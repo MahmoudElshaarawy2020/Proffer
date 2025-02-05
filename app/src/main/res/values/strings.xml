@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="Build_yor_house">Build Your House</string>
+    <string name="personalize">Personalize your experience \n and Get exclusive offers</string>
+    <string name="login">Log in</string>
+    <string name="sign_up">Sign up</string>
 </resources>
