@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -26,6 +30,12 @@ import com.example.myapplication.R
 
 @Composable
 fun OnBoardingScreen(modifier: Modifier = Modifier) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        IdentityDialog(onDismiss = { showDialog = false })
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -93,7 +103,7 @@ fun OnBoardingScreen(modifier: Modifier = Modifier) {
             Button(
                 modifier = modifier
                     .size(width = 160.dp, height = 50.dp),
-                onClick = { /*TODO*/ },
+                onClick = { showDialog = true },
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
             ) {
                 Text(
