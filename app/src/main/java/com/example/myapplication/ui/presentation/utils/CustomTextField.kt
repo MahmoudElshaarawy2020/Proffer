@@ -1,8 +1,10 @@
 package com.example.myapplication.ui.presentation.utils
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -40,22 +43,28 @@ fun CustomTextField(
     focusedBorderColor: Color,
     unfocusedBorderColor: Color,
     cursorColor: Color,
-    leadingIcon: Int,
     isFocused: Boolean,
     maxLines: Int = 1,
     isPassword: Boolean = false,
     isEncrypted: Boolean = false,
     isError: Boolean = false,
-    width: Int = 343,
-    height: Int = 56,
+    isPhoneNumber: Boolean = false,
+    isEmail: Boolean = false,
+    width: Int = 360,
+    height: Int = 60,
     errorMessage: String = ""
 ) {
 
     var isFieldFocused by remember { mutableStateOf(isFocused) }
 
+    val phoneNumberPattern = Regex("^[0-9]{11,15}$")
     val passwordPattern = Regex("^(?=.*[A-Z])(?=.*[@#\$%^&+=!]).{8,}$")
 
     val actualErrorMessage = when {
+        isPhoneNumber && value.isNotEmpty() && !value.matches(phoneNumberPattern) ->
+            "Enter a valid phone number (11-15 digits)"
+        isEmail && (value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(value).matches()) ->
+            "Enter a valid email address"
         isPassword && value.isNotEmpty() && !value.matches(passwordPattern) ->
             "Password must be 8+ chars, \n include 1 uppercase & 1 special char"
         isError -> errorMessage
@@ -81,19 +90,10 @@ fun CustomTextField(
                 unfocusedBorderColor = if (hasError) Color.Red else unfocusedBorderColor,
                 cursorColor = cursorColor
             ),
-            leadingIcon = {
-                Icon(
-                    modifier = modifier
-                        .size(24.dp),
-                    painter = painterResource(id = leadingIcon),
-                    contentDescription = "Icon",
-                    tint = when {
-                        hasError -> Color.Red
-                        isFieldFocused -> colorResource(id = R.color.light_grey)
-                        else -> colorResource(id = R.color.light_grey)
-                    }
-                )
-            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = if (isPhoneNumber) KeyboardType.Number else KeyboardType.Text
+            ),
+
             isError = hasError,
             label = {
                 Text(

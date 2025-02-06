@@ -23,18 +23,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.myapplication.R
 
 @Composable
-fun OnBoardingScreen(modifier: Modifier = Modifier) {
+fun OnBoardingScreen(
+    modifier: Modifier = Modifier,
+    onLoginClick: () -> Unit = {},
+    onIdentityClick: () -> Unit = {},
+    navController: NavController) {
 
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
-        IdentityDialog(onDismiss = { showDialog = false })
+        IdentityDialog(
+            onDismiss = { showDialog = false },
+            onIdentityClick
+        )
     }
     Column(
         modifier = modifier
@@ -119,8 +126,3 @@ fun OnBoardingScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview
-@Composable
-private fun OnBoardingScreenPrev() {
-    OnBoardingScreen()
-}

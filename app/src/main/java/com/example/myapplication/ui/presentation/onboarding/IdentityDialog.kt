@@ -33,7 +33,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.myapplication.R
 
 @Composable
-fun IdentityDialog(onDismiss: () -> Unit) {
+fun IdentityDialog(onDismiss: () -> Unit, onSignUpClick: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         Box(
             modifier = Modifier
@@ -62,7 +62,10 @@ fun IdentityDialog(onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { onDismiss()},
+                    onClick = {
+                        onSignUpClick()
+                        onDismiss()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .size(width = 220.dp, height = 120.dp),
@@ -89,7 +92,10 @@ fun IdentityDialog(onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { onDismiss()},
+                    onClick = {
+                        onSignUpClick()
+                        onDismiss()
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.lighter_brown))
@@ -113,9 +119,3 @@ fun IdentityDialog(onDismiss: () -> Unit) {
     }
 }
 
-
-@Preview
-@Composable
-private fun IdentityDialogPrev() {
-    IdentityDialog(onDismiss = {})
-}
