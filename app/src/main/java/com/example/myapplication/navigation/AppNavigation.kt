@@ -45,6 +45,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             SignUpScreen(
                 modifier = modifier,
                 navController = navController,
+                onNavigateToLogin = { navController.navigate(Screen.Login.route) }
             )
         }
     }

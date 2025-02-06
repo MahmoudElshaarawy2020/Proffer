@@ -44,6 +44,7 @@ fun CustomTextField(
     unfocusedBorderColor: Color,
     cursorColor: Color,
     isFocused: Boolean,
+    backgroundColor: Color = colorResource(id = R.color.lighter_white),
     maxLines: Int = 1,
     isPassword: Boolean = false,
     isEncrypted: Boolean = false,
@@ -88,7 +89,8 @@ fun CustomTextField(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = if (hasError) Color.Red else focusedBorderColor,
                 unfocusedBorderColor = if (hasError) Color.Red else unfocusedBorderColor,
-                cursorColor = cursorColor
+                cursorColor = cursorColor,
+                containerColor = backgroundColor
             ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = if (isPhoneNumber) KeyboardType.Number else KeyboardType.Text
