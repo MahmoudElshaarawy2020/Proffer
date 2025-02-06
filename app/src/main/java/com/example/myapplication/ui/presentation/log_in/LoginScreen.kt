@@ -96,7 +96,7 @@ fun LoginScreen(
         )
 
         Text(
-            text = "Create Your Account",
+            text = "Unlock Your Benefits",
             fontSize = 28.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.orange),
@@ -202,7 +202,7 @@ fun LoginScreen(
             textAlign = TextAlign.Center,
             color = colorResource(id = R.color.orange),
         )
-        Spacer(modifier = modifier.size(height = 16.dp, width = 0.dp))
+        Spacer(modifier = modifier.size(height = 45.dp, width = 0.dp))
 
 
     }
