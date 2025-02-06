@@ -1,8 +1,7 @@
-package com.example.myapplication.ui.presentation.log_in
+package com.example.myapplication.ui.presentation.new_password
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,26 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.ui.presentation.utils.CustomTextField
 
 @Composable
-fun LoginScreen(
-    modifier: Modifier = Modifier,
-    navController: NavController,
-    onNavigateToVerification: () -> Unit = {},
-    onNavigateToSignUp: () -> Unit = {}
-) {
+fun NewPasswordScreen(modifier: Modifier = Modifier) {
 
-    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
@@ -56,7 +48,7 @@ fun LoginScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.light_white))
-                .padding(start = 24.dp,top = 64.dp , end = 24.dp),
+                .padding(start = 24.dp, top = 64.dp, end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -67,19 +59,6 @@ fun LoginScreen(
                 )
             }
 
-            Row {
-                Text(
-                    text = "English",
-                    textDecoration = TextDecoration.Underline
-                )
-
-                Image(
-                    painter = painterResource(id = R.drawable.earth_ic),
-                    contentDescription = null
-                )
-            }
-
-
         }
         Divider(
             modifier = modifier
@@ -87,8 +66,6 @@ fun LoginScreen(
                 .padding(start = 24.dp, top = 16.dp, end = 24.dp),
             thickness = 1.dp
         )
-        Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
-
         Image(
             modifier = modifier
                 .size(width = 190.dp, height = 50.dp)
@@ -98,14 +75,14 @@ fun LoginScreen(
         )
 
         Text(
-            text = "Unlock Your Benefits",
+            text = "New Password",
             fontSize = 28.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.orange),
             lineHeight = 28.sp
         )
         Text(
-            text = "Get exclusive offers",
+            text = "Personalize your experience",
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 2,
@@ -117,29 +94,7 @@ fun LoginScreen(
         Text(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, bottom = 8.dp, top = 17.dp),
-            text = "Email",
-            fontSize = 17.sp,
-            lineHeight = 21.sp,
-            color = colorResource(id = R.color.dark_blue),
-            fontWeight = FontWeight.Medium
-        )
-
-        CustomTextField(
-            value = email,
-            onValueChange = { email = it },
-            isEmail = true,
-            label = "Your Email",
-            focusedBorderColor = colorResource(id = R.color.lighter_grey),
-            unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
-            cursorColor = colorResource(id = R.color.light_grey),
-            isFocused = false
-        )
-
-        Text(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, bottom = 8.dp, top = 17.dp),
+                .padding(start = 24.dp, top = 17.dp),
             text = "Password",
             fontSize = 17.sp,
             lineHeight = 21.sp,
@@ -150,7 +105,30 @@ fun LoginScreen(
         CustomTextField(
             value = password,
             onValueChange = { password = it },
+            isPassword = true,
+            isEncrypted = true,
             label = "Your Password",
+            focusedBorderColor = colorResource(id = R.color.lighter_grey),
+            unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
+            cursorColor = colorResource(id = R.color.light_grey),
+            isFocused = false
+        )
+
+        Text(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, top = 17.dp),
+            text = "Confirm Password",
+            fontSize = 17.sp,
+            lineHeight = 21.sp,
+            color = colorResource(id = R.color.dark_blue),
+            fontWeight = FontWeight.Medium
+        )
+
+        CustomTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = "Confirm Your Password",
             isEncrypted = true,
             focusedBorderColor = colorResource(id = R.color.lighter_grey),
             unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
@@ -158,29 +136,19 @@ fun LoginScreen(
             isFocused = false
         )
 
-        Spacer(modifier = modifier.size(height = 8.dp, width = 0.dp))
-        Text(
-            modifier = modifier.clickable {
-                onNavigateToVerification()
-            },
-            text = "Can’t Remember Your Password",
-            textDecoration = TextDecoration.Underline,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.orange),
-        )
-
         Spacer(modifier = modifier.size(height = 200.dp, width = 0.dp))
+
         Button(
             modifier = modifier
                 .size(width = 230.dp, height = 50.dp),
-            onClick = {},
+            onClick = {
+                //TODO
+            },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
         ) {
+
             Text(
-                text = stringResource(id = R.string.login),
+                text = "Verify",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,
@@ -188,24 +156,7 @@ fun LoginScreen(
                 color = colorResource(id = R.color.light_white),
                 lineHeight = 25.sp
             )
-
         }
-
-        Spacer(modifier = modifier.size(height = 16.dp, width = 0.dp))
-        Text(
-            modifier = modifier.clickable {
-                onNavigateToSignUp()
-            },
-            text = "Want To Create Your Account",
-            textDecoration = TextDecoration.Underline,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.orange),
-        )
-        Spacer(modifier = modifier.size(height = 45.dp, width = 0.dp))
-
-
+        Spacer(modifier = modifier.size(height = 64.dp, width = 0.dp))
     }
 }
