@@ -38,6 +38,7 @@ import com.example.myapplication.ui.presentation.utils.CustomTextField
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    onNavigateToSignUp: () -> Unit = {}
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -192,7 +193,7 @@ fun LoginScreen(
         Spacer(modifier = modifier.size(height = 16.dp, width = 0.dp))
         Text(
             modifier = modifier.clickable {
-                //TODO
+                onNavigateToSignUp()
             },
             text = "Want To Create Your Account",
             textDecoration = TextDecoration.Underline,

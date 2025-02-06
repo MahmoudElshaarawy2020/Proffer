@@ -29,7 +29,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     ) {
         composable(Screen.Login.route) {
             LoginScreen(
-                modifier, navController
+                modifier = modifier,
+                navController = navController,
+                onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) }
             )
         }
         composable(Screen.OnBoarding.route) {
