@@ -37,7 +37,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 modifier = modifier,
                 navController = navController,
                 onIdentityClick = { navController.navigate(Screen.SignUp.route) },
-                onLoginClick = { navController.navigate(Screen.Login.route) }
+               onNavigateToLogin = { navController.navigate(Screen.Login.route) }
             )
         }
 

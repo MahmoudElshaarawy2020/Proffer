@@ -31,7 +31,7 @@ import com.example.myapplication.R
 @Composable
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
     onIdentityClick: () -> Unit = {},
     navController: NavController) {
 
@@ -92,7 +92,7 @@ fun OnBoardingScreen(
             Button(
                 modifier = modifier
                     .size(width = 160.dp, height = 50.dp),
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateToLogin() },
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.dark_blue))
             ) {
                 Text(
