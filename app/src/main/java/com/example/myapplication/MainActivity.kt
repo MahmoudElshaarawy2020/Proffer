@@ -4,8 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.myapplication.navigation.AppNavigation
-import com.example.myapplication.ui.presentation.onboarding.OnBoardingScreen
+import com.example.myapplication.presentation.navigation.AppNavigation
+import dagger.hilt.android.AndroidEntryPoint
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +16,5 @@ class MainActivity : ComponentActivity() {
             AppNavigation()
         }
     }
-
-
 }
 

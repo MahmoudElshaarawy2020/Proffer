@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.presentation.utils
+package com.example.myapplication.presentation.utils
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Column

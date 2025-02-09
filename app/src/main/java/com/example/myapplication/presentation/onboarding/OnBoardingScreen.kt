@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.presentation.onboarding
+package com.example.myapplication.presentation.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

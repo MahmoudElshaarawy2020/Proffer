@@ -1,4 +1,4 @@
-package com.example.myapplication.navigation
+package com.example.myapplication.presentation.navigation
 
 sealed class Screen(val route: String) {
     object Login : Screen("login_screen")

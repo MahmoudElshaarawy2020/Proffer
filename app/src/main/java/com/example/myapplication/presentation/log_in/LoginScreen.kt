@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.presentation.log_in
+package com.example.myapplication.presentation.log_in
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.R
-import com.example.myapplication.ui.presentation.utils.CustomTextField
+import com.example.myapplication.presentation.utils.CustomTextField
 
 @Composable
 fun LoginScreen(

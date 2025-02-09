@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.presentation.sign_up
+package com.example.myapplication.presentation.sign_up
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.R
-import com.example.myapplication.ui.presentation.utils.CustomTextField
+import com.example.myapplication.presentation.utils.CustomTextField
 
 @Composable
 fun SignUpScreen(

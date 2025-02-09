@@ -1,4 +1,4 @@
-package com.example.myapplication.navigation
+package com.example.myapplication.presentation.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.ui.presentation.log_in.LoginScreen
-import com.example.myapplication.ui.presentation.new_password.NewPasswordScreen
-import com.example.myapplication.ui.presentation.onboarding.OnBoardingScreen
-import com.example.myapplication.ui.presentation.sign_up.SignUpScreen
-import com.example.myapplication.ui.presentation.verification.VerificationScreen
+import com.example.myapplication.presentation.log_in.LoginScreen
+import com.example.myapplication.presentation.new_password.NewPasswordScreen
+import com.example.myapplication.presentation.onboarding.OnBoardingScreen
+import com.example.myapplication.presentation.sign_up.SignUpScreen
+import com.example.myapplication.presentation.verification.VerificationScreen
 
 
 @Composable

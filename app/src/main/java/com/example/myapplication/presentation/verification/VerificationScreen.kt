@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.presentation.verification
+package com.example.myapplication.presentation.verification
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
