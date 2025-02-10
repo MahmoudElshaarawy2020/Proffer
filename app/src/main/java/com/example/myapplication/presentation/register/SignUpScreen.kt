@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.register
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,12 +34,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.presentation.utils.CustomTextField
 
 @Composable
 fun SignUpScreen(
+    viewModel: RegisterViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     navController: NavController? = null,
     onNavigateToLogin: () -> Unit = {}
@@ -49,6 +54,13 @@ fun SignUpScreen(
     var address by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val request = RegisterRequest("A\'laa", "ssffdgds@gmail.com", "sfag","sfgd","dfdgfd","sdgsdfsdf","fadgfdf")
+    viewModel.registerUser(request)
+    val registerState by viewModel.registerState.collectAsState()
+    Log.d("TAG", "SignUpScreen: ${registerState}")
+
+
+
     Column(
         modifier = modifier
             .fillMaxSize()

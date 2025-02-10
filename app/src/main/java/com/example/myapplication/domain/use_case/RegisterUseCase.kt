@@ -5,11 +5,12 @@ import com.example.myapplication.data.response.RegisterResponse
 import com.example.myapplication.domain.repository.RegisterRepository
 import com.example.myapplication.util.Result
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class RegisterUseCase(
+class RegisterUseCase @Inject constructor(
     private val repository: RegisterRepository
 ) {
-    suspend operator fun invoke(registerRequest: RegisterRequest): Flow<Result<RegisterResponse>> {
-        return repository.register(registerRequest)
+    operator fun invoke(request: RegisterRequest): Flow<Result<RegisterResponse>> {
+        return repository.register(request)
     }
 }
