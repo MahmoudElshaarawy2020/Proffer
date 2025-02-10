@@ -1,5 +1,6 @@
 package com.example.myapplication.data.repository
 
+import android.util.Log
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.response.RegisterResponse
@@ -24,10 +25,13 @@ class RegisterRepoImpl @Inject constructor(
             val response = apiService.register(registerRequest)
 
             if (response.isSuccessful) {
+                Log.d("RegisterRepoImpl", "API call successful")
                 response.body()?.let {
                     emit(Result.Success(it))
                 } ?: emit(Result.Error("Empty response body"))
+
             } else {
+                Log.d("RegisterRepoImpl", "API call failed")
                 emit(Result.Error("Error: ${response.errorBody()?.string()}"))
             }
 

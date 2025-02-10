@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.register
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.request.RegisterRequest
@@ -27,6 +28,7 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             registerUseCase.invoke(registerRequest)
                 .catch { e ->
+                    Log.e("RegisterError", "API call failed", e)
                     _registerState.value = Result.Error("Unexpected Error: ${e.message}")
                 }
                 .collectLatest { result ->

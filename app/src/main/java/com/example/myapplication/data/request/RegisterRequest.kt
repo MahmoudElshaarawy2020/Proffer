@@ -10,7 +10,7 @@ data class RegisterRequest (
     @SerializedName("address")
     var address: String,
     @SerializedName("account_type")
-    var accountType: String,
+    var accountType: Int,
     @SerializedName("email")
     var email: String,
     @SerializedName("password")

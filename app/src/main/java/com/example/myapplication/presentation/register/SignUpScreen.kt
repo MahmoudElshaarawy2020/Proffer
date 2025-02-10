@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,10 +55,9 @@ fun SignUpScreen(
     var address by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    val request = RegisterRequest("A\'laa", "ssffdgds@gmail.com", "sfag","sfgd","dfdgfd","sdgsdfsdf","fadgfdf")
-    viewModel.registerUser(request)
+    val request = RegisterRequest("Mahmoud", "01018490780", "Hassan Radwan",1,"mahmoudfaragelshaarawy1842001@gmail.com","M01018490780","M01018490780")
+
     val registerState by viewModel.registerState.collectAsState()
-    Log.d("TAG", "SignUpScreen: ${registerState}")
 
 
 
@@ -286,7 +286,11 @@ fun SignUpScreen(
                 Button(
                     modifier = modifier
                         .size(width = 230.dp, height = 50.dp),
-                    onClick = { },
+                    onClick = {
+
+                        Log.d("TAG", "SignUpScreen: $registerState")
+                        viewModel.registerUser(request)
+                    },
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
                 ) {
                     Text(
