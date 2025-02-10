@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.sign_up
+package com.example.myapplication.presentation.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

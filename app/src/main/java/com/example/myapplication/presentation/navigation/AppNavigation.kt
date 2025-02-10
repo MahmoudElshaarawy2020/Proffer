@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
 import com.example.myapplication.presentation.onboarding.OnBoardingScreen
-import com.example.myapplication.presentation.sign_up.SignUpScreen
+import com.example.myapplication.presentation.register.SignUpScreen
 import com.example.myapplication.presentation.verification.VerificationScreen
 
 
