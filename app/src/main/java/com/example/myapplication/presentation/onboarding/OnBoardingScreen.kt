@@ -27,12 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.presentation.navigation.Screen
 
 @Composable
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
     onNavigateToLogin: () -> Unit = {},
-    onIdentityClick: () -> Unit = {},
+    onRoleClickBoarding: (Int) -> Unit = {},
     navController: NavController) {
 
     var showDialog by remember { mutableStateOf(false) }
@@ -40,7 +41,9 @@ fun OnBoardingScreen(
     if (showDialog) {
         IdentityDialog(
             onDismiss = { showDialog = false },
-            onIdentityClick
+            onRoleClick = { role ->
+                onRoleClickBoarding(role)
+            }
         )
     }
     Column(

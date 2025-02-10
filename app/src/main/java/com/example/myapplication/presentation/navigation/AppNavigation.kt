@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
 import com.example.myapplication.presentation.onboarding.OnBoardingScreen
@@ -41,19 +43,28 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             OnBoardingScreen(
                 modifier = modifier,
                 navController = navController,
-                onIdentityClick = { navController.navigate(Screen.SignUp.route) },
+                onRoleClickBoarding = { role ->
+                    navController.navigate(Screen.SignUp.createRoute(role))
+                },
                 onNavigateToLogin = { navController.navigate(Screen.Login.route) },
 
-            )
+                )
         }
 
-        composable(Screen.SignUp.route) {
+        composable(
+            route = "signUp_screen/{role}",
+            arguments = listOf(navArgument("role") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val role = backStackEntry.arguments?.getInt("role") ?: 1
+
             SignUpScreen(
                 modifier = modifier,
                 navController = navController,
+                role = role,
                 onNavigateToLogin = { navController.navigate(Screen.Login.route) }
             )
         }
+
 
         composable(Screen.Verification.route) {
             VerificationScreen(

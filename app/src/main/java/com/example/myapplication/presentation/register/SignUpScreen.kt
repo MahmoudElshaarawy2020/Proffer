@@ -18,7 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,22 +42,32 @@ import com.example.myapplication.presentation.utils.CustomTextField
 
 @Composable
 fun SignUpScreen(
+    role: Int,
     viewModel: RegisterViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-    navController: NavController? = null,
+    navController: NavController,
     onNavigateToLogin: () -> Unit = {}
 ) {
 
+    Log.d("TAG", "SignUpScreen: $role")
     var userName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    val request = RegisterRequest("Mahmoud", "01018490780", "Hassan Radwan",1,"mahmoudfaragelshaarawy1842001@gmail.com","M01018490780","M01018490780")
-
     val registerState by viewModel.registerState.collectAsState()
 
+    val request =
+        RegisterRequest(
+            userName,
+            phoneNumber,
+            address,
+            role,
+            email,
+            password,
+            confirmPassword
+        )
 
 
     Column(
@@ -316,7 +325,7 @@ fun SignUpScreen(
                     maxLines = 1,
                     textAlign = TextAlign.Center,
                     color = colorResource(id = R.color.orange),
-                    )
+                )
 
                 Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
 
@@ -327,8 +336,3 @@ fun SignUpScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun SignUpPreview() {
-    SignUpScreen()
-}
