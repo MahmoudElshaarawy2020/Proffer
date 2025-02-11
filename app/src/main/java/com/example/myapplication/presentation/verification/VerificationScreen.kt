@@ -188,7 +188,7 @@ fun VerificationScreen(
                 if (isOtpComplete) {
                     val request = VerificationRequest(email = email, code = otp.joinToString(""))
                     viewModel.verification(request)
-                    if (viewModel.verificationState.value is Result.Success) {
+                    if (viewModel.verificationState.value.data?.status == true ) {
                         Log.w("can navigate1", "VerificationScreen: navigated1")
                         onNavigateToLogin()
                         Log.w("can navigate2", "VerificationScreen: navigated2")
