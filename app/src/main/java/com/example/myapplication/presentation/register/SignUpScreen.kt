@@ -1,6 +1,7 @@
 package com.example.myapplication.presentation.register
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +42,8 @@ import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.presentation.utils.CustomTextField
+import com.example.myapplication.util.Result
+
 
 @Composable
 fun SignUpScreen(
@@ -46,6 +51,7 @@ fun SignUpScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     navController: NavController,
+    onNavigateToVerification: (String) -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
 
@@ -57,6 +63,8 @@ fun SignUpScreen(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     val registerState by viewModel.registerState.collectAsState()
+    val context = LocalContext.current
+
 
     val request =
         RegisterRequest(
@@ -289,15 +297,12 @@ fun SignUpScreen(
                 )
             }
 
-
             item {
                 Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
                 Button(
                     modifier = modifier
                         .size(width = 230.dp, height = 50.dp),
                     onClick = {
-
-                        Log.d("TAG", "SignUpScreen: $registerState")
                         viewModel.registerUser(request)
                     },
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
@@ -332,6 +337,29 @@ fun SignUpScreen(
             }
         }
 
+
+        LaunchedEffect(registerState) {
+            when (registerState) {
+                is Result.Success -> {
+                    Log.d("TAG", "Registration Success: ${registerState.data}")
+                    onNavigateToVerification(email)
+                }
+
+                is Result.Error -> {
+                    Toast.makeText(
+                        context,
+                        "Registration failed: ${registerState.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is Result.Loading -> {
+                    Log.d("TAG", "Registering user: ${registerState.message}")
+                }
+
+                else -> Unit
+            }
+        }
 
     }
 }

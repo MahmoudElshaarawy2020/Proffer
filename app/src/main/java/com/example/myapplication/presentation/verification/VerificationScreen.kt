@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.verification
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,20 +46,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.data.request.VerificationRequest
+import com.example.myapplication.util.Result
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VerificationScreen(
+    email: String,
+    viewModel: VerificationViewModel = hiltViewModel(),
     navController: NavController,
     modifier: Modifier = Modifier,
     otpLength: Int = 4,
     onNavigateToLogin : () -> Unit
 ) {
+
     var otp by remember { mutableStateOf(List(otpLength) { "" }) }
     val focusRequesters = List(otpLength) { FocusRequester() }
     var isOtpComplete by remember { mutableStateOf(false) }
+    var context = LocalContext.current
 
     Column(
         modifier = modifier
@@ -175,7 +185,13 @@ fun VerificationScreen(
                 .size(width = 230.dp, height = 50.dp),
             onClick = {
                 if (isOtpComplete) {
-                    onNavigateToLogin()
+                    val request = VerificationRequest(email = email, code = otp.joinToString(""))
+                    viewModel.verification(request)
+                    if (viewModel.verificationState.value is Result.Success) {
+                        onNavigateToLogin()
+                    }else {
+                        Toast.makeText(context, "Verification failed", Toast.LENGTH_SHORT).show()
+                    }
                 }
             },
             enabled = isOtpComplete,

@@ -61,14 +61,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 modifier = modifier,
                 navController = navController,
                 role = role,
-                onNavigateToLogin = { navController.navigate(Screen.Login.route) }
+                onNavigateToLogin = { navController.navigate(Screen.Login.route) },
+                onNavigateToVerification = { navController.navigate(Screen.Verification.createRoute(email = it)) }
             )
         }
 
 
-        composable(Screen.Verification.route) {
+        composable(
+            route = "verification_screen/{email}",
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
             VerificationScreen(
                 modifier = modifier,
+                email = email,
                 navController = navController,
                 onNavigateToLogin = { navController.navigate(Screen.NewPassword.route) }
             )
