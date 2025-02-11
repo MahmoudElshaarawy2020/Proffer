@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.verification
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -188,10 +189,12 @@ fun VerificationScreen(
                     val request = VerificationRequest(email = email, code = otp.joinToString(""))
                     viewModel.verification(request)
                     if (viewModel.verificationState.value is Result.Success) {
+                        Log.w("can navigate1", "VerificationScreen: navigated1")
                         onNavigateToLogin()
-                    }else {
-                        Toast.makeText(context, "Verification failed", Toast.LENGTH_SHORT).show()
+                        Log.w("can navigate2", "VerificationScreen: navigated2")
                     }
+                }else {
+                    Toast.makeText(context, "Verification failed", Toast.LENGTH_SHORT).show()
                 }
             },
             enabled = isOtpComplete,
