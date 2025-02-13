@@ -1,5 +1,7 @@
 package com.example.myapplication.presentation.log_in
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,12 +18,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,20 +35,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.presentation.utils.CustomTextField
+import com.example.myapplication.util.Result
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
     navController: NavController,
-    onNavigateToVerification: () -> Unit = {},
+    onNavigateToPassword: () -> Unit = {},
     onNavigateToSignUp: () -> Unit = {}
 ) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val loginState by viewModel.loginState.collectAsState()
+    val context = LocalContext.current
+
 
     Column(
         modifier = modifier
@@ -161,7 +173,7 @@ fun LoginScreen(
         Spacer(modifier = modifier.size(height = 8.dp, width = 0.dp))
         Text(
             modifier = modifier.clickable {
-                onNavigateToVerification()
+                onNavigateToPassword()
             },
             text = "Can’t Remember Your Password",
             textDecoration = TextDecoration.Underline,
@@ -176,7 +188,10 @@ fun LoginScreen(
         Button(
             modifier = modifier
                 .size(width = 230.dp, height = 50.dp),
-            onClick = {},
+            onClick = {
+                val request = LoginRequest(email = email, password = password)
+                viewModel.login(request)
+            },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
         ) {
             Text(
@@ -206,6 +221,30 @@ fun LoginScreen(
         )
         Spacer(modifier = modifier.size(height = 45.dp, width = 0.dp))
 
+        LaunchedEffect(loginState) {
+            when (loginState) {
+                is Result.Success -> {
+                    Log.d("TAG", "login Success: ${loginState.data}")
+
+                    onNavigateToPassword()
+                }
+
+                is Result.Error -> {
+                    Toast.makeText(
+                        context,
+                        "login failed: ${loginState.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+
+                is Result.Loading -> {
+                    Log.d("TAG", "login user: ${loginState.message}")
+                }
+
+                else -> Unit
+            }
+        }
 
     }
 }

@@ -304,7 +304,6 @@ fun SignUpScreen(
                         .size(width = 230.dp, height = 50.dp),
                     onClick = {
                         viewModel.registerUser(request)
-                        Log.w("alaa", "aaaaaaaaaa: 1")
                     },
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
                 ) {
@@ -343,7 +342,6 @@ fun SignUpScreen(
             when (registerState) {
                 is Result.Success -> {
                     Log.d("TAG", "Registration Success: ${registerState.data}")
-                    Log.w("alaa", "aaaaaaaaaa: 2")
 
                     onNavigateToVerification(email)
                 }
@@ -354,7 +352,6 @@ fun SignUpScreen(
                         "Registration failed: ${registerState.message}",
                         Toast.LENGTH_SHORT
                     ).show()
-                    Log.w("alaa", "aaaaaaaaaa: 3")
 
                 }
 

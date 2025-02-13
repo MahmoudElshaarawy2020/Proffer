@@ -36,7 +36,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 modifier = modifier,
                 navController = navController,
                 onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
-                onNavigateToVerification = { navController.navigate(Screen.Verification.route) }
+                onNavigateToPassword = { navController.navigate(Screen.NewPassword.route) }
             )
         }
         composable(Screen.OnBoarding.route) {

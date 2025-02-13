@@ -35,11 +35,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,16 +49,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.request.VerificationRequest
-import com.example.myapplication.util.Result
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VerificationScreen(
+    modifier: Modifier = Modifier,
     email: String,
     viewModel: VerificationViewModel = hiltViewModel(),
     navController: NavController,
-    modifier: Modifier = Modifier,
     otpLength: Int = 4,
     onNavigateToLogin : () -> Unit
 ) {
@@ -189,9 +186,8 @@ fun VerificationScreen(
                     val request = VerificationRequest(email = email, code = otp.joinToString(""))
                     viewModel.verification(request)
                     if (viewModel.verificationState.value.data?.status == true ) {
-                        Log.w("can navigate1", "VerificationScreen: navigated1")
                         onNavigateToLogin()
-                        Log.w("can navigate2", "VerificationScreen: navigated2")
+                        Log.w("can Verify", "VerificationScreen: Successful Verification")
                     }
                 }else {
                     Toast.makeText(context, "Verification failed", Toast.LENGTH_SHORT).show()
