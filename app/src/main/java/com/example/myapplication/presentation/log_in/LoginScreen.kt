@@ -41,15 +41,24 @@ import com.example.myapplication.R
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.presentation.utils.CustomTextField
 import com.example.myapplication.util.Result
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     navController: NavController,
-    onNavigateToPassword: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
     onNavigateToSignUp: () -> Unit = {}
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.getAuthToken().collectLatest { token ->
+            if (!token.isNullOrEmpty()) {
+                onNavigateToHome()
+            }
+        }
+    }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -173,7 +182,7 @@ fun LoginScreen(
         Spacer(modifier = modifier.size(height = 8.dp, width = 0.dp))
         Text(
             modifier = modifier.clickable {
-                onNavigateToPassword()
+                onNavigateToHome()
             },
             text = "Can’t Remember Your Password",
             textDecoration = TextDecoration.Underline,
@@ -226,7 +235,7 @@ fun LoginScreen(
                 is Result.Success -> {
                     Log.d("TAG", "login Success: ${loginState.data}")
 
-                    onNavigateToPassword()
+                    onNavigateToHome()
                 }
 
                 is Result.Error -> {

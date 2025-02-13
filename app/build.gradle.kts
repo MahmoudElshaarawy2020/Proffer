@@ -94,6 +94,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
 
+    //data store
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+
     // OkHttp Logging (Updated)
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 

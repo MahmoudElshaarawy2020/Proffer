@@ -6,26 +6,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.myapplication.presentation.home.HomeScreen
 import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
 import com.example.myapplication.presentation.onboarding.OnBoardingScreen
 import com.example.myapplication.presentation.register.SignUpScreen
+import com.example.myapplication.presentation.splash.SplashScreen
 import com.example.myapplication.presentation.verification.VerificationScreen
 
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
-    val navController = rememberNavController()
+fun AppNavigation(modifier: Modifier = Modifier, startDestination: String, navController: NavHostController) {
+
     val paddingValues = remember { PaddingValues() }
 
     NavHost(
         navController = navController,
-        startDestination = Screen.OnBoarding.route,
+        startDestination = startDestination,
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
@@ -36,7 +39,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 modifier = modifier,
                 navController = navController,
                 onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
-                onNavigateToPassword = { navController.navigate(Screen.NewPassword.route) }
+                onNavigateToHome = { navController.navigate(Screen.Home.route) }
             )
         }
         composable(Screen.OnBoarding.route) {
@@ -85,5 +88,16 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
 
+        composable(Screen.Home.route) {
+            HomeScreen(
+                modifier = modifier,
+            )
+        }
+
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                modifier = modifier,
+            )
+        }
     }
 }
