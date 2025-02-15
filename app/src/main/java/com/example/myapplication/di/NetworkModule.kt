@@ -1,7 +1,6 @@
 package com.example.myapplication.di
 
 import android.app.Application
-import android.content.Context
 import com.example.myapplication.constants.BASE_URL
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.remote.ApiService
@@ -17,9 +16,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 object NetworkModule {
+
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService {
@@ -36,24 +36,28 @@ object NetworkModule {
             .build()
     }
 
-
     @Provides
     @Singleton
     fun provideDataStoreManager(application: Application): DataStoreManager {
-        return DataStoreManager(application.applicationContext)
+        return DataStoreManager(application)
     }
-
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(dataStoreManager: DataStoreManager): OkHttpClient {
+    fun provideAuthInterceptor(dataStoreManager: DataStoreManager): AuthInterceptor {
+        return AuthInterceptor(dataStoreManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
         return OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(AuthInterceptor(dataStoreManager))  // Attach AuthInterceptor
+            .addInterceptor(loggingInterceptor) // Logs requests and responses
+            .addInterceptor(authInterceptor) // Adds Authorization header automatically
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .build()

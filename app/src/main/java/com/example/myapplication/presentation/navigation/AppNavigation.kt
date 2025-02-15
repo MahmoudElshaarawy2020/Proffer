@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myapplication.presentation.home.HomeScreen
 import com.example.myapplication.presentation.log_in.LoginScreen
+import com.example.myapplication.presentation.navbar_screens.more.MoreScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
 import com.example.myapplication.presentation.onboarding.OnBoardingScreen
 import com.example.myapplication.presentation.register.SignUpScreen
@@ -88,9 +89,16 @@ fun AppNavigation(modifier: Modifier = Modifier, startDestination: String, navCo
             )
         }
 
+        composable(Screen.MoreScreen.route) {
+            MoreScreen(
+                modifier = modifier,
+            )
+        }
+
         composable(Screen.Home.route) {
             HomeScreen(
                 modifier = modifier,
+                navController = navController
             )
         }
 

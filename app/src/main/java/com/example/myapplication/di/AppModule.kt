@@ -2,9 +2,11 @@ package com.example.myapplication.di
 
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.repository.LoginRepoImpl
+import com.example.myapplication.data.repository.ProfileRepoImpl
 import com.example.myapplication.data.repository.RegisterRepoImpl
 import com.example.myapplication.data.repository.VerificationRepoImpl
 import com.example.myapplication.domain.repository.LoginRepository
+import com.example.myapplication.domain.repository.ProfileRepository
 import com.example.myapplication.domain.repository.RegisterRepository
 import com.example.myapplication.domain.repository.VerificationRepo
 import dagger.Module
@@ -33,6 +35,12 @@ object AppModule {
     @Singleton
     fun provideLoginRepo(apiService: ApiService): LoginRepository {
         return LoginRepoImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileRepo(apiService: ApiService): ProfileRepository {
+        return ProfileRepoImpl(apiService)
     }
 
 }

@@ -37,11 +37,15 @@ class LoginViewModel @Inject constructor(
                 .collectLatest { result ->
                     _loginState.value = result
                     if (result is Result.Success) {
-                        result.data?.token?.let { dataStoreManager.saveAuthToken(it) }
+                        result.data?.token?.let { token ->
+                            Log.d("New Token", token)
+                            dataStoreManager.saveAuthToken(token)
                         }
+                    }
                 }
         }
     }
-    fun getAuthToken(): StateFlow<String?> = dataStoreManager.getAuthToken()
+
+    fun getAuthToken(): Flow<String?> = dataStoreManager.getToken
 
 }

@@ -9,6 +9,7 @@ sealed class Screen(val route: String) {
     object NewPassword : Screen("new_password_screen")
     object Home : Screen("home_screen")
     object Splash : Screen("splash_screen")
+    object MoreScreen : Screen("more_screen")
 
     object SignUp : Screen("signUp_screen/{role}") {
         fun createRoute(role: Int) = "signUp_screen/$role"

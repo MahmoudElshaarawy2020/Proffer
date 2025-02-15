@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.navbar_screens.more
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,20 +18,45 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.R
+import com.example.myapplication.data.data_store.DataStoreManager
+import com.example.myapplication.util.Result
+
 
 @Composable
-fun MoreScreen(modifier: Modifier = Modifier) {
+fun MoreScreen(
+    modifier: Modifier = Modifier,
+    viewModel: MoreViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val token by dataStoreManager.getToken.collectAsState(initial = null)
+
+    LaunchedEffect(token) {
+        if (!token.isNullOrEmpty()) {
+            Log.d("Using Token", token!!)
+            viewModel.getMoreAboutUser()
+        }
+    }
+
+    val profileState by viewModel.profileState.collectAsState()
+
     Column(
         modifier
             .fillMaxSize()
@@ -38,7 +64,6 @@ fun MoreScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         Box(
             modifier
                 .fillMaxWidth(),
@@ -50,26 +75,21 @@ fun MoreScreen(modifier: Modifier = Modifier) {
                     .background(color = colorResource(R.color.dark_blue))
                     .size(width = 270.dp, height = 100.dp)
             ) {
-                Column(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(16.dp)),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        "User Name",
-                        color = colorResource(R.color.white),
-                        fontSize = 17.sp,
-                        maxLines = 1
-                    )
-                    Text(
-                        "Email",
-                        color = colorResource(R.color.white),
-                        fontSize = 14.sp,
-                        maxLines = 1
-                    )
 
+                when (profileState) {
+                    is Result.Loading -> Text("Loading...", color = Color.White)
+                    is Result.Success -> {
+                        val profile = (profileState as Result.Success).data?.data
+                        if (profile != null) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(text = profile.name ?: "No Name", color = Color.White)
+                                Text(text = profile.email ?: "No Email", color = Color.White)
+                            }
+                        } else {
+                            Text("Error: No profile data", color = Color.Red)
+                        }
+                    }
+                    is Result.Error -> Text("Error: ${(profileState as Result.Error).message}", color = Color.Red)
                 }
             }
             Row(modifier.fillMaxWidth()) {
@@ -80,11 +100,11 @@ fun MoreScreen(modifier: Modifier = Modifier) {
                         .clip(CircleShape)
                         .border(3.dp, color = colorResource(R.color.orange), CircleShape),
                     painter = painterResource(R.drawable.client_img),
-
                     contentDescription = null
                 )
             }
         }
+
         Divider(
             modifier
                 .size(width = 300.dp, height = 1.dp)
@@ -92,33 +112,23 @@ fun MoreScreen(modifier: Modifier = Modifier) {
             color = colorResource(R.color.lighter_grey)
         )
 
-        Spacer(modifier.size(10.dp))
+        // Your CustomRow items remain unchanged
         CustomRow(text = "Your Profile", icon = R.drawable.person_ic)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "Settings", icon = R.drawable.settings_ic)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "Contact Us", icon = R.drawable.phone_ic)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "FAQ", icon = R.drawable.faq_ic)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "About Us", icon = R.drawable.right_ic)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "Terms & Conditions", icon = R.drawable.terms_ic)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "Privacy Policy", icon = R.drawable.privacy)
         Spacer(modifier.size(10.dp))
-
         CustomRow(text = "Log Out", icon = R.drawable.logout_ic)
         Spacer(modifier.size(10.dp))
-
-
-
     }
 }
 
