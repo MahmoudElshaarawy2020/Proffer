@@ -34,16 +34,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
+import com.example.myapplication.presentation.navigation.Screen
 import com.example.myapplication.util.Result
 
 
 @Composable
 fun MoreScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     viewModel: MoreViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -150,7 +153,12 @@ fun MoreScreen(
                 .size(40.dp)
         )
 
-        CustomRow(text = "Your Profile", icon = R.drawable.person_ic)
+        CustomRow(
+            text = "Your Profile",
+            icon = R.drawable.person_ic,
+            onItemClick = {
+                navController.navigate(Screen.YourProfile.route)
+        })
         Spacer(modifier.size(10.dp))
         CustomRow(text = "Settings", icon = R.drawable.settings_ic)
         Spacer(modifier.size(10.dp))
@@ -169,8 +177,3 @@ fun MoreScreen(
     }
 }
 
-@Preview
-@Composable
-private fun MoreScreenPrev() {
-    MoreScreen()
-}

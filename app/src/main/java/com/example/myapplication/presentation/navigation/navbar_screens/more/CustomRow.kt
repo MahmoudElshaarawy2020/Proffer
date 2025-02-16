@@ -1,6 +1,7 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.more
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import com.example.myapplication.R
 @Composable
 fun CustomRow(
     modifier: Modifier = Modifier,
+    onItemClick: () -> Unit = {},
     text: String,
     icon: Int
 ) {
@@ -36,6 +38,7 @@ fun CustomRow(
     ) {
         Row(
             modifier = Modifier
+                .clickable { onItemClick() }
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,

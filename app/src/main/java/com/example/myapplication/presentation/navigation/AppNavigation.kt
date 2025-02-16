@@ -19,6 +19,7 @@ import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bottom_navbar.BottomNavigationBar
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.navbar_items.BottomNavItem
 import com.example.myapplication.presentation.navigation.navbar_screens.projects.ProjectsScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
@@ -139,6 +140,7 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
 
             composable(Screen.More.route) {
                 MoreScreen(
+                    navController = navController,
                     modifier = modifier,
                 )
             }
@@ -166,6 +168,13 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
 
             composable(Screen.Splash.route) {
                 SplashScreen(
+                    modifier = modifier,
+                )
+            }
+
+
+            composable(Screen.YourProfile.route) {
+                YourProfileScreen(
                     modifier = modifier,
                 )
             }
