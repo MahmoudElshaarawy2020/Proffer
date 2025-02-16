@@ -20,7 +20,7 @@ class ProfileRepoImpl @Inject constructor(
         emit(Result.Loading())
 
         try {
-            val response = apiService.getMoreAboutUser(token)
+            val response = apiService.getMoreAboutUser(token, "application/json")
 
             if (response.isSuccessful) {
                 Log.d("profileRepoImpl", "successful")

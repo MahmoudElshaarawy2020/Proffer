@@ -31,6 +31,7 @@ interface ApiService {
 
     @GET("auth/profile")
     suspend fun getMoreAboutUser(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
     ): Response<ProfileResponse>
 }

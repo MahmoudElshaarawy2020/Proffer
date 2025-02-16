@@ -18,13 +18,17 @@ class AuthInterceptor(private val dataStoreManager: DataStoreManager) : Intercep
             }
         }
 
-        val request = chain.request().newBuilder().apply {
-            if (!token.isNullOrEmpty()) {
-                Log.d("AuthInterceptor", "Attaching Token: Bearer $token") // Debugging
-                addHeader("Authorization", "Bearer $token")
-            }
-        }.build()
+        val requestBuilder = chain.request().newBuilder()
 
-        return chain.proceed(request)
+        if (!token.isNullOrEmpty()) {
+            Log.d("AuthInterceptor", "Using Token: Bearer $token")
+            requestBuilder.addHeader("Authorization", "Bearer $token")
+        } else {
+            Log.w("AuthInterceptor", "No token found, sending request without Authorization")
+        }
+
+        requestBuilder.addHeader("Accept", "application/json")
+
+        return chain.proceed(requestBuilder.build())
     }
 }

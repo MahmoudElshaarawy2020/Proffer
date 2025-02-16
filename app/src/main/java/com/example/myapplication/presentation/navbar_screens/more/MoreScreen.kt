@@ -51,7 +51,7 @@ fun MoreScreen(
     LaunchedEffect(token) {
         if (!token.isNullOrEmpty()) {
             Log.d("Using Token", token!!)
-            viewModel.getMoreAboutUser()
+            viewModel.getMoreAboutUser(token!!)
         }
     }
 

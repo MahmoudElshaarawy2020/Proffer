@@ -24,11 +24,11 @@ class MoreViewModel @Inject constructor(
     private val _profileState = MutableStateFlow<Result<ProfileResponse>>(Result.Loading())
     val profileState: MutableStateFlow<Result<ProfileResponse>> get() = _profileState
 
-    fun getMoreAboutUser() {
+    fun getMoreAboutUser(token: String) {  // Accepts token parameter
         viewModelScope.launch {
-            dataStoreManager.getToken.collectLatest { token ->
-                if (!token.isNullOrEmpty()) {
-                    profileUseCase.invoke("Bearer $token")
+            try {
+                if (token.isNotEmpty()) {
+                    profileUseCase.invoke(token) // Pass token
                         .catch { e ->
                             Log.e("ProfileRequestError", "API call failed", e)
                             _profileState.value = Result.Error("Unexpected Error: ${e.message}")
@@ -40,9 +40,11 @@ class MoreViewModel @Inject constructor(
                     Log.e("ProfileRequestError", "Token is missing!")
                     _profileState.value = Result.Error("Authentication token is missing!")
                 }
+            } catch (e: Exception) {
+                Log.e("ProfileRequestError", "Unexpected error", e)
+                _profileState.value = Result.Error("Unexpected Error: ${e.message}")
             }
         }
     }
-
-
 }
+
