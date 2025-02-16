@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.navbar_screens.more
+package com.example.myapplication.presentation.navigation.navbar_screens.more
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -29,9 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.util.Result
@@ -75,13 +79,37 @@ fun MoreScreen(
             ) {
 
                 when (profileState) {
-                    is Result.Loading -> Text("Loading...", color = Color.White)
+                    is Result.Loading ->
+                        Box(
+                            modifier = modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Loading...",
+                                color = Color.White,
+                                fontSize = 20.sp
+                            )
+                        }
                     is Result.Success -> {
                         val profile = (profileState as Result.Success).data?.data
                         if (profile != null) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(text = profile.name ?: "No Name", color = Color.White)
-                                Text(text = profile.email ?: "No Email", color = Color.White)
+                            Column(
+                                modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center) {
+                                Text(
+                                    text = profile.name ?: "No Name",
+                                    modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 50.dp),
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    textAlign = TextAlign.Start)
+                                Text(
+                                    text = profile.email?: "No Email",
+                                    color = Color.White,
+                                    fontSize = 17.sp,
+                                    textAlign = TextAlign.Start)
                             }
                         } else {
                             Text("Error: No profile data", color = Color.Red)
@@ -92,13 +120,20 @@ fun MoreScreen(
             }
             Row(modifier.fillMaxWidth()) {
                 Spacer(modifier.size(40.dp))
-                Image(
+
+                val imageUrl = (profileState as? Result.Success)?.data?.data?.profileImage ?: ""
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageUrl)
+                        .crossfade(true)
+                        .placeholder(R.drawable.client_img)
+                        .error(R.drawable.client_img)
+                        .build(),
+                    contentDescription = "Profile Image",
                     modifier = modifier
                         .size(70.dp)
                         .clip(CircleShape)
-                        .border(3.dp, color = colorResource(R.color.orange), CircleShape),
-                    painter = painterResource(R.drawable.client_img),
-                    contentDescription = null
+                        .border(3.dp, color = colorResource(R.color.orange), CircleShape)
                 )
             }
         }
@@ -110,7 +145,11 @@ fun MoreScreen(
             color = colorResource(R.color.lighter_grey)
         )
 
-        // Your CustomRow items remain unchanged
+        Spacer(
+            modifier
+                .size(40.dp)
+        )
+
         CustomRow(text = "Your Profile", icon = R.drawable.person_ic)
         Spacer(modifier.size(10.dp))
         CustomRow(text = "Settings", icon = R.drawable.settings_ic)

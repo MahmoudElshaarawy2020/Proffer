@@ -84,7 +84,12 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
+    //Interceptor library
     implementation(libs.ok2curl)
+
+    // Accompanist
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
@@ -106,10 +111,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
 
     // Coil (Fixed Dependency Name)
-//    implementation("io.coil-kt:coil-compose:3.1.0")
+    implementation("io.coil-kt:coil-compose:2.2.2")
 
     // Glide (Removed Duplicate)
-    implementation("com.github.bumptech.glide:glide:4.13.0")
+// implementation("com.github.bumptech.glide:glide:4.13.0")
 //    kapt("com.github.bumptech.glide:compiler:4.13.0")
 
 }

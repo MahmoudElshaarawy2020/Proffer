@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.navbar_screens.more
+package com.example.myapplication.presentation.navigation.navbar_screens.more
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

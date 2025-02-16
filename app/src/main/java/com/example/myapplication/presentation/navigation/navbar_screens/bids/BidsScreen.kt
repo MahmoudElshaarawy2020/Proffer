@@ -1,36 +1,27 @@
-package com.example.myapplication.presentation.home
+package com.example.myapplication.presentation.navigation.navbar_screens.bids
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavController
-import com.example.myapplication.presentation.navigation.Screen
+import com.example.myapplication.R
 
 @Composable
-fun HomeScreen(
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
+fun BidsScreen(modifier: Modifier = Modifier, navController: NavController) {
     Column(
         modifier
             .fillMaxSize()
-            .background(color = Color.White),
+            .background(color = colorResource(R.color.light_white)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Home Screen")
-
-        Button(onClick = {
-            navController.navigate(Screen.MoreScreen.route)
-        }) {
-            Text("Go To More Screen")
-        }
+        Text("Bids Screen")
     }
 }
