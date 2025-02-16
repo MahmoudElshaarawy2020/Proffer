@@ -47,11 +47,11 @@ fun YourProfileScreen(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.light_white))
     ) {
-        // Top Section (Dark Blue Background)
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp) // Keep background height to fit profile image overlap
+                .height(180.dp)
                 .background(backgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -64,12 +64,12 @@ fun YourProfileScreen(
             )
         }
 
-        // Profile Image (Proper Overlap)
+
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 120.dp) // Move image slightly lower for proper visibility
-                .size(110.dp) // Slightly larger to match design
+                .padding(top = 120.dp)
+                .size(110.dp)
                 .clip(CircleShape)
                 .border(3.dp, colorResource(R.color.orange), CircleShape)
         ) {
@@ -85,15 +85,15 @@ fun YourProfileScreen(
             )
         }
 
-        // Bottom Section (White Background)
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 180.dp) // Lowered to prevent image cutoff
+                .padding(top = 180.dp)
                 .background(Color.Transparent),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(50.dp)) // Extra space below image
+            Spacer(modifier = Modifier.height(50.dp))
 
 
             Text(
@@ -117,14 +117,12 @@ fun YourProfileScreen(
             }
 
             Spacer(modifier = Modifier.height(80.dp))
-            // User Information Section
             ProfileInfoItem(label = "Email Address", value = email, isEditable = true)
             ProfileInfoItem(label = "Phone Number", value = phoneNumber)
             ProfileInfoItem(label = "Location Address", value = location)
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Delete Account Button
             Button(
                 onClick = { /* Handle Delete Account */ },
                 modifier = Modifier
@@ -138,8 +136,6 @@ fun YourProfileScreen(
         }
     }
 }
-
-
 @Composable
 fun ProfileInfoItem(label: String, value: String, isEditable: Boolean = false) {
     Column(
