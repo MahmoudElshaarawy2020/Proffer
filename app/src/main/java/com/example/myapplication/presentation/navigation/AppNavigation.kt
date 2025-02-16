@@ -11,7 +11,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myapplication.R
 import com.example.myapplication.presentation.navigation.navbar_screens.home.HomeScreen
@@ -39,8 +38,14 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
         BottomNavItem("Bids", R.drawable.bids_ic),
         BottomNavItem("More", R.drawable.more_ic)
     )
-    val selectedItemIndex =
-        bottomNavItems.indexOfFirst { it.label.lowercase() in (currentRoute ?: "") }
+    val selectedItemIndex = when {
+        currentRoute?.startsWith(Screen.Home.route) == true -> 0
+        currentRoute?.startsWith(Screen.Projects.route) == true -> 1
+        currentRoute?.startsWith(Screen.Bids.route) == true -> 2
+        currentRoute?.startsWith(Screen.More.route) == true ||
+                currentRoute == Screen.YourProfile.route -> 3
+        else -> 0
+    }
 
 
     Scaffold(
