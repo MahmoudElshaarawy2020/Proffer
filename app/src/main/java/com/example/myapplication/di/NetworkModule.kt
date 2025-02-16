@@ -4,11 +4,12 @@ import android.app.Application
 import com.example.myapplication.constants.BASE_URL
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.remote.ApiService
-import com.example.myapplication.data.remote.AuthInterceptor
+import com.example.myapplication.data.remote.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.firstOrNull
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -45,8 +46,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthInterceptor(dataStoreManager: DataStoreManager): AuthInterceptor {
-        return AuthInterceptor(dataStoreManager)
+        return AuthInterceptor(tokenProvider = { dataStoreManager.getToken.firstOrNull().orEmpty() })
     }
+
 
     @Provides
     @Singleton
@@ -56,8 +58,8 @@ object NetworkModule {
         }
 
         return OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor) // Logs requests and responses
-            .addInterceptor(authInterceptor) // Adds Authorization header automatically
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .build()

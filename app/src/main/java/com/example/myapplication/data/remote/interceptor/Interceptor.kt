@@ -7,15 +7,16 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class Interceptor(loggable: Loggable? = null,private var token: String = "") :
-    CurlInterceptor(loggable) {
-
+class AuthInterceptor(
+    private val tokenProvider: suspend () -> String, // Fetch token dynamically
+    loggable: Loggable? = null
+) : CurlInterceptor(loggable) {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        var request = chain.request()
-        runBlocking {
-            token = getToken()
-        }
+        val request = chain.request()
+
+        // Fetch token in a blocking manner
+        val token = runBlocking { tokenProvider() }
 
         val newRequest = request.newBuilder()
             .header("Accept", "application/json")
@@ -32,19 +33,5 @@ class Interceptor(loggable: Loggable? = null,private var token: String = "") :
         Log.i("CurLogger", curlCommand)
 
         return response
-    }
-
-
-    object ResponseCode {
-        var responseCode: Int? = 0
-    }
-
-
-    private suspend fun getToken(): String {
-        return "Bearer $token"
-    }
-
-    private fun getAcceptHeader(): String {
-        return "application/json"
     }
 }
