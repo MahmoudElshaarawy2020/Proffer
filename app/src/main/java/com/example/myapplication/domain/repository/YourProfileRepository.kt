@@ -4,8 +4,7 @@ import com.example.myapplication.data.response.ProfileResponse
 import kotlinx.coroutines.flow.Flow
 import com.example.myapplication.util.Result
 
-
-interface ProfileRepository {
-    fun getMoreAboutUser(token: String): Flow<Result<ProfileResponse>>
-    fun logout(token: String): Flow<Result<ProfileResponse>>
+interface YourProfileRepository {
+    fun deleteAccount(token: String): Flow<Result<ProfileResponse>>
+    fun getYourProfileData(token: String): Flow<Result<ProfileResponse>>
 }

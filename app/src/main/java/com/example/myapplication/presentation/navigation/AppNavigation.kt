@@ -51,7 +51,11 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            if (currentRoute != Screen.Login.route && currentRoute != Screen.SignUp.route) {
+            if (
+                currentRoute != Screen.Login.route &&
+                currentRoute != Screen.SignUp.route &&
+                currentRoute != Screen.OnBoarding.route &&
+                currentRoute != Screen.Verification.route) {
                 BottomNavigationBar(
                     items = bottomNavItems,
                     selectedItem = if (selectedItemIndex != -1) selectedItemIndex else 0,
@@ -181,6 +185,13 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
             composable(Screen.YourProfile.route) {
                 YourProfileScreen(
                     modifier = modifier,
+                    onNavigateToOnboarding = {
+                        navController.navigate(Screen.OnBoarding.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 )
             }
         }

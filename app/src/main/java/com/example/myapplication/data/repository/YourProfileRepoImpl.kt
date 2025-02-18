@@ -3,7 +3,7 @@ package com.example.myapplication.data.repository
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.response.ProfileResponse
-import com.example.myapplication.domain.repository.ProfileRepository
+import com.example.myapplication.domain.repository.YourProfileRepository
 import com.example.myapplication.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,23 +13,55 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class ProfileRepoImpl @Inject constructor(
+class YourProfileRepoImpl @Inject constructor(
     private val apiService: ApiService
-): ProfileRepository {
-    override fun getMoreAboutUser(token: String): Flow<Result<ProfileResponse>> = flow {
+): YourProfileRepository {
+    override fun deleteAccount(token: String): Flow<Result<ProfileResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.deleteAccount(token, "application/json")
+
+            if (response.isSuccessful) {
+                Log.d("profileDeletion", "successful")
+                response.body()?.let {
+                    emit(Result.Success(it))
+                } ?: emit(Result.Error("Empty response body"))
+
+            } else {
+                Log.d("ProfileDeletion", "profile API call failed")
+                emit(
+                    Result.Error(
+                        "Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun getYourProfileData(token: String): Flow<Result<ProfileResponse>> = flow {
         emit(Result.Loading())
 
         try {
             val response = apiService.getMoreAboutUser(token, "application/json")
 
             if (response.isSuccessful) {
-                Log.d("profileRepoImpl", "successful")
+                Log.d("YourProfileData", "successful")
                 response.body()?.let {
                     emit(Result.Success(it))
                 } ?: emit(Result.Error("Empty response body"))
 
             } else {
-                Log.d("profileRepoImpl", "profile API call failed")
+                Log.d("YourProfileData", "profile API call failed")
                 emit(
                     Result.Error(
                         "Error: ${
@@ -47,37 +79,4 @@ class ProfileRepoImpl @Inject constructor(
             emit(Result.Error("Unexpected Error: ${e.message}"))
         }
     }.flowOn(Dispatchers.IO)
-
-    override fun logout(token: String): Flow<Result<ProfileResponse>> = flow {
-        emit(Result.Loading())
-
-        try {
-            val response = apiService.logout(token, "application/json")
-
-            if (response.isSuccessful) {
-                Log.d("Account Logout", "successful")
-                response.body()?.let {
-                    emit(Result.Success(it))
-                } ?: emit(Result.Error("Empty response body"))
-
-            } else {
-                Log.d("Account Logout", "profile API call failed")
-                emit(
-                    Result.Error(
-                        "Error: ${
-                            response.errorBody()?.string()
-                        }"
-                    )
-                )
-            }
-
-        } catch (e: HttpException) {
-            emit(Result.Error("HTTP Error: ${e.message}"))
-        } catch (e: IOException) {
-            emit(Result.Error("Network Error: ${e.message}"))
-        } catch (e: Exception) {
-            emit(Result.Error("Unexpected Error: ${e.message}"))
-        }
-    }.flowOn(Dispatchers.IO)
-
 }

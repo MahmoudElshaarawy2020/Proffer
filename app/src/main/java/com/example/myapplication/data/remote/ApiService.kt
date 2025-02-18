@@ -9,6 +9,7 @@ import com.example.myapplication.data.response.RegisterResponse
 import com.example.myapplication.data.response.VerificationResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -31,6 +32,18 @@ interface ApiService {
 
     @GET("auth/profile")
     suspend fun getMoreAboutUser(
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
+    ): Response<ProfileResponse>
+
+    @DELETE("auth/delete-account")
+    suspend fun deleteAccount(
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
+    ): Response<ProfileResponse>
+
+    @POST("auth/logout")
+    suspend fun logout(
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
     ): Response<ProfileResponse>

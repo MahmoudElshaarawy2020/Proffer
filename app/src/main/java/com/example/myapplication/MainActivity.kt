@@ -32,21 +32,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            var startDestination by remember { mutableStateOf<String?>(null) }
 
-            // Check token asynchronously
+            AppNavigation(
+                navController = navController,
+                startDestination = Screen.Splash.route // 👈 Always start at SplashScreen
+            )
+
             LaunchedEffect(Unit) {
                 val token = dataStoreManager.getToken.first()
-                startDestination =
-                    if (token.isNullOrEmpty()) Screen.Login.route else Screen.Home.route
-            }
-
-            if (startDestination == null) {
-                SplashScreen()
-            } else {
-                AppNavigation(
-                    navController = navController, startDestination = startDestination!!
-                )
+                navController.navigate(
+                    if (token.isNullOrEmpty()) Screen.OnBoarding.route else Screen.Home.route
+                ) {
+                    popUpTo(Screen.Splash.route) { inclusive = true } // 👈 Remove Splash from back stack
+                }
             }
         }
     }

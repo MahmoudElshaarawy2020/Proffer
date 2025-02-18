@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.response.ProfileResponse
+import com.example.myapplication.domain.use_case.LogoutUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,17 +19,21 @@ import javax.inject.Inject
 @HiltViewModel
 class MoreViewModel @Inject constructor(
     private val profileUseCase: ProfileUseCase,
-    private val dataStoreManager: DataStoreManager
+    private val logoutUseCase: LogoutUseCase,
+    private val dataStoreManager: DataStoreManager,
 ) : ViewModel() {
 
     private val _profileState = MutableStateFlow<Result<ProfileResponse>>(Result.Loading())
     val profileState: MutableStateFlow<Result<ProfileResponse>> get() = _profileState
 
-    fun getMoreAboutUser(token: String) {  // Accepts token parameter
+    private val _logoutState = MutableStateFlow<Result<ProfileResponse>>(Result.Loading())
+    val logoutState: MutableStateFlow<Result<ProfileResponse>> get() = _logoutState
+
+    fun getMoreAboutUser(token: String) {
         viewModelScope.launch {
             try {
                 if (token.isNotEmpty()) {
-                    profileUseCase.invoke(token) // Pass token
+                    profileUseCase.invoke(token)
                         .catch { e ->
                             Log.e("ProfileRequestError", "API call failed", e)
                             _profileState.value = Result.Error("Unexpected Error: ${e.message}")
@@ -44,6 +49,26 @@ class MoreViewModel @Inject constructor(
                 Log.e("ProfileRequestError", "Unexpected error", e)
                 _profileState.value = Result.Error("Unexpected Error: ${e.message}")
             }
+        }
+    }
+
+    fun logout(token: String) {
+        viewModelScope.launch {
+            _logoutState.value = Result.Loading()
+
+            logoutUseCase.invoke(token)
+                .catch { e ->
+                    Log.e("LogoutError", "API call failed", e)
+                    _logoutState.value = Result.Error("Failed to logout: ${e.message}")
+                }
+                .collectLatest { result ->
+                    _logoutState.value = result
+                    if (result is Result.Success) {
+                        viewModelScope.launch {
+                            dataStoreManager.clearToken()
+                        }
+                    }
+                }
         }
     }
 }

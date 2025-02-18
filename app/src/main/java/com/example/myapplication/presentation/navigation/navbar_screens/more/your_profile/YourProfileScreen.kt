@@ -1,5 +1,7 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,25 +22,54 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.myapplication.R
-import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreViewModel
+import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.util.Result
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.delay
 
 @Composable
 fun YourProfileScreen(
     modifier: Modifier = Modifier,
-    viewModel: MoreViewModel = hiltViewModel(),
+    viewModel: YourProfileViewModel = hiltViewModel(),
+    onNavigateToOnboarding: () -> Unit
 ) {
     val backgroundColor = colorResource(R.color.dark_blue)
     val systemUiController = rememberSystemUiController()
-    val profileState by viewModel.profileState.collectAsState()
-    val imageUrl = (profileState as? Result.Success)?.data?.data?.profileImage ?: ""
-    val email = (profileState as? Result.Success)?.data?.data?.email ?: "example@gmail.com"
-    val phoneNumber = (profileState as? Result.Success)?.data?.data?.phone ?: "0000000000"
-    val location = (profileState as? Result.Success)?.data?.data?.address ?: "Unknown Location"
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val token by dataStoreManager.getToken.collectAsState(initial = null)
+    val yourProfileState by viewModel.yourProfileState.collectAsState()
+    val deleteAccountState by viewModel.deleteAccountState.collectAsState()
+    val name = (yourProfileState as? Result.Success)?.data?.userData?.name ?: "Unknown"
+    val imageUrl = (yourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
+    val email = (yourProfileState as? Result.Success)?.data?.userData?.email ?: "example@gmail.com"
+    val phoneNumber = (yourProfileState as? Result.Success)?.data?.userData?.phone ?: "0000000000"
+    val location = (yourProfileState as? Result.Success)?.data?.userData?.address ?: "Unknown Location"
 
     LaunchedEffect(Unit) {
         systemUiController.setStatusBarColor(color = backgroundColor, darkIcons = false)
+    }
+
+    LaunchedEffect(token) {
+        if (!token.isNullOrEmpty()) {
+            Log.d("Using Token", token!!)
+            viewModel.getYourProfileData(token!!)
+        }
+    }
+
+    LaunchedEffect(deleteAccountState) {
+        when (deleteAccountState) {
+            is Result.Success -> {
+                Toast.makeText(context, "Account deleted successfully!", Toast.LENGTH_LONG).show()
+                delay(1000)
+                onNavigateToOnboarding()
+            }
+            is Result.Error -> {
+                val errorMessage = (deleteAccountState as Result.Error).message
+                Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_LONG).show()
+            }
+            else -> {}
+        }
     }
 
     Box(
@@ -94,12 +125,14 @@ fun YourProfileScreen(
             Spacer(modifier = Modifier.height(50.dp))
 
 
-            Text(
-                text = "User Name Here",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(R.color.dark_blue)
-            )
+
+                Text(
+                    text = name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.dark_blue)
+                )
+
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -122,7 +155,9 @@ fun YourProfileScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-                onClick = { /* Handle Delete Account */ },
+                onClick = {
+                    viewModel.deleteAccount(token!!)
+                },
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .height(50.dp),
