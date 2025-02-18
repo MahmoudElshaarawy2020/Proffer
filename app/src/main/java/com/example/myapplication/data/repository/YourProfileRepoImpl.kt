@@ -2,7 +2,7 @@ package com.example.myapplication.data.repository
 
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
-import com.example.myapplication.data.response.ProfileResponse
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.domain.repository.YourProfileRepository
 import com.example.myapplication.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class YourProfileRepoImpl @Inject constructor(
     private val apiService: ApiService
 ): YourProfileRepository {
-    override fun deleteAccount(token: String): Flow<Result<ProfileResponse>> = flow {
+    override fun deleteAccount(token: String): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {
@@ -48,7 +48,7 @@ class YourProfileRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getYourProfileData(token: String): Flow<Result<ProfileResponse>> = flow {
+    override fun getYourProfileData(token: String): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {

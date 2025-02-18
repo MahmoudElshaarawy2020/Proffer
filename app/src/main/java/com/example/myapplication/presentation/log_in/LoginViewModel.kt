@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.VerificationRequest
-import com.example.myapplication.data.response.LoginResponse
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.VerificationResponse
 import com.example.myapplication.domain.use_case.LoginUseCase
 import com.example.myapplication.util.Result
@@ -24,8 +24,8 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val dataStoreManager: DataStoreManager
 ): ViewModel() {
-    private val _loginState = MutableStateFlow<Result<LoginResponse>>(Result.Loading())
-    val loginState: MutableStateFlow<Result<LoginResponse>> get() = _loginState
+    private val _loginState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
+    val loginState: MutableStateFlow<Result<AuthResponse>> get() = _loginState
 
     fun login(loginRequest: LoginRequest) {
         viewModelScope.launch {

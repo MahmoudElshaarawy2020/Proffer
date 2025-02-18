@@ -25,6 +25,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,13 +61,24 @@ fun VerificationScreen(
     viewModel: VerificationViewModel = hiltViewModel(),
     navController: NavController,
     otpLength: Int = 4,
-    onNavigateToLogin : () -> Unit
+    onNavigateToHome : () -> Unit
 ) {
 
     var otp by remember { mutableStateOf(List(otpLength) { "" }) }
     val focusRequesters = List(otpLength) { FocusRequester() }
     var isOtpComplete by remember { mutableStateOf(false) }
     var context = LocalContext.current
+
+    val verificationState by viewModel.verificationState.collectAsState()
+
+    LaunchedEffect(verificationState.data) {
+        if (verificationState.data?.status == true) {
+            onNavigateToHome()
+            Log.w("VerificationScreen", "Successful Verification")
+        } else if (verificationState.data?.status != null) {
+            Toast.makeText(context, "Verification failed: ${verificationState.data?.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -186,7 +199,7 @@ fun VerificationScreen(
                     val request = VerificationRequest(email = email, code = otp.joinToString(""))
                     viewModel.verification(request)
                     if (viewModel.verificationState.value.data?.status == true ) {
-                        onNavigateToLogin()
+                        onNavigateToHome()
                         Log.w("can Verify", "VerificationScreen: Successful Verification")
                     }
                 }else {

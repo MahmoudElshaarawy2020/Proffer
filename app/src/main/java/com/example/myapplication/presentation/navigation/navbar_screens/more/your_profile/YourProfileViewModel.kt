@@ -3,7 +3,7 @@ package com.example.myapplication.presentation.navigation.navbar_screens.more.yo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.response.ProfileResponse
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.domain.use_case.DeleteProfileUseCase
 import com.example.myapplication.domain.use_case.GetYourProfileUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
@@ -20,11 +20,11 @@ class YourProfileViewModel @Inject constructor(
     private val profileUseCase: GetYourProfileUseCase,
     private val deleteAccountUseCase: DeleteProfileUseCase
 ): ViewModel() {
-    private val _yourProfileState = MutableStateFlow<Result<ProfileResponse>>(Result.Loading())
-    val yourProfileState: MutableStateFlow<Result<ProfileResponse>> get() = _yourProfileState
+    private val _yourProfileState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
+    val yourProfileState: MutableStateFlow<Result<AuthResponse>> get() = _yourProfileState
 
-    private val _deleteAccountState = MutableStateFlow<Result<Unit>?>(null)
-    val deleteAccountState: MutableStateFlow<Result<Unit>?> get() = _deleteAccountState
+    private val _deleteAccountState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
+    val deleteAccountState: MutableStateFlow<Result<AuthResponse>> get() = _deleteAccountState
 
     fun getYourProfileData(token: String) {
         viewModelScope.launch {

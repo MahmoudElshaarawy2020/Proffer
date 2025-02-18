@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -13,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.myapplication.R
+import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.presentation.navigation.navbar_screens.home.HomeScreen
 import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
@@ -29,9 +31,16 @@ import com.example.myapplication.presentation.verification.VerificationScreen
 
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navController: NavHostController) {
+fun AppNavigation(
+    modifier: Modifier = Modifier,
+    startDestination: String,
+    navController: NavHostController,
+    dataStoreManager: DataStoreManager
+) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
+
+    Log.d("NavigationDebug", "Current Route: $currentRoute")
     val bottomNavItems = listOf(
         BottomNavItem("Home", R.drawable.home_ic),
         BottomNavItem("Projects", R.drawable.project_ic),
@@ -44,6 +53,7 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
         currentRoute?.startsWith(Screen.Bids.route) == true -> 2
         currentRoute?.startsWith(Screen.More.route) == true ||
                 currentRoute == Screen.YourProfile.route -> 3
+
         else -> 0
     }
 
@@ -52,10 +62,13 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (
+                currentRoute?.startsWith(Screen.Verification.route) != true &&
                 currentRoute != Screen.Login.route &&
                 currentRoute != Screen.SignUp.route &&
                 currentRoute != Screen.OnBoarding.route &&
-                currentRoute != Screen.Verification.route) {
+                currentRoute != Screen.NewPassword.route &&
+                currentRoute != Screen.Splash.route
+            ) {
                 BottomNavigationBar(
                     items = bottomNavItems,
                     selectedItem = if (selectedItemIndex != -1) selectedItemIndex else 0,
@@ -77,6 +90,7 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
                     }
                 )
             }
+
         }
     ) { paddingValues ->
         NavHost(
@@ -138,7 +152,7 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
                     modifier = modifier,
                     email = email,
                     navController = navController,
-                    onNavigateToLogin = { navController.navigate(Screen.NewPassword.route) }
+                    onNavigateToHome = { navController.navigate(Screen.Home.route) }
                 )
             }
             composable(Screen.NewPassword.route) {
@@ -177,7 +191,9 @@ fun AppNavigation(modifier: Modifier = Modifier,startDestination: String, navCon
 
             composable(Screen.Splash.route) {
                 SplashScreen(
-                    modifier = modifier,
+
+                    navController = navController,
+                    dataStoreManager = dataStoreManager
                 )
             }
 

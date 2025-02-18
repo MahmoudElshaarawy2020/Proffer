@@ -3,6 +3,7 @@ package com.example.myapplication.data.repository
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.request.RegisterRequest
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.RegisterResponse
 import com.example.myapplication.domain.repository.RegisterRepository
 import com.example.myapplication.util.Result
@@ -18,7 +19,7 @@ class RegisterRepoImpl @Inject constructor(
     private val apiService: ApiService
 ) : RegisterRepository {
 
-    override fun register(registerRequest: RegisterRequest): Flow<Result<RegisterResponse>> = flow {
+    override fun register(registerRequest: RegisterRequest): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {

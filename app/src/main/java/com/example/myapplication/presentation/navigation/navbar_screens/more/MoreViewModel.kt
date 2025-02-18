@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
-import com.example.myapplication.data.response.ProfileResponse
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.domain.use_case.LogoutUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
 import com.example.myapplication.util.Result
@@ -23,11 +23,12 @@ class MoreViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager,
 ) : ViewModel() {
 
-    private val _profileState = MutableStateFlow<Result<ProfileResponse>>(Result.Loading())
-    val profileState: MutableStateFlow<Result<ProfileResponse>> get() = _profileState
+    // Update the state to reflect the correct type
+    private val _profileState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
+    val profileState: MutableStateFlow<Result<AuthResponse>> get() = _profileState
 
-    private val _logoutState = MutableStateFlow<Result<ProfileResponse>>(Result.Loading())
-    val logoutState: MutableStateFlow<Result<ProfileResponse>> get() = _logoutState
+    private val _logoutState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
+    val logoutState: MutableStateFlow<Result<AuthResponse>> get() = _logoutState
 
     fun getMoreAboutUser(token: String) {
         viewModelScope.launch {
@@ -72,4 +73,3 @@ class MoreViewModel @Inject constructor(
         }
     }
 }
-

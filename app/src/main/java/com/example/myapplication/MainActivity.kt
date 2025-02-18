@@ -33,19 +33,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            AppNavigation(
-                navController = navController,
-                startDestination = Screen.Splash.route // 👈 Always start at SplashScreen
-            )
-
             LaunchedEffect(Unit) {
                 val token = dataStoreManager.getToken.first()
                 navController.navigate(
                     if (token.isNullOrEmpty()) Screen.OnBoarding.route else Screen.Home.route
                 ) {
-                    popUpTo(Screen.Splash.route) { inclusive = true } // 👈 Remove Splash from back stack
+                    popUpTo(Screen.Splash.route) { inclusive = true }
                 }
             }
+
+            AppNavigation(
+                navController = navController,
+                startDestination = Screen.Splash.route,
+                dataStoreManager = dataStoreManager
+                )
         }
     }
 }

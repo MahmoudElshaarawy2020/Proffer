@@ -63,6 +63,7 @@ fun YourProfileScreen(
                 Toast.makeText(context, "Account deleted successfully!", Toast.LENGTH_LONG).show()
                 delay(1000)
                 onNavigateToOnboarding()
+                dataStoreManager.clearToken()
             }
             is Result.Error -> {
                 val errorMessage = (deleteAccountState as Result.Error).message

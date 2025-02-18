@@ -3,8 +3,7 @@ package com.example.myapplication.data.remote
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
-import com.example.myapplication.data.response.LoginResponse
-import com.example.myapplication.data.response.ProfileResponse
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.RegisterResponse
 import com.example.myapplication.data.response.VerificationResponse
 import retrofit2.Response
@@ -18,7 +17,7 @@ interface ApiService {
     @POST("auth/register")
     suspend fun register(
         @Body registerRequest: RegisterRequest
-    ): Response<RegisterResponse>
+    ): Response<AuthResponse>
 
     @POST("auth/verify")
     suspend fun verify(
@@ -28,23 +27,23 @@ interface ApiService {
     @POST("auth/login")
     suspend fun login(
         @Body loginRequest: LoginRequest
-    ): Response<LoginResponse>
+    ): Response<AuthResponse>
 
     @GET("auth/profile")
     suspend fun getMoreAboutUser(
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
-    ): Response<ProfileResponse>
+    ): Response<AuthResponse>
 
     @DELETE("auth/delete-account")
     suspend fun deleteAccount(
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
-    ): Response<ProfileResponse>
+    ): Response<AuthResponse>
 
     @POST("auth/logout")
     suspend fun logout(
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
-    ): Response<ProfileResponse>
+    ): Response<AuthResponse>
 }

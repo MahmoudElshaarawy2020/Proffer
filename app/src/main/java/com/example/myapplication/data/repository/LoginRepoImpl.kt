@@ -3,7 +3,7 @@ package com.example.myapplication.data.repository
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.request.LoginRequest
-import com.example.myapplication.data.response.LoginResponse
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.domain.repository.LoginRepository
 import com.example.myapplication.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class LoginRepoImpl @Inject constructor(
     private val apiService: ApiService
 ): LoginRepository {
-    override fun login(loginRequest: LoginRequest): Flow<Result<LoginResponse>> = flow {
+    override fun login(loginRequest: LoginRequest): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {

@@ -31,7 +31,7 @@ class VerificationRepoImpl @Inject constructor(
                     } ?: emit(Result.Error("Empty response body"))
 
                 } else {
-                    Log.d("RegisterRepoImpl", "API call failed")
+                    Log.d("VerificationRepoImpl", "API call failed")
                     emit(
                         Result.Error(
                             "Error: ${

@@ -1,6 +1,7 @@
 package com.example.myapplication.data.data_store
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -29,8 +30,10 @@ class DataStoreManager @Inject constructor(@ApplicationContext private val conte
     }
 
     suspend fun clearToken() {
+        Log.d("DataStoreManager", "Clearing token")
         dataStore.edit { preferences ->
             preferences.remove(TOKEN_KEY)
         }
+        Log.d("DataStoreManager", "Token cleared")
     }
 }
