@@ -22,7 +22,7 @@ interface ApiService {
     @POST("auth/verify")
     suspend fun verify(
         @Body verificationRequest: VerificationRequest
-    ): Response<VerificationResponse>
+    ): Response<AuthResponse>
 
     @POST("auth/login")
     suspend fun login(

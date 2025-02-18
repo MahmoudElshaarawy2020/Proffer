@@ -3,7 +3,9 @@ package com.example.myapplication.presentation.verification
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.VerificationRequest
+import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.VerificationResponse
 import com.example.myapplication.domain.use_case.VerificationUseCase
 import com.example.myapplication.util.Result
@@ -17,11 +19,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VerificationViewModel @Inject constructor(
-    private val verificationUseCase: VerificationUseCase
+    private val verificationUseCase: VerificationUseCase,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-    private val _verificationState = MutableStateFlow<Result<VerificationResponse>>(Result.Loading())
-    val verificationState: StateFlow<Result<VerificationResponse>> get() = _verificationState
+    private val _verificationState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
+    val verificationState: StateFlow<Result<AuthResponse>> get() = _verificationState
 
     fun verification(verificationRequest: VerificationRequest) {
         viewModelScope.launch {
@@ -32,6 +35,12 @@ class VerificationViewModel @Inject constructor(
                 }
                 .collectLatest { result ->
                     _verificationState.value = result
+                    if (result is Result.Success) {
+                        result.data?.token?.let { token ->
+                            Log.d("New Token", token)
+                            dataStoreManager.saveAuthToken(token)
+                        }
+                    }
                 }
         }
     }
