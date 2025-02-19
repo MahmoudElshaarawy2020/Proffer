@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AuthResponse
-import com.example.myapplication.data.response.VerificationResponse
 import com.example.myapplication.domain.use_case.VerificationUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
