@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.navigation.navbar_screens.projects
+package com.example.myapplication.presentation.navigation.navbar_screens.projects.project_home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image

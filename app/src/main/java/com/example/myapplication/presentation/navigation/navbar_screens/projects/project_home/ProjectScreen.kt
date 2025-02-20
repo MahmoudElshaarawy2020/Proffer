@@ -1,18 +1,11 @@
-package com.example.myapplication.presentation.navigation.navbar_screens.projects
+package com.example.myapplication.presentation.navigation.navbar_screens.projects.project_home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -26,8 +19,22 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.R
 
 @Composable
-fun ProjectsScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun ProjectsScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    onTypeClickProject : (Int) -> Unit = {}
+) {
     var selectedTabIndex by remember { mutableStateOf(0) }
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        ProjectTypeDialog(
+            onDismiss = { showDialog = false },
+            onTypeClick = { type ->
+                onTypeClickProject(type)
+            }
+        )
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -78,7 +85,9 @@ fun ProjectsScreen(modifier: Modifier = Modifier, navController: NavController) 
         }
 
         FloatingActionButton(
-            onClick = { /* Handle FAB Click */ },
+            onClick = {
+                showDialog = true
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
@@ -104,8 +113,3 @@ data class Project(
 )
 
 
-@Preview(showBackground = true)
-@Composable
-private fun ProjectsScreenPrev() {
-    ProjectsScreen(navController = rememberNavController())
-}

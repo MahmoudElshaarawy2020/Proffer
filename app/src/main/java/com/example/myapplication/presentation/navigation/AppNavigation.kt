@@ -22,7 +22,8 @@ import com.example.myapplication.presentation.navigation.navbar_screens.bottom_n
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.navbar_items.BottomNavItem
-import com.example.myapplication.presentation.navigation.navbar_screens.projects.ProjectsScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project.AddProjectScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.projects.project_home.ProjectsScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
 import com.example.myapplication.presentation.onboarding.OnBoardingScreen
 import com.example.myapplication.presentation.register.SignUpScreen
@@ -59,7 +60,8 @@ fun AppNavigation(
 
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         bottomBar = {
             if (
                 currentRoute?.startsWith(Screen.Verification.route) != true &&
@@ -67,7 +69,8 @@ fun AppNavigation(
                 currentRoute != Screen.SignUp.route &&
                 currentRoute != Screen.OnBoarding.route &&
                 currentRoute != Screen.NewPassword.route &&
-                currentRoute != Screen.Splash.route
+                currentRoute != Screen.Splash.route &&
+                currentRoute != Screen.AddProject.route
             ) {
                 BottomNavigationBar(
                     items = bottomNavItems,
@@ -178,13 +181,22 @@ fun AppNavigation(
             composable(Screen.Projects.route) {
                 ProjectsScreen(
                     modifier = modifier,
-                    navController = navController
+                    navController = navController,
+                    onTypeClickProject = {
+                        navController.navigate(Screen.AddProject.route)
+                    }
                 )
             }
 
             composable(Screen.Bids.route) {
                 BidsScreen(
                     modifier = modifier,
+                    navController = navController
+                )
+            }
+
+            composable(Screen.AddProject.route) {
+                AddProjectScreen(
                     navController = navController
                 )
             }

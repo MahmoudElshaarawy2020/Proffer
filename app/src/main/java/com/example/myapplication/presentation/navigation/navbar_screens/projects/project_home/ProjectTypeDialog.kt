@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.navigation.navbar_screens.projects
+package com.example.myapplication.presentation.navigation.navbar_screens.projects.project_home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,8 +32,7 @@ import com.example.myapplication.R
 @Composable
 fun ProjectTypeDialog(
     onDismiss: () -> Unit,
-    onPublicClick: (Int) -> Unit,
-    onPrivateClick: (Int) -> Unit
+    onTypeClick: (Int) -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Box(
@@ -64,7 +63,7 @@ fun ProjectTypeDialog(
 
                 Button(
                     onClick = {
-                        onPublicClick(1)
+                        onTypeClick(1)
                         onDismiss()
                     },
                     modifier = Modifier
@@ -81,11 +80,11 @@ fun ProjectTypeDialog(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painterResource(id = R.drawable.client_img),
+                            painterResource(id = R.drawable.public_img),
                             modifier = Modifier.size(width = 50.dp, height = 50.dp),
                             contentDescription = null
                         )
-                        Text("Client", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Public Project", color = Color.Black, fontWeight = FontWeight.Bold)
                     }
 
                 }
@@ -94,7 +93,7 @@ fun ProjectTypeDialog(
 
                 Button(
                     onClick = {
-                        onPublicClick(2)
+                        onTypeClick(2)
                         onDismiss()
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -107,11 +106,11 @@ fun ProjectTypeDialog(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painterResource(id = R.drawable.contractor_img),
+                            painterResource(id = R.drawable.private_img),
                             modifier = Modifier.size(width = 50.dp, height = 50.dp),
                             contentDescription = null
                         )
-                        Text("Contractor", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Private Project", color = Color.Black, fontWeight = FontWeight.Bold)
                     }
                 }
 

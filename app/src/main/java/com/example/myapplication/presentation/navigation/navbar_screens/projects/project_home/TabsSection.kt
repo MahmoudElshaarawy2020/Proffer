@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.navigation.navbar_screens.projects
+package com.example.myapplication.presentation.navigation.navbar_screens.projects.project_home
 
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
