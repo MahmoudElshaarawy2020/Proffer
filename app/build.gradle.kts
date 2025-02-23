@@ -119,6 +119,12 @@ dependencies {
     // Coil (Fixed Dependency Name)
     implementation("io.coil-kt:coil-compose:2.2.2")
 
+    //WindowSizeClass
+    implementation ("androidx.compose.material3:material3-window-size-class:1.1.0")
+
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+
+
     // Glide (Removed Duplicate)
 // implementation("com.github.bumptech.glide:glide:4.13.0")
 //    kapt("com.github.bumptech.glide:compiler:4.13.0")

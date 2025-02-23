@@ -51,7 +51,7 @@ fun CustomTextField(
     isError: Boolean = false,
     isPhoneNumber: Boolean = false,
     isEmail: Boolean = false,
-    width: Int = 360,
+    width: Int = 340,
     height: Int = 60,
     errorMessage: String = ""
 ) {

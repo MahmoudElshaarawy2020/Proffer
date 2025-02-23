@@ -90,7 +90,7 @@ fun SignUpScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.light_white))
-                .padding(start = 24.dp, top = 64.dp, end = 24.dp),
+                .padding(start = 24.dp, top = 32.dp, end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

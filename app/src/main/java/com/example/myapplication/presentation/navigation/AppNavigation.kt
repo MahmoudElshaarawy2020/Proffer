@@ -17,7 +17,7 @@ import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.presentation.navigation.navbar_screens.home.HomeScreen
 import com.example.myapplication.presentation.log_in.LoginScreen
-import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
+//import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bottom_navbar.BottomNavigationBar
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
@@ -189,10 +189,10 @@ fun AppNavigation(
             }
 
             composable(Screen.Bids.route) {
-                BidsScreen(
-                    modifier = modifier,
-                    navController = navController
-                )
+//                BidsScreen(
+//                    modifier = modifier,
+//                    navController = navController
+//                )
             }
 
             composable(Screen.AddProject.route) {

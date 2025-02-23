@@ -148,7 +148,7 @@ fun YourProfileScreen(
                 Text(text = "Edit", color = Color.White, fontSize = 16.sp)
             }
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             ProfileInfoItem(label = "Email Address", value = email, isEditable = true)
             ProfileInfoItem(label = "Phone Number", value = phoneNumber)
             ProfileInfoItem(label = "Location Address", value = location)

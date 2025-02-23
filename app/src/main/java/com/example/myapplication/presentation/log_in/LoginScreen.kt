@@ -77,7 +77,7 @@ fun LoginScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.light_white))
-                .padding(start = 24.dp,top = 64.dp , end = 24.dp),
+                .padding(start = 24.dp,top = 32.dp , end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -193,7 +193,7 @@ fun LoginScreen(
             color = colorResource(id = R.color.orange),
         )
 
-        Spacer(modifier = modifier.size(height = 200.dp, width = 0.dp))
+        Spacer(modifier = modifier.size(height = 130.dp, width = 0.dp))
         Button(
             modifier = modifier
                 .size(width = 230.dp, height = 50.dp),

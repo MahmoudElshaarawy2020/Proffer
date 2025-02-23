@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +51,7 @@ fun OnBoardingScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(colorResource(id = R.color.light_white)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -61,7 +64,7 @@ fun OnBoardingScreen(
         Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
 
         Image(
-            modifier = modifier.size(width = 393.dp, height = 405.dp),
+            modifier = modifier.size(300.dp),
             painter = painterResource(id = R.drawable.onboarding_img),
             contentDescription = null
         )
