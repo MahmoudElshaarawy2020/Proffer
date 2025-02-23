@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,14 +58,18 @@ fun OnBoardingScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            modifier = modifier.size(width = 190.dp, height = 50.dp),
+            modifier = modifier
+                .padding(top = 30.dp)
+                .size(width = 190.dp, height = 50.dp)
+                .weight(0.1f),
             painter = painterResource(id = R.drawable.logo_img),
             contentDescription = null
         )
         Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
 
         Image(
-            modifier = modifier.size(300.dp),
+            modifier = modifier.size(300.dp)
+                .weight(0.3f),
             painter = painterResource(id = R.drawable.onboarding_img),
             contentDescription = null
         )
@@ -92,7 +97,9 @@ fun OnBoardingScreen(
         Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
 
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .weight(0.1f),
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
