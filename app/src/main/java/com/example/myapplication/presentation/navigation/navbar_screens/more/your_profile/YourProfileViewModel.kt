@@ -3,8 +3,11 @@ package com.example.myapplication.presentation.navigation.navbar_screens.more.yo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.request.EditProfileRequest
 import com.example.myapplication.data.response.AuthResponse
+import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.domain.use_case.DeleteProfileUseCase
+import com.example.myapplication.domain.use_case.EditYourProfileUseCase
 import com.example.myapplication.domain.use_case.GetYourProfileUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
 import com.example.myapplication.util.Result
@@ -18,13 +21,17 @@ import javax.inject.Inject
 @HiltViewModel
 class YourProfileViewModel @Inject constructor(
     private val profileUseCase: GetYourProfileUseCase,
-    private val deleteAccountUseCase: DeleteProfileUseCase
+    private val deleteAccountUseCase: DeleteProfileUseCase,
+    private val editProfileUseCase: EditYourProfileUseCase
 ): ViewModel() {
     private val _yourProfileState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
     val yourProfileState: MutableStateFlow<Result<AuthResponse>> get() = _yourProfileState
 
     private val _deleteAccountState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
     val deleteAccountState: MutableStateFlow<Result<AuthResponse>> get() = _deleteAccountState
+
+    private val _editYourProfileState = MutableStateFlow<Result<EditProfileResponse>>(Result.Loading())
+    val editYourProfileState: MutableStateFlow<Result<EditProfileResponse>> get() = _editYourProfileState
 
     fun getYourProfileData(token: String) {
         viewModelScope.launch {
@@ -70,6 +77,31 @@ class YourProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("DeleteAccountError", "Unexpected error", e)
                 _deleteAccountState.value = Result.Error("Unexpected Error: ${e.message}")
+            }
+        }
+    }
+
+    fun editYourProfile(token: String, editProfileRequest: EditProfileRequest) {
+        viewModelScope.launch {
+            _editYourProfileState.value = Result.Loading()
+
+            try {
+                if (token.isNotEmpty()) {
+                    editProfileUseCase.invoke(token, editProfileRequest)
+                        .catch { e ->
+                            Log.e("EditYourProfileError", "API call failed", e)
+                            _editYourProfileState.value = Result.Error("Failed to edit the profile: ${e.message}")
+                        }
+                        .collectLatest { result ->
+                            _editYourProfileState.value = result
+                        }
+                } else {
+                    Log.e("EditYourProfileError", "Token is missing!")
+                    _editYourProfileState.value = Result.Error("Authentication token is missing!")
+                }
+            } catch (e: Exception) {
+                Log.e("EditYourProfileError", "Unexpected error", e)
+                _editYourProfileState.value = Result.Error("Unexpected Error: ${e.message}")
             }
         }
     }

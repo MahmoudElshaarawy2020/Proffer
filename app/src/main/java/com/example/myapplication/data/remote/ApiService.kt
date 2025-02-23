@@ -1,11 +1,11 @@
 package com.example.myapplication.data.remote
 
+import com.example.myapplication.data.request.EditProfileRequest
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AuthResponse
-import com.example.myapplication.data.response.RegisterResponse
-import com.example.myapplication.data.response.VerificationResponse
+import com.example.myapplication.data.response.EditProfileResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -46,4 +46,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
     ): Response<AuthResponse>
+
+    @POST("auth/edit-profile")
+    suspend fun editProfile(
+        @Body editProfileRequest: EditProfileRequest,
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
+    ): Response<EditProfileResponse>
 }

@@ -31,7 +31,8 @@ import kotlinx.coroutines.delay
 fun YourProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: YourProfileViewModel = hiltViewModel(),
-    onNavigateToOnboarding: () -> Unit
+    onNavigateToOnboarding: () -> Unit,
+    onNavigateToEditProfile: () -> Unit
 ) {
     val backgroundColor = colorResource(R.color.dark_blue)
     val systemUiController = rememberSystemUiController()
@@ -139,7 +140,9 @@ fun YourProfileScreen(
 
 
             Button(
-                onClick = {  },
+                onClick = {
+                    onNavigateToEditProfile()
+                },
                 modifier = Modifier
                     .width(120.dp)
                     .height(40.dp),

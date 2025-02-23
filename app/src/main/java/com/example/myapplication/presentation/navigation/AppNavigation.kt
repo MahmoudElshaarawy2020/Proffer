@@ -17,9 +17,10 @@ import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.presentation.navigation.navbar_screens.home.HomeScreen
 import com.example.myapplication.presentation.log_in.LoginScreen
-//import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bottom_navbar.BottomNavigationBar
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.EditProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.navbar_items.BottomNavItem
 import com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project.AddProjectScreen
@@ -189,10 +190,10 @@ fun AppNavigation(
             }
 
             composable(Screen.Bids.route) {
-//                BidsScreen(
-//                    modifier = modifier,
-//                    navController = navController
-//                )
+                BidsScreen(
+                    modifier = modifier,
+                    navController = navController
+                )
             }
 
             composable(Screen.AddProject.route) {
@@ -208,6 +209,12 @@ fun AppNavigation(
                     dataStoreManager = dataStoreManager
                 )
             }
+            composable(Screen.EditProfile.route) {
+                EditProfileScreen(
+                    navController = navController,
+                )
+            }
+
 
 
             composable(Screen.YourProfile.route) {
@@ -219,6 +226,9 @@ fun AppNavigation(
                                 inclusive = true
                             }
                         }
+                    },
+                    onNavigateToEditProfile = {
+                        navController.navigate(Screen.EditProfile.route)
                     }
                 )
             }
