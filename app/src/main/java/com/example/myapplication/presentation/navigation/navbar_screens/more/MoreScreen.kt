@@ -186,6 +186,7 @@ fun MoreScreen(
                 contentDescription = "User Image",
                 modifier = Modifier
                     .padding(start = 40.dp)
+                    .clip(CircleShape)
                     .constrainAs(imageRef) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)

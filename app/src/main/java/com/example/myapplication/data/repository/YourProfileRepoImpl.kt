@@ -2,7 +2,6 @@ package com.example.myapplication.data.repository
 
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
-import com.example.myapplication.data.request.EditProfileRequest
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.domain.repository.YourProfileRepository
@@ -11,6 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -82,14 +85,27 @@ class YourProfileRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun editeYourProfile(
+    override fun editYourProfile(
         token: String,
-        editProfileRequest: EditProfileRequest
+        method: RequestBody,
+        userName: RequestBody,
+        phoneNumber: RequestBody,
+        address: RequestBody,
+        image: MultipartBody.Part?
     ): Flow<Result<EditProfileResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.editProfile(editProfileRequest, token, "application/json")
+            val imageFile = "image".toRequestBody("multipart/form-data".toMediaTypeOrNull())
+            val response = apiService.editProfile(
+                method,
+                userName,
+                phoneNumber,
+                address,
+                image,
+                imageFile,
+                token = token,
+                accept = "application/json")
 
             if (response.isSuccessful) {
                 Log.d("editProfileRepoImpl", "editProfile API call successful")
