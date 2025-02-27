@@ -1,5 +1,6 @@
 package com.example.myapplication.data.remote
 
+import com.example.myapplication.data.request.ChangePasswordRequest
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
@@ -61,5 +62,11 @@ interface ApiService {
         @Part("profile_image") requestBody: RequestBody,
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
+    ): Response<EditProfileResponse>
+
+    @POST("auth/logout")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Body changePasswordRequest: ChangePasswordRequest
     ): Response<EditProfileResponse>
 }

@@ -91,7 +91,7 @@ fun VerificationScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.light_white))
-                .padding(start = 24.dp, top = 64.dp, end = 24.dp),
+                .padding(start = 24.dp, top = 32.dp, end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -189,7 +189,7 @@ fun VerificationScreen(
             color = Color.Gray
         )
 
-        Spacer(modifier = modifier.size(height = 200.dp, width = 0.dp))
+        Spacer(modifier = modifier.size(height = 120.dp, width = 0.dp))
 
         Button(
             modifier = modifier

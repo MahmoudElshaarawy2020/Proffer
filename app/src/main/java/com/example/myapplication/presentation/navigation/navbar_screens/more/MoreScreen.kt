@@ -218,7 +218,11 @@ fun MoreScreen(
                 navController.navigate(Screen.YourProfile.route)
             })
         Spacer(modifier.size(10.dp))
-        CustomRow(text = "Settings", icon = R.drawable.settings_ic)
+        CustomRow(text = "Settings", icon = R.drawable.settings_ic,
+            onItemClick = {
+                navController.navigate(Screen.Settings.route)
+            }
+            )
         Spacer(modifier.size(10.dp))
         CustomRow(text = "Contact Us", icon = R.drawable.phone_ic)
         Spacer(modifier.size(10.dp))

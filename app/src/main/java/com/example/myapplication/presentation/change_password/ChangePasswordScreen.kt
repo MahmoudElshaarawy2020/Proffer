@@ -1,10 +1,11 @@
-package com.example.myapplication.presentation.log_in
+package com.example.myapplication.presentation.change_password
 
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -33,63 +36,64 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
-import com.example.myapplication.data.request.LoginRequest
+import com.example.myapplication.data.request.ChangePasswordRequest
 import com.example.myapplication.presentation.navigation.Screen
-import com.example.myapplication.presentation.navigation.navbar_screens.more.LogoutDialog
 import com.example.myapplication.presentation.utils.CustomTextField
 import com.example.myapplication.util.Result
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LoginScreen(
+fun ChangePasswordScreen(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
     navController: NavController,
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToSignUp: () -> Unit = {}
+    viewModel: ChangePasswordViewModel = hiltViewModel(),
+    onNavigateToHome: () -> Unit
 ) {
 
-    LaunchedEffect(Unit) {
-        viewModel.getAuthToken().collectLatest { token ->
-            if (!token.isNullOrEmpty()) {
-                onNavigateToHome()
-            }
-        }
-    }
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val loginState by viewModel.loginState.collectAsState()
+    var oldPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var changePasswordRequest = ChangePasswordRequest(oldPassword, newPassword, confirmPassword)
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
     val token by dataStoreManager.getToken.collectAsState(initial = null)
+    val changePasswordState by viewModel.changePasswordState.collectAsState()
 
+    LaunchedEffect(changePasswordState) {
+        when (changePasswordState) {
+            is Result.Success -> {
+                Log.d("TAG", "change password Success: ${changePasswordState.data}")
 
-    var showDialog by remember { mutableStateOf(false) }
+                onNavigateToHome()
+            }
 
-    if (showDialog) {
-        EnterEmailDialog (
-            onDismiss = { showDialog = false },
-            onVerifyClick = {
-                showDialog = false
-                token?.let {
-                    Log.d("Using Token", it)
-                    navController.navigate(Screen.OnBoarding.route)
-                }
-            },
-        )
+            is Result.Error -> {
+                Toast.makeText(
+                    context,
+                    "change password failed: ${changePasswordState.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            }
+
+            is Result.Loading -> {
+                Log.d("TAG", "changing password : ${changePasswordState.message}")
+            }
+
+            else -> Unit
+        }
     }
-
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(color = colorResource(id = R.color.light_white)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
@@ -98,7 +102,7 @@ fun LoginScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.light_white))
-                .padding(start = 24.dp,top = 32.dp , end = 24.dp),
+                .padding(start = 24.dp, top = 32.dp, end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -140,14 +144,14 @@ fun LoginScreen(
         )
 
         Text(
-            text = "Unlock Your Benefits",
+            text = "Change Password",
             fontSize = 28.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.orange),
             lineHeight = 28.sp
         )
         Text(
-            text = "Get exclusive offers",
+            text = "Personalize your experience",
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 2,
@@ -160,7 +164,7 @@ fun LoginScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(start = 24.dp, bottom = 8.dp, top = 17.dp),
-            text = "Email",
+            text = "Old Password",
             fontSize = 17.sp,
             lineHeight = 21.sp,
             color = colorResource(id = R.color.dark_blue),
@@ -168,10 +172,11 @@ fun LoginScreen(
         )
 
         CustomTextField(
-            value = email,
-            onValueChange = { email = it },
-            isEmail = true,
-            label = "Your Email",
+            value = oldPassword,
+            onValueChange = { oldPassword = it },
+            isPassword = true,
+            isEncrypted = true,
+            label = "old password",
             focusedBorderColor = colorResource(id = R.color.lighter_grey),
             unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
             cursorColor = colorResource(id = R.color.light_grey),
@@ -182,7 +187,7 @@ fun LoginScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(start = 24.dp, bottom = 8.dp, top = 17.dp),
-            text = "Password",
+            text = "New Password",
             fontSize = 17.sp,
             lineHeight = 21.sp,
             color = colorResource(id = R.color.dark_blue),
@@ -190,10 +195,34 @@ fun LoginScreen(
         )
 
         CustomTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = "Your Password",
+            value = newPassword,
+            onValueChange = { newPassword = it },
+            label = "new password",
             isEncrypted = true,
+            isPassword = true,
+            focusedBorderColor = colorResource(id = R.color.lighter_grey),
+            unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
+            cursorColor = colorResource(id = R.color.light_grey),
+            isFocused = false
+        )
+
+        Text(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, bottom = 8.dp, top = 17.dp),
+            text = "Confirm Password",
+            fontSize = 17.sp,
+            lineHeight = 21.sp,
+            color = colorResource(id = R.color.dark_blue),
+            fontWeight = FontWeight.Medium
+        )
+
+        CustomTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            isPassword = true,
+            isEncrypted = true,
+            label = "confirm password",
             focusedBorderColor = colorResource(id = R.color.lighter_grey),
             unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
             cursorColor = colorResource(id = R.color.light_grey),
@@ -201,31 +230,24 @@ fun LoginScreen(
         )
 
         Spacer(modifier = modifier.size(height = 8.dp, width = 0.dp))
-        Text(
-            modifier = modifier.clickable {
 
-            },
-            text = "Can’t Remember Your Password",
-            textDecoration = TextDecoration.Underline,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.orange),
-        )
-
-        Spacer(modifier = modifier.size(height = 130.dp, width = 0.dp))
+        Spacer(modifier = modifier.size(height = 64.dp, width = 0.dp))
         Button(
             modifier = modifier
                 .size(width = 230.dp, height = 50.dp),
             onClick = {
-                val request = LoginRequest(email = email, password = password)
-                viewModel.login(request)
+                token?.let { viewModel.changePassword(it, changePasswordRequest) }
+                if (changePasswordState is Result.Success) {
+                    navController.navigate(Screen.Login.route)
+                    Toast.makeText(context, "change password success", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "change password failed", Toast.LENGTH_SHORT).show()
+                }
             },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
         ) {
             Text(
-                text = stringResource(id = R.string.login),
+                text = "Save",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,
@@ -235,46 +257,8 @@ fun LoginScreen(
             )
 
         }
-
-        Spacer(modifier = modifier.size(height = 16.dp, width = 0.dp))
-        Text(
-            modifier = modifier.clickable {
-                onNavigateToSignUp()
-            },
-            text = "Want To Create Your Account",
-            textDecoration = TextDecoration.Underline,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.orange),
-        )
         Spacer(modifier = modifier.size(height = 45.dp, width = 0.dp))
 
-        LaunchedEffect(loginState) {
-            when (loginState) {
-                is Result.Success -> {
-                    Log.d("TAG", "login Success: ${loginState.data}")
-
-                    onNavigateToHome()
-                }
-
-                is Result.Error -> {
-                    Toast.makeText(
-                        context,
-                        "login failed: ${loginState.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                }
-
-                is Result.Loading -> {
-                    Log.d("TAG", "login user: ${loginState.message}")
-                }
-
-                else -> Unit
-            }
-        }
 
     }
 }
