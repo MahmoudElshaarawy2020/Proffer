@@ -1,13 +1,11 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.more
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,12 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +42,7 @@ import coil.request.ImageRequest
 import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.presentation.navigation.Screen
-import com.example.myapplication.presentation.onboarding.IdentityDialog
+import com.example.myapplication.presentation.navigation.navbar_screens.more.log_out.LogoutDialog
 import com.example.myapplication.util.Result
 
 
@@ -222,17 +217,24 @@ fun MoreScreen(
             onItemClick = {
                 navController.navigate(Screen.Settings.route)
             }
-            )
+        )
         Spacer(modifier.size(10.dp))
         CustomRow(text = "Contact Us", icon = R.drawable.phone_ic)
         Spacer(modifier.size(10.dp))
-        CustomRow(text = "FAQ", icon = R.drawable.faq_ic)
+        CustomRow(
+            text = "FAQ",
+            icon = R.drawable.faq_ic,
+            onItemClick = { navController.navigate(Screen.FAQ.route) })
         Spacer(modifier.size(10.dp))
-        CustomRow(text = "About Us", icon = R.drawable.right_ic)
+        CustomRow(text = "About Us", icon = R.drawable.right_ic, onItemClick = {
+            navController.navigate(Screen.AboutUs.route)
+        })
         Spacer(modifier.size(10.dp))
         CustomRow(text = "Terms & Conditions", icon = R.drawable.terms_ic)
         Spacer(modifier.size(10.dp))
-        CustomRow(text = "Privacy Policy", icon = R.drawable.privacy)
+        CustomRow(text = "Privacy Policy", icon = R.drawable.privacy, onItemClick = {
+            navController.navigate(Screen.PrivacyScreen.route)
+        })
         Spacer(modifier.size(10.dp))
         CustomRow(
             text = "Log Out",

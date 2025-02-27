@@ -21,6 +21,9 @@ import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bottom_navbar.BottomNavigationBar
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.about_us.AboutUsScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.faq.FAQScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.privacy_policy.PrivacyScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.settings.SettingsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.EditProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
@@ -223,6 +226,27 @@ fun AppNavigation(
                     modifier = modifier,
                 )
             }
+
+            composable(Screen.PrivacyScreen.route) {
+                PrivacyScreen(
+                    navController = navController,
+                    modifier = modifier,
+                )
+            }
+
+            composable(Screen.AboutUs.route) {
+                AboutUsScreen(
+                    navController = navController,
+                    modifier = modifier,
+                )
+            }
+            composable(Screen.FAQ.route) {
+                FAQScreen(
+                    navController = navController,
+                    modifier = modifier,
+                )
+            }
+
 
             composable(Screen.ChangePassword.route) {
                 ChangePasswordScreen(

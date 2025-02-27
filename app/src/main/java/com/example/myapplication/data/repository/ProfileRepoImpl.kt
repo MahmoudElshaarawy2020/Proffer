@@ -3,8 +3,11 @@ package com.example.myapplication.data.repository
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.request.ChangePasswordRequest
+import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
+import com.example.myapplication.data.response.FAQResponse
+import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.domain.repository.ProfileRepository
 import com.example.myapplication.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +20,7 @@ import javax.inject.Inject
 
 class ProfileRepoImpl @Inject constructor(
     private val apiService: ApiService
-): ProfileRepository {
+) : ProfileRepository {
     override fun getMoreAboutUser(token: String): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
@@ -82,7 +85,106 @@ class ProfileRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>> = flow {
+    override fun getFAQ(): Flow<Result<FAQResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.getFAQ()
+
+            if (response.isSuccessful) {
+                Log.d("getFAQImpl", "successful")
+                response.body()?.let {
+                    emit(Result.Success(it))
+                } ?: emit(Result.Error("Empty response body"))
+
+            } else {
+                Log.d("getFAQImpl", "profile API call failed")
+                emit(
+                    Result.Error(
+                        "Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun getPrivacyPolicy(): Flow<Result<PrivacyPolicyResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.getPrivacyPolicy()
+
+            if (response.isSuccessful) {
+                Log.d("getPrivacy", "successful")
+                response.body()?.let {
+                    emit(Result.Success(it))
+                } ?: emit(Result.Error("Empty response body"))
+
+            } else {
+                Log.d("getPrivacy", "profile API call failed")
+                emit(
+                    Result.Error(
+                        "Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun getAboutUs(): Flow<Result<AboutUsResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.getAboutUs()
+
+            if (response.isSuccessful) {
+                Log.d("getAboutUsImpl", "successful")
+                response.body()?.let {
+                    emit(Result.Success(it))
+                } ?: emit(Result.Error("Empty response body"))
+
+            } else {
+                Log.d("getAboutUsImpl", "profile API call failed")
+                emit(
+                    Result.Error(
+                        "Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun changePassword(
+        token: String,
+        changePasswordRequest: ChangePasswordRequest
+    ): Flow<Result<EditProfileResponse>> = flow {
         emit(Result.Loading())
 
         try {

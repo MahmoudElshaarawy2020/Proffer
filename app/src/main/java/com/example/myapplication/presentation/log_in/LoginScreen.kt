@@ -41,7 +41,6 @@ import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.presentation.navigation.Screen
-import com.example.myapplication.presentation.navigation.navbar_screens.more.LogoutDialog
 import com.example.myapplication.presentation.utils.CustomTextField
 import com.example.myapplication.util.Result
 import kotlinx.coroutines.flow.collectLatest
