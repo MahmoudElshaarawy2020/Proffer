@@ -78,7 +78,7 @@ class YourProfileViewModel @Inject constructor(
     fun editYourProfile(
         token: String,
         method: RequestBody,
-        userName: RequestBody?,
+        userName: RequestBody,
         phoneNumber: RequestBody?,
         address: RequestBody?,
         image: MultipartBody.Part?

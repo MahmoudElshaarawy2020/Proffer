@@ -97,7 +97,7 @@ fun CustomTextField(
             ),
 
             isError = hasError,
-            label = {
+            placeholder = {
                 Text(
                     text = label,
                     fontWeight = FontWeight.Medium,

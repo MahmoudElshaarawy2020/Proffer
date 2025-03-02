@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
+import com.example.myapplication.presentation.navigation.Screen
 import com.example.myapplication.presentation.utils.CustomTextField
 import com.example.myapplication.util.Result
 import okhttp3.MediaType.Companion.toMediaType
@@ -70,14 +72,17 @@ fun EditProfileScreen(
     var userName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    val requestUserName = userName.toRequestBody("text/plain".toMediaType())
-    val requestPhoneNumber = phoneNumber.toRequestBody("text/plain".toMediaType())
-    val requestAddress = address.toRequestBody("text/plain".toMediaType())
-    val requestMethod = "put".toRequestBody("text/plain".toMediaType())
+    val yourProfileState by viewModel.yourProfileState.collectAsState()
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
     val token by dataStoreManager.getToken.collectAsState(initial = null)
     val editYourProfileState by viewModel.yourProfileState.collectAsState()
+    val phoneNumberNullable =
+        (yourProfileState as? Result.Success)?.data?.userData?.phone ?: "0000000000"
+    val addressNullable =
+        (yourProfileState as? Result.Success)?.data?.userData?.address ?: "Unknown Location"
+    val userNameNullable = (yourProfileState as? Result.Success)?.data?.userData?.name ?: "John Doe"
+
     val imageUrl = (editYourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
 
 
@@ -95,10 +100,21 @@ fun EditProfileScreen(
     viewModel.editYourProfileState.collectAsState().value.let { state ->
         when (state) {
             is Result.Loading -> Log.d("EditProfileScreen", "Loading...")
-            is Result.Success -> Log.d("EditProfileScreen", "Success: ${state.data}")
+            is Result.Success ->{
+                Log.d("EditProfileScreen", "Success: ${state.data}")
+                navController.navigate(Screen.Home.route)
+            }
             is Result.Error -> Log.e("EditProfileScreen", "Error: ${state.message}")
         }
     }
+
+    LaunchedEffect(token) {
+        if (!token.isNullOrEmpty()) {
+            Log.d("Using Token", token!!)
+            viewModel.getYourProfileData(token!!)
+        }
+    }
+
 
 
     Column(
@@ -144,7 +160,7 @@ fun EditProfileScreen(
                     .clip(CircleShape)
                     .size(70.dp),
                 model = ImageRequest.Builder(context)
-                    .data(selectedImageUri ?: R.drawable.client_img)
+                    .data(selectedImageUri ?: imageUrl)
                     .crossfade(true)
                     .placeholder(R.drawable.client_img)
                     .error(R.drawable.client_img)
@@ -192,7 +208,7 @@ fun EditProfileScreen(
             CustomTextField(
                 value = userName,
                 onValueChange = { userName = it },
-                label = "Your Name",
+                label = userNameNullable,
                 focusedBorderColor = colorResource(id = R.color.lighter_grey),
                 unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
                 cursorColor = colorResource(id = R.color.light_grey),
@@ -217,7 +233,7 @@ fun EditProfileScreen(
             CustomTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
-                label = "Your Phone Number",
+                label = phoneNumberNullable,
                 focusedBorderColor = colorResource(id = R.color.lighter_grey),
                 unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
                 cursorColor = colorResource(id = R.color.light_grey),
@@ -243,7 +259,7 @@ fun EditProfileScreen(
             CustomTextField(
                 value = address,
                 onValueChange = { address = it },
-                label = "Your address",
+                label = addressNullable,
                 focusedBorderColor = colorResource(id = R.color.lighter_grey),
                 unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
                 cursorColor = colorResource(id = R.color.light_grey),
@@ -262,10 +278,16 @@ fun EditProfileScreen(
                 .size(width = 230.dp, height = 50.dp),
             onClick = {
                 Log.d("EditProfileScreen", "Button clicked!")
-                if (selectedImageUri == null) {
-                    Log.e("EditProfileScreen", "No image selected!")
-                }
                 val imagePart = prepareFilePart(selectedImageUri, context)
+                val finalUserName = if (userName.isNotEmpty()) userName else userNameNullable
+                val finalPhoneNumber = if (phoneNumber.isNotEmpty()) phoneNumber else phoneNumberNullable
+                val finalAddress = if (address.isNotEmpty()) address else addressNullable
+
+                val requestUserName = finalUserName.toRequestBody("text/plain".toMediaType())
+                val requestPhoneNumber = finalPhoneNumber.toRequestBody("text/plain".toMediaType())
+                val requestAddress = finalAddress.toRequestBody("text/plain".toMediaType())
+                val requestMethod = "put".toRequestBody("text/plain".toMediaType())
+
                 token?.let {
                     viewModel.editYourProfile(
                         it,
@@ -276,6 +298,7 @@ fun EditProfileScreen(
                         image = imagePart
                     )
                 }
+
                 Log.d("EditProfileScreen", "editYourProfile called")
             },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
@@ -292,8 +315,6 @@ fun EditProfileScreen(
         }
 
     }
-
-
 
 
 }

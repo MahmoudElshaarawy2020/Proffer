@@ -107,7 +107,6 @@ fun AppNavigation(
             startDestination = startDestination,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
 
         ) {
             composable(Screen.Login.route) {
