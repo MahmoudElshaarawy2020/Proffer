@@ -1,8 +1,8 @@
 package com.example.myapplication.presentation.navigation
 
+import NotificationScreen
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -76,7 +76,16 @@ fun AppNavigation(
                 currentRoute != Screen.OnBoarding.route &&
                 currentRoute != Screen.NewPassword.route &&
                 currentRoute != Screen.Splash.route &&
-                currentRoute != Screen.AddProject.route
+                currentRoute != Screen.AddProject.route &&
+                currentRoute != Screen.EditProfile.route &&
+                currentRoute != Screen.Settings.route &&
+                currentRoute != Screen.Privacy.route &&
+                currentRoute != Screen.AboutUs.route &&
+                currentRoute != Screen.FAQ.route &&
+                currentRoute != Screen.ChangePassword.route &&
+                currentRoute != Screen.YourProfile.route &&
+                currentRoute != Screen.Notification.route
+
             ) {
                 BottomNavigationBar(
                     items = bottomNavItems,
@@ -169,6 +178,14 @@ fun AppNavigation(
                 )
             }
 
+
+            composable(Screen.Notification.route) {
+                NotificationScreen(
+                    modifier = modifier,
+                    navController = navController
+                )
+            }
+
             composable(Screen.More.route) {
                 MoreScreen(
                     navController = navController,
@@ -179,7 +196,10 @@ fun AppNavigation(
             composable(Screen.Home.route) {
                 HomeScreen(
                     modifier = modifier,
-                    navController = navController
+                    navController = navController,
+                    onNotificationClick = {
+                        navController.navigate(Screen.Notification.route)
+                    }
                 )
             }
 
@@ -226,7 +246,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(Screen.PrivacyScreen.route) {
+            composable(Screen.Privacy.route) {
                 PrivacyScreen(
                     navController = navController,
                     modifier = modifier,
@@ -250,7 +270,7 @@ fun AppNavigation(
             composable(Screen.ChangePassword.route) {
                 ChangePasswordScreen(
                     navController = navController,
-                    onNavigateToHome = {
+                    onNavigateToLogin = {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 inclusive = true

@@ -19,7 +19,8 @@ sealed class Screen(val route: String) {
     object FAQ : Screen("faq_screen")
     object Settings : Screen("settings_screen")
     object AboutUs : Screen("about_us_screen")
-    object PrivacyScreen : Screen("privacy_screen")
+    object Privacy : Screen("privacy_screen")
+    object Notification : Screen("notification_screen")
 
     object SignUp : Screen("signUp_screen/{role}") {
         fun createRoute(role: Int) = "signUp_screen/$role"

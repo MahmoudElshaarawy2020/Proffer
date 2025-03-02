@@ -1,3 +1,4 @@
+
 package com.example.myapplication.presentation.navigation.navbar_screens.home
 
 import androidx.compose.foundation.Image
@@ -36,14 +37,12 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun HomeScreen(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNotificationClick : () -> Unit = {}
 ) {
     val backgroundColor = colorResource(R.color.light_white)
     val systemUiController = rememberSystemUiController()
 
-    LaunchedEffect(Unit) {
-        systemUiController.setStatusBarColor(color = backgroundColor, darkIcons = true)
-    }
 
     val product = Product(
         images = listOf(
@@ -92,7 +91,9 @@ fun HomeScreen(
                 }
                 Spacer(modifier = Modifier.weight(1f))
 
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    onNotificationClick()
+                }) {
                     Icon(
                         modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.alarm_ic),

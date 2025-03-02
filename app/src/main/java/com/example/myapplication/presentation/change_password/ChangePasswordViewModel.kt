@@ -31,16 +31,18 @@ class ChangePasswordViewModel @Inject constructor(
             changePasswordUseCase.invoke(token, changePasswordRequest)
                 .catch { e ->
                     Log.e("changePassword Error", "API call failed", e)
-                    _changePasswordState.value = Result.Error("Failed to changePassword: ${e.message}")
+                    _changePasswordState.value = Result.Error("Failed to change password: ${e.message}")
                 }
                 .collectLatest { result ->
                     _changePasswordState.value = result
-                    if (result is Result.Success) {
-                        viewModelScope.launch {
-                            dataStoreManager.clearToken()
-                        }
+                    if (result is Result.Error) {
+                        Log.e("changePassword Error", "API response error: ${result.message}")
+                    } else if (result is Result.Success) {
+                        Log.d("changePassword Success", "Password changed successfully")
+                        dataStoreManager.clearToken()
                     }
                 }
         }
+
     }
 }

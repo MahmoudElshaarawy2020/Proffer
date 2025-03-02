@@ -68,7 +68,7 @@ interface ApiService {
         @Header("Accept") accept: String
     ): Response<EditProfileResponse>
 
-    @POST("auth/logout")
+    @POST("auth/change-password")
     suspend fun changePassword(
         @Header("Authorization") token: String,
         @Body changePasswordRequest: ChangePasswordRequest

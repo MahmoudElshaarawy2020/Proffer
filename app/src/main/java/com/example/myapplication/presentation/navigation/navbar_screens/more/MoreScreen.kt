@@ -233,7 +233,7 @@ fun MoreScreen(
         CustomRow(text = "Terms & Conditions", icon = R.drawable.terms_ic)
         Spacer(modifier.size(10.dp))
         CustomRow(text = "Privacy Policy", icon = R.drawable.privacy, onItemClick = {
-            navController.navigate(Screen.PrivacyScreen.route)
+            navController.navigate(Screen.Privacy.route)
         })
         Spacer(modifier.size(10.dp))
         CustomRow(

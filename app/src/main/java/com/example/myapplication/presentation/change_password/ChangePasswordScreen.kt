@@ -4,8 +4,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,11 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,7 +49,7 @@ fun ChangePasswordScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: ChangePasswordViewModel = hiltViewModel(),
-    onNavigateToHome: () -> Unit
+    onNavigateToLogin: () -> Unit
 ) {
 
     var oldPassword by remember { mutableStateOf("") }
@@ -69,8 +65,8 @@ fun ChangePasswordScreen(
         when (changePasswordState) {
             is Result.Success -> {
                 Log.d("TAG", "change password Success: ${changePasswordState.data}")
-
-                onNavigateToHome()
+                dataStoreManager.clearToken()
+                onNavigateToLogin()
             }
 
             is Result.Error -> {
@@ -102,7 +98,7 @@ fun ChangePasswordScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .background(colorResource(id = R.color.light_white))
-                .padding(start = 24.dp, top = 32.dp, end = 24.dp),
+                .padding(start = 16.dp, top = 32.dp, end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -133,7 +129,7 @@ fun ChangePasswordScreen(
                 .padding(start = 24.dp, top = 16.dp, end = 24.dp),
             thickness = 1.dp
         )
-        Spacer(modifier = modifier.size(height = 50.dp, width = 0.dp))
+        Spacer(modifier = modifier.size(height = 10.dp, width = 0.dp))
 
         Image(
             modifier = modifier
@@ -231,15 +227,20 @@ fun ChangePasswordScreen(
 
         Spacer(modifier = modifier.size(height = 8.dp, width = 0.dp))
 
-        Spacer(modifier = modifier.size(height = 64.dp, width = 0.dp))
         Button(
             modifier = modifier
                 .size(width = 230.dp, height = 50.dp),
             onClick = {
                 token?.let { viewModel.changePassword(it, changePasswordRequest) }
                 if (changePasswordState is Result.Success) {
+
                     navController.navigate(Screen.Login.route)
-                    Toast.makeText(context, "change password success", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Password changed, please log in again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 } else {
                     Toast.makeText(context, "change password failed", Toast.LENGTH_SHORT).show()
                 }
