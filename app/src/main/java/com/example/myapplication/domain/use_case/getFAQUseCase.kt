@@ -6,6 +6,6 @@ import javax.inject.Inject
 class getFAQUseCase @Inject constructor(
     private val repository: ProfileRepository
 ) {
-    operator fun invoke() = repository.getFAQ()
+    operator fun invoke(skip: Int, take: Int) = repository.getFAQ(skip, take)
 
 }

@@ -20,6 +20,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/register")
@@ -75,7 +76,10 @@ interface ApiService {
     ): Response<EditProfileResponse>
 
     @GET("faqs")
-    suspend fun getFAQ(): Response<FAQResponse>
+    suspend fun getFAQ(
+        @Query("skip") skip: Int,
+        @Query("take") take: Int
+    ): Response<FAQResponse>
 
     @GET("settings/about_us")
     suspend fun getAboutUs(): Response<AboutUsResponse>

@@ -16,6 +16,7 @@ import com.example.myapplication.domain.use_case.getPrivacyUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -32,12 +33,20 @@ class MoreViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager,
 ) : ViewModel() {
 
-    // Update the state to reflect the correct type
     private val _profileState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
     val profileState: MutableStateFlow<Result<AuthResponse>> get() = _profileState
 
     private val _getFaqState = MutableStateFlow<Result<FAQResponse>>(Result.Loading())
     val getFaqState: MutableStateFlow<Result<FAQResponse>> get() = _getFaqState
+
+    private val _isLoadingMore = MutableStateFlow(false)
+    val isLoadingMore: StateFlow<Boolean> = _isLoadingMore
+
+    private var currentPage = 1
+    private val pageSize = 10
+    private var canLoadMore = true
+
+
 
     private val _getAboutUsState = MutableStateFlow<Result<AboutUsResponse>>(Result.Loading())
     val getAboutUsState: MutableStateFlow<Result<AboutUsResponse>> get() = _getAboutUsState
@@ -92,24 +101,66 @@ class MoreViewModel @Inject constructor(
         }
     }
 
-    fun getFAQ() {
+    fun getFAQ(skip: Int = 0, take: Int = 10) {
         viewModelScope.launch {
             try {
-                getFAQUseCase.invoke()
+                getFAQUseCase.invoke(skip, take)
                     .catch { e ->
                         Log.e("getFAQRequestError", "API call failed", e)
                         _getFaqState.value = Result.Error("Unexpected Error: ${e.message}")
                     }
                     .collectLatest { result ->
+                        if (result is Result.Success) {
+                            val faqList = result.data?.data ?: emptyList()
+                            canLoadMore = faqList.isNotEmpty()
+                        }
                         _getFaqState.value = result
                     }
-
             } catch (e: Exception) {
                 Log.e("getFAQRequestError", "Unexpected error", e)
                 _getFaqState.value = Result.Error("Unexpected Error: ${e.message}")
             }
         }
     }
+
+    fun loadMoreFAQ() {
+        if (!canLoadMore || _isLoadingMore.value) return
+
+        _isLoadingMore.value = true
+
+        viewModelScope.launch {
+            val currentFaqList = (_getFaqState.value as? Result.Success)?.data?.data.orEmpty()
+            val newSkip = (currentPage - 1) * pageSize
+            val newTake = pageSize
+
+            try {
+                getFAQUseCase.invoke(newSkip, newTake)
+                    .catch { e ->
+                        Log.e("LoadMoreFAQError", "API call failed", e)
+                        _isLoadingMore.value = false
+                    }
+                    .collectLatest { result ->
+                        if (result is Result.Success) {
+                            val newData = result.data?.data.orEmpty()
+                            if (newData.isEmpty()) {
+                                canLoadMore = false
+                            } else {
+                                currentPage++
+                            }
+                            val updatedList = currentFaqList + newData
+                            _getFaqState.value = Result.Success(FAQResponse(updatedList))
+                        }
+                        _isLoadingMore.value = false
+                    }
+            } catch (e: Exception) {
+                Log.e("LoadMoreFAQError", "Unexpected error", e)
+                _isLoadingMore.value = false
+            }
+        }
+    }
+
+
+
     fun getPrivacy() {
         viewModelScope.launch {
             try {

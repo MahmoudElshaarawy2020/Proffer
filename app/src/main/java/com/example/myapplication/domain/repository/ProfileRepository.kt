@@ -14,7 +14,7 @@ import com.example.myapplication.util.Result
 interface ProfileRepository {
     fun getMoreAboutUser(token: String): Flow<Result<AuthResponse>>
     fun logout(token: String): Flow<Result<AuthResponse>>
-    fun getFAQ(): Flow<Result<FAQResponse>>
+    fun getFAQ(skip: Int, take: Int): Flow<Result<FAQResponse>>
     fun getPrivacyPolicy(): Flow<Result<PrivacyPolicyResponse>>
     fun getAboutUs(): Flow<Result<AboutUsResponse>>
     fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>>

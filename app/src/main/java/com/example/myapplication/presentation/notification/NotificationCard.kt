@@ -27,8 +27,8 @@ fun NotificationCard(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFDF7F4)), // Background color
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp) // Add elevation here
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFDF7F4)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
             modifier = Modifier.padding(16.dp)

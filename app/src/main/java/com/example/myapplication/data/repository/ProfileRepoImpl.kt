@@ -85,11 +85,11 @@ class ProfileRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getFAQ(): Flow<Result<FAQResponse>> = flow {
+    override fun getFAQ(skip: Int, take: Int): Flow<Result<FAQResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.getFAQ()
+            val response = apiService.getFAQ(skip, take)
 
             if (response.isSuccessful) {
                 Log.d("getFAQImpl", "successful")

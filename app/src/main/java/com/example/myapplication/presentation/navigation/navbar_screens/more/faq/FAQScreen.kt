@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -55,9 +58,25 @@ fun FAQScreen(
     viewModel: MoreViewModel = hiltViewModel()
 ) {
     val faqState = viewModel.getFaqState.collectAsState()
-    LaunchedEffect(Unit) {
+    val isLoadingMore = viewModel.isLoadingMore.collectAsState()
+    val scrollState = rememberLazyListState()
+
+    LaunchedEffect(key1 = true) {
         viewModel.getFAQ()
     }
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                val lastVisibleItem = visibleItems.lastOrNull()
+                val totalItemsCount = scrollState.layoutInfo.totalItemsCount
+
+                if (lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 1) {
+                    viewModel.loadMoreFAQ()
+                }
+            }
+    }
+
+
 
     Column(
         modifier = Modifier
@@ -101,7 +120,9 @@ fun FAQScreen(
 
         when (val result = faqState.value) {
             is Result.Loading -> {
-                Text("Loading FAQs...", fontSize = 18.sp, color = Color.Gray)
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
 
             is Result.Success -> {
@@ -114,6 +135,19 @@ fun FAQScreen(
                 ) {
                     items(faqList) { faq ->
                         faq?.let { FAQItem(it) }
+                    }
+
+                    item {
+                        if (isLoadingMore.value) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
                     }
                 }
             }
