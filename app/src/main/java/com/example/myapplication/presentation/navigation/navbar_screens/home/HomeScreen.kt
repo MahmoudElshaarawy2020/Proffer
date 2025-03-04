@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import com.example.myapplication.util.Result
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,8 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.R
+import com.example.myapplication.data.response.SliderResponse
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
@@ -38,19 +41,25 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    onNotificationClick : () -> Unit = {}
-) {
+    onNotificationClick : () -> Unit = {},
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    ) {
     val backgroundColor = colorResource(R.color.light_white)
     val systemUiController = rememberSystemUiController()
 
+    LaunchedEffect(Unit) {
+        homeViewModel.getSliders()
+    }
 
-    val product = Product(
-        images = listOf(
-            R.drawable.sample_project_img,
-            R.drawable.sample_project_img,
-            R.drawable.sample_project_img
-        )
-    )
+//    val product = Product(
+//        images = listOf(
+//            R.drawable.sample_project_img,
+//            R.drawable.sample_project_img,
+//            R.drawable.sample_project_img
+//        )
+//    )
+
+    val sliderState by homeViewModel.getSliderState.collectAsState()
 
     val contractors = listOf("Contractor 1", "Contractor 2", "Contractor 3", "Contractor 4")
 
@@ -104,7 +113,22 @@ fun HomeScreen(
             }
 
 
-            ImageProductPager(product)
+            when (sliderState) {
+                is Result.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+                is Result.Error -> {
+                    Text(text = "Error loading images", color = Color.Red)
+                }
+                is Result.Success -> {
+                    val sliderImages = (sliderState as Result.Success<SliderResponse>).data?.data
+                    ImageProductPager(sliderImages)
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

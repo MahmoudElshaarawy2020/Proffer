@@ -7,7 +7,6 @@ import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.TermsResponse
-import com.example.myapplication.presentation.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 import com.example.myapplication.util.Result
 

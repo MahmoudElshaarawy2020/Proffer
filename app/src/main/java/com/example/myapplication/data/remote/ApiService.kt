@@ -9,6 +9,7 @@ import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
+import com.example.myapplication.data.response.SliderResponse
 import com.example.myapplication.data.response.TermsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -90,4 +91,7 @@ interface ApiService {
 
     @GET("settings/terms")
     suspend fun getTerms(): Response<TermsResponse>
+
+    @GET("sliders")
+    suspend fun getSliders(): Response<SliderResponse>
 }

@@ -20,20 +20,22 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.myapplication.R
+import com.example.myapplication.data.response.SliderItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ImageProductPager(product: Product) {
-    val items = product.images
-    val pagerState = rememberPagerState(pageCount = { items.size })
-    val coroutineScope = rememberCoroutineScope() 
+fun ImageProductPager(images: List<SliderItem?>?) {
+
+
+    val pagerState = rememberPagerState(pageCount = { images?.size!! })
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(2000) 
+            delay(3000)
             coroutineScope.launch {
-                val nextPage = (pagerState.currentPage + 1) % items.size
+                val nextPage = (pagerState.currentPage + 1) % images?.size!!
                 pagerState.animateScrollToPage(nextPage)
             }
         }
@@ -42,51 +44,58 @@ fun ImageProductPager(product: Product) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
         ) { page ->
+            val imageUrl = images?.get(page)?.image
+
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(items[page])
+                    .data(imageUrl)
                     .crossfade(true)
                     .build(),
                 loading = {
                     CircularProgressIndicator(
-                        color = Color.LightGray,
-                        modifier = Modifier.padding(48.dp)
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.Center)
                     )
                 },
-                contentDescription = null,
+                contentDescription = "Slider Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .height(170.dp)
-                    .width(340.dp)
                     .clip(RoundedCornerShape(16.dp))
             )
         }
 
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        DotsIndicator(pagerState, items.size)
+        if (images != null) {
+            DotsIndicator(pagerState, images.size)
+        }
     }
 }
+
 
 @Composable
 fun DotsIndicator(pagerState: PagerState, itemCount: Int) {
     Row(
         modifier = Modifier
-            .padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp), // Add spacing between dots
+            .padding(top = 8.dp)
+            .height(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(itemCount) { index ->
-            val color = if (pagerState.currentPage == index) colorResource(R.color.orange) else Color.LightGray
+            val isSelected = pagerState.currentPage == index
             Box(
                 modifier = Modifier
-                    .size(8.dp)
+                    .size(if (isSelected) 12.dp else 8.dp)
                     .clip(CircleShape)
-                    .background(color)
+                    .background(if (isSelected) colorResource(R.color.orange) else Color.LightGray)
             )
         }
     }
