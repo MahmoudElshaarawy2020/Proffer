@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation.navigation.navbar_screens.more.privacy_policy
+package com.example.myapplication.presentation.navigation.navbar_screens.more.terms_conditions
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,15 +36,15 @@ import com.example.myapplication.util.Result
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivacyScreen(
+fun TermsConditions(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: MoreViewModel = hiltViewModel()
 ) {
 
-    val privacyState = viewModel.getPrivacyState.collectAsState()
+    val termsState = viewModel.getTermsState.collectAsState()
     LaunchedEffect(Unit) {
-        viewModel.getPrivacy()
+        viewModel.getTerms()
     }
 
     Column(
@@ -57,7 +57,7 @@ fun PrivacyScreen(
         TopAppBar(
             title = {
                 Text(
-                    "Privacy Policy",
+                    "Terms & Conditions",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 35.dp),
@@ -80,21 +80,20 @@ fun PrivacyScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column(modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())) {
-
-
-            when (val result = privacyState.value) {
+        Column(
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            when (val result = termsState.value) {
                 is Result.Loading -> {
-                    Text("Loading Privacy content...", fontSize = 18.sp, color = Color.Gray)
+                    Text("Loading Terms content...", fontSize = 18.sp, color = Color.Gray)
                 }
 
                 is Result.Success -> {
-                    val privacyContent =
-                        privacyState.value.data?.data?.privacyPolicy ?: "No content available"
+                    val termsContent = termsState.value.data?.data?.terms ?: "No content available"
                     Text(
-                        text = privacyContent,
+                        text = termsContent ,
                         fontSize = 18.sp,
                         color = Color.Gray,
                         textAlign = TextAlign.Center,
@@ -104,13 +103,12 @@ fun PrivacyScreen(
 
                 is Result.Error -> {
                     Text(
-                        text = "Failed to load about us: ${result.message}",
+                        text = "Failed to load Terms: ${result.message}",
                         color = Color.Red,
                         fontSize = 16.sp
                     )
                 }
             }
-
         }
 
     }

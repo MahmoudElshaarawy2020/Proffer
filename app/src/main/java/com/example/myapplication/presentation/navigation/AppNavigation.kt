@@ -25,6 +25,7 @@ import com.example.myapplication.presentation.navigation.navbar_screens.more.abo
 import com.example.myapplication.presentation.navigation.navbar_screens.more.faq.FAQScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.privacy_policy.PrivacyScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.settings.SettingsScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.terms_conditions.TermsConditions
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.EditProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.navbar_items.BottomNavItem
@@ -84,7 +85,8 @@ fun AppNavigation(
                 currentRoute != Screen.FAQ.route &&
                 currentRoute != Screen.ChangePassword.route &&
                 currentRoute != Screen.YourProfile.route &&
-                currentRoute != Screen.Notification.route
+                currentRoute != Screen.Notification.route &&
+                currentRoute != Screen.Terms.route
 
             ) {
                 BottomNavigationBar(
@@ -255,6 +257,13 @@ fun AppNavigation(
 
             composable(Screen.AboutUs.route) {
                 AboutUsScreen(
+                    navController = navController,
+                    modifier = modifier,
+                )
+            }
+
+            composable(Screen.Terms.route) {
+                TermsConditions(
                     navController = navController,
                     modifier = modifier,
                 )

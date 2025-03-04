@@ -8,11 +8,13 @@ import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
+import com.example.myapplication.data.response.TermsResponse
 import com.example.myapplication.domain.use_case.LogoutUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
 import com.example.myapplication.domain.use_case.getAboutUsUseCase
 import com.example.myapplication.domain.use_case.getFAQUseCase
 import com.example.myapplication.domain.use_case.getPrivacyUseCase
+import com.example.myapplication.domain.use_case.getTermsUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +32,7 @@ class MoreViewModel @Inject constructor(
     private val getPrivacyUseCase : getPrivacyUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getAboutUsUseCase: getAboutUsUseCase,
+    private val getTermsUseCase: getTermsUseCase,
     private val dataStoreManager: DataStoreManager,
 ) : ViewModel() {
 
@@ -50,6 +53,9 @@ class MoreViewModel @Inject constructor(
 
     private val _getAboutUsState = MutableStateFlow<Result<AboutUsResponse>>(Result.Loading())
     val getAboutUsState: MutableStateFlow<Result<AboutUsResponse>> get() = _getAboutUsState
+
+    private val _getTermsState = MutableStateFlow<Result<TermsResponse>>(Result.Loading())
+    val getTermsState: MutableStateFlow<Result<TermsResponse>> get() = _getTermsState
 
     private val _getPrivacyState = MutableStateFlow<Result<PrivacyPolicyResponse>>(Result.Loading())
     val getPrivacyState: MutableStateFlow<Result<PrivacyPolicyResponse>> get() = _getPrivacyState
@@ -196,6 +202,27 @@ class MoreViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("getAboutUsError", "Unexpected error", e)
                 _getAboutUsState.value = Result.Error("Unexpected Error: ${e.message}")
+            }
+        }
+    }
+
+
+
+    fun getTerms() {
+        viewModelScope.launch {
+            try {
+                getTermsUseCase.invoke()
+                    .catch { e ->
+                        Log.e("getTermsError", "API call failed", e)
+                        _getTermsState.value = Result.Error("Unexpected Error: ${e.message}")
+                    }
+                    .collectLatest { result ->
+                        _getTermsState.value = result
+                    }
+
+            } catch (e: Exception) {
+                Log.e("getTermsError", "Unexpected error", e)
+                _getTermsState.value = Result.Error("Unexpected Error: ${e.message}")
             }
         }
     }

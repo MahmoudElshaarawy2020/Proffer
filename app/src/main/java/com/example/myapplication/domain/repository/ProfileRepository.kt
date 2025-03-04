@@ -6,6 +6,7 @@ import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
+import com.example.myapplication.data.response.TermsResponse
 import com.example.myapplication.presentation.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 import com.example.myapplication.util.Result
@@ -17,5 +18,6 @@ interface ProfileRepository {
     fun getFAQ(skip: Int, take: Int): Flow<Result<FAQResponse>>
     fun getPrivacyPolicy(): Flow<Result<PrivacyPolicyResponse>>
     fun getAboutUs(): Flow<Result<AboutUsResponse>>
+    fun getTerms(): Flow<Result<TermsResponse>>
     fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>>
 }

@@ -9,6 +9,7 @@ import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
+import com.example.myapplication.data.response.TermsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -86,4 +87,7 @@ interface ApiService {
 
     @GET("settings/privacy_policy")
     suspend fun getPrivacyPolicy(): Response<PrivacyPolicyResponse>
+
+    @GET("settings/terms")
+    suspend fun getTerms(): Response<TermsResponse>
 }
