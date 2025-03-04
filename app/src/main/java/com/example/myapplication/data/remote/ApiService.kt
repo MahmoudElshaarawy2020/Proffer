@@ -8,8 +8,9 @@ import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
+import com.example.myapplication.data.response.HomeResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
-import com.example.myapplication.data.response.SliderResponse
+import com.example.myapplication.data.response.HomeSliderResponse
 import com.example.myapplication.data.response.TermsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -21,7 +22,6 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -93,5 +93,11 @@ interface ApiService {
     suspend fun getTerms(): Response<TermsResponse>
 
     @GET("sliders")
-    suspend fun getSliders(): Response<SliderResponse>
+    suspend fun getSliders(): Response<HomeSliderResponse>
+
+    @GET("clients/home?filter[status]=pending")
+    suspend fun getContractors(
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
+    ): Response<HomeResponse>
 }

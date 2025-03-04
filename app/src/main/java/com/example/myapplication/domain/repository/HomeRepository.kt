@@ -1,10 +1,12 @@
 package com.example.myapplication.domain.repository
 
-import com.example.myapplication.data.response.SliderResponse
+import com.example.myapplication.data.response.HomeResponse
+import com.example.myapplication.data.response.HomeSliderResponse
 import kotlinx.coroutines.flow.Flow
 import com.example.myapplication.util.Result
 
 
 interface HomeRepository {
-    fun getSliders(): Flow<Result<SliderResponse>>
+    fun getSliders(): Flow<Result<HomeSliderResponse>>
+    fun getContractors(token: String): Flow<Result<HomeResponse>>
 }

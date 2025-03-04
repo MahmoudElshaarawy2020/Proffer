@@ -1,4 +1,3 @@
-
 package com.example.myapplication.presentation.navigation.navbar_screens.home
 
 import androidx.compose.foundation.Image
@@ -28,12 +27,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import coil.compose.SubcomposeAsyncImage
 import com.example.myapplication.R
-import com.example.myapplication.data.response.SliderResponse
+import com.example.myapplication.data.data_store.DataStoreManager
+import com.example.myapplication.data.response.HomeResponse
+import com.example.myapplication.data.response.HomeSliderResponse
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
@@ -41,27 +44,23 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    onNotificationClick : () -> Unit = {},
+    onNotificationClick: () -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel(),
-    ) {
+) {
     val backgroundColor = colorResource(R.color.light_white)
     val systemUiController = rememberSystemUiController()
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val token by dataStoreManager.getToken.collectAsState(initial = null)
 
     LaunchedEffect(Unit) {
         homeViewModel.getSliders()
+        token?.let { homeViewModel.getContractors(it) }
     }
 
-//    val product = Product(
-//        images = listOf(
-//            R.drawable.sample_project_img,
-//            R.drawable.sample_project_img,
-//            R.drawable.sample_project_img
-//        )
-//    )
-
     val sliderState by homeViewModel.getSliderState.collectAsState()
+    val contractorsState by homeViewModel.getContractorsState.collectAsState()
 
-    val contractors = listOf("Contractor 1", "Contractor 2", "Contractor 3", "Contractor 4")
 
     Box(
         modifier = modifier
@@ -121,11 +120,14 @@ fun HomeScreen(
                             .align(Alignment.CenterHorizontally)
                     )
                 }
+
                 is Result.Error -> {
                     Text(text = "Error loading images", color = Color.Red)
                 }
+
                 is Result.Success -> {
-                    val sliderImages = (sliderState as Result.Success<SliderResponse>).data?.data
+                    val sliderImages =
+                        (sliderState as Result.Success<HomeSliderResponse>).data?.data
                     ImageProductPager(sliderImages)
                 }
             }
@@ -146,36 +148,78 @@ fun HomeScreen(
                 modifier = modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(contractors.size) { contractor ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.client_img),
-                            contentDescription = "Contractor Image",
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clip(CircleShape)
-                                .border(2.dp, Color.Black, CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                        Text(
-                            text = "Contractor name",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color.Yellow
+                when (contractorsState) {
+                    is Result.Loading -> {
+                        item {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .padding(16.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                color = Color.Gray
                             )
-                            Text(text = "4.8", fontSize = 12.sp)
+                        }
+                    }
+
+                    is Result.Success -> {
+                        val contractors =
+                            (contractorsState as Result.Success<HomeResponse>).data?.data?.contractors
+
+                        items(contractors?.size!!) { index ->
+                            val contractor = contractors[index]
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                SubcomposeAsyncImage(
+                                    model = contractor?.image?.takeIf { it.isNotBlank() } ?: R.drawable.client_img,
+                                    contentDescription = "Contractor Image",
+                                    loading = {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .size(30.dp)
+                                                .align(Alignment.Center)
+                                        )
+                                    },
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clip(CircleShape)
+                                        .border(2.dp, Color.Black, CircleShape)
+                                )
+                                contractor?.name?.let {
+                                    Text(
+                                        text = it,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = colorResource(R.color.yellow),
+                                    )
+                                    Text(text = contractor?.rateAvg.toString(), fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+
+                    is Result.Error -> {
+                        item {
+                            (contractorsState as Result.Error).message?.let {
+                                Text(
+                                    text = it,
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 

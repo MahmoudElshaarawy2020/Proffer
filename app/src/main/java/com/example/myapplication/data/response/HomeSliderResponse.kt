@@ -2,7 +2,7 @@ package com.example.myapplication.data.response
 
 import com.google.gson.annotations.SerializedName
 
-data class SliderResponse(
+data class HomeSliderResponse(
 
 	@field:SerializedName("data")
 	val data: List<SliderItem?>? = null,
