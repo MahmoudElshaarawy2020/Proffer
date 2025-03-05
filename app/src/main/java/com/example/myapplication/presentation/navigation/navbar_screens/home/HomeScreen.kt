@@ -249,10 +249,6 @@ fun HomeScreen(
 }
 
 
-data class Product(
-    val images: List<Int>
-)
-
 @Preview
 @Composable
 private fun HomeScreenPrev() {

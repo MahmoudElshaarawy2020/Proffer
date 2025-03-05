@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -52,7 +54,8 @@ fun ProjectInfo(modifier: Modifier = Modifier) {
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(R.color.light_white))
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -149,9 +152,10 @@ fun ProjectInfo(modifier: Modifier = Modifier) {
         Button(
             onClick = { },
             modifier = Modifier
+                .padding(vertical = 8.dp)
                 .width(200.dp)
                 .height(50.dp)
-                .shadow(8.dp, RoundedCornerShape(32.dp)),
+                .shadow(4.dp, RoundedCornerShape(32.dp)),
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.orange)),
             shape = RoundedCornerShape(32.dp)
         ) {

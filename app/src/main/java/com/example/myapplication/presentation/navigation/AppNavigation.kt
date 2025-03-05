@@ -3,6 +3,7 @@ package com.example.myapplication.presentation.navigation
 import NotificationScreen
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import com.example.myapplication.presentation.navigation.navbar_screens.bids.Bid
 import com.example.myapplication.presentation.navigation.navbar_screens.bottom_navbar.BottomNavigationBar
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.about_us.AboutUsScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.more.contact_us.ContactUsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.faq.FAQScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.privacy_policy.PrivacyScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.settings.SettingsScreen
@@ -86,7 +88,8 @@ fun AppNavigation(
                 currentRoute != Screen.ChangePassword.route &&
                 currentRoute != Screen.YourProfile.route &&
                 currentRoute != Screen.Notification.route &&
-                currentRoute != Screen.Terms.route
+                currentRoute != Screen.Terms.route &&
+                currentRoute != Screen.ContactUs.route
 
             ) {
                 BottomNavigationBar(
@@ -118,6 +121,7 @@ fun AppNavigation(
             startDestination = startDestination,
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
 
         ) {
             composable(Screen.Login.route) {
@@ -237,6 +241,12 @@ fun AppNavigation(
             }
             composable(Screen.EditProfile.route) {
                 EditProfileScreen(
+                    navController = navController,
+                )
+            }
+
+            composable(Screen.ContactUs.route) {
+                ContactUsScreen(
                     navController = navController,
                 )
             }

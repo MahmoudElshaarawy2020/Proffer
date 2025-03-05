@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsScreen(
     modifier: Modifier = Modifier,
@@ -38,44 +39,35 @@ fun ProjectsScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(color = colorResource(R.color.light_white)),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Row(
-                modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp, start = 27.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
+            TopAppBar(
+                title = {
                     Text(
-                        text = "Welcome,",
-                        color = colorResource(R.color.light_grey),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Start
-                    )
-                    Text(
-                        text = "Apps Square!",
-                        color = Color.Black,
-                        fontSize = 17.sp,
-                        textAlign = TextAlign.Start,
+                        "Projects",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 35.dp),
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                IconButton(onClick = { /* Handle notification click */ }) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(R.drawable.alarm_ic),
-                        contentDescription = null,
-                        tint = Color.Black
-                    )
-                }
-            }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = colorResource(R.color.light_white)),
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.back_arrow_img),
+                            contentDescription = "Back",
+                            tint = Color.Unspecified
+                        )
+                    }
+                },
+            )
 
             TabsSection(selectedTabIndex) { index ->
                 selectedTabIndex = index

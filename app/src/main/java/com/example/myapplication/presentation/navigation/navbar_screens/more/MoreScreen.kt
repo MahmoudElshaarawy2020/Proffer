@@ -219,7 +219,10 @@ fun MoreScreen(
             }
         )
         Spacer(modifier.size(10.dp))
-        CustomRow(text = "Contact Us", icon = R.drawable.phone_ic)
+        CustomRow(text = "Contact Us", icon = R.drawable.phone_ic,
+            onItemClick = {
+                navController.navigate(Screen.ContactUs.route)
+            })
         Spacer(modifier.size(10.dp))
         CustomRow(
             text = "FAQ",
