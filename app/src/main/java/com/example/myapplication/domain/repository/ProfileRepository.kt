@@ -5,6 +5,7 @@ import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
+import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.TermsResponse
 import kotlinx.coroutines.flow.Flow
@@ -18,5 +19,6 @@ interface ProfileRepository {
     fun getPrivacyPolicy(): Flow<Result<PrivacyPolicyResponse>>
     fun getAboutUs(): Flow<Result<AboutUsResponse>>
     fun getTerms(): Flow<Result<TermsResponse>>
+    fun getContactTypes(): Flow<Result<GetContactTypesResponse>>
     fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>>
 }

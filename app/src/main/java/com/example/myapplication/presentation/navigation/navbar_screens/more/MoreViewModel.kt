@@ -7,8 +7,10 @@ import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.FAQResponse
+import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.TermsResponse
+import com.example.myapplication.domain.use_case.GetContactTypesUseCase
 import com.example.myapplication.domain.use_case.LogoutUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
 import com.example.myapplication.domain.use_case.getAboutUsUseCase
@@ -33,6 +35,7 @@ class MoreViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val getAboutUsUseCase: getAboutUsUseCase,
     private val getTermsUseCase: getTermsUseCase,
+    private val getContactTypesUseCase: GetContactTypesUseCase,
     private val dataStoreManager: DataStoreManager,
 ) : ViewModel() {
 
@@ -56,6 +59,9 @@ class MoreViewModel @Inject constructor(
 
     private val _getTermsState = MutableStateFlow<Result<TermsResponse>>(Result.Loading())
     val getTermsState: MutableStateFlow<Result<TermsResponse>> get() = _getTermsState
+
+    private val _getContactTypesState = MutableStateFlow<Result<GetContactTypesResponse>>(Result.Loading())
+    val getContactTypesState: MutableStateFlow<Result<GetContactTypesResponse>> get() = _getContactTypesState
 
     private val _getPrivacyState = MutableStateFlow<Result<PrivacyPolicyResponse>>(Result.Loading())
     val getPrivacyState: MutableStateFlow<Result<PrivacyPolicyResponse>> get() = _getPrivacyState
@@ -202,6 +208,25 @@ class MoreViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("getAboutUsError", "Unexpected error", e)
                 _getAboutUsState.value = Result.Error("Unexpected Error: ${e.message}")
+            }
+        }
+    }
+
+    fun getContactTypes() {
+        viewModelScope.launch {
+            try {
+                getContactTypesUseCase.invoke()
+                    .catch { e ->
+                        Log.e("getContactTypesError", "API call failed", e)
+                        _getContactTypesState.value = Result.Error("Unexpected Error: ${e.message}")
+                    }
+                    .collectLatest { result ->
+                        _getContactTypesState.value = result
+                    }
+
+            } catch (e: Exception) {
+                Log.e("getContactTypesError", "Unexpected error", e)
+                _getContactTypesState.value = Result.Error("Unexpected Error: ${e.message}")
             }
         }
     }

@@ -8,6 +8,7 @@ import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
+import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.HomeResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.HomeSliderResponse
@@ -100,4 +101,8 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
     ): Response<HomeResponse>
+
+
+    @GET("contact-types")
+    suspend fun getContactTypes(): Response<GetContactTypesResponse>
 }

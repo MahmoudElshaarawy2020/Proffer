@@ -7,6 +7,7 @@ import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
+import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.TermsResponse
 import com.example.myapplication.domain.repository.ProfileRepository
@@ -196,6 +197,38 @@ class ProfileRepoImpl @Inject constructor(
 
             } else {
                 Log.d("getTermsImpl", "profile API call failed")
+                emit(
+                    Result.Error(
+                        "Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun getContactTypes(): Flow<Result<GetContactTypesResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.getContactTypes()
+
+            if (response.isSuccessful) {
+                Log.d("getContactTypesImpl", "successful")
+                response.body()?.let {
+                    emit(Result.Success(it))
+                } ?: emit(Result.Error("Empty response body"))
+
+            } else {
+                Log.d("getContactTypesImpl", "profile API call failed")
                 emit(
                     Result.Error(
                         "Error: ${
