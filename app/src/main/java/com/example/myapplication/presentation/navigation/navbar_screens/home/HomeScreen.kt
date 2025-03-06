@@ -3,6 +3,7 @@ package com.example.myapplication.presentation.navigation.navbar_screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -37,7 +38,6 @@ import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.response.HomeResponse
 import com.example.myapplication.data.response.HomeSliderResponse
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
@@ -45,10 +45,9 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     onNotificationClick: () -> Unit = {},
+    onContractorClick: (Int) -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val backgroundColor = colorResource(R.color.light_white)
-    val systemUiController = rememberSystemUiController()
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
     val token by dataStoreManager.getToken.collectAsState(initial = null)
@@ -169,7 +168,9 @@ fun HomeScreen(
                             val contractor = contractors[index]
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.padding(8.dp)
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .clickable { contractor?.id?.let { onContractorClick(it) } }
                             ) {
                                 SubcomposeAsyncImage(
                                     model = contractor?.image?.takeIf { it.isNotBlank() } ?: R.drawable.client_img,

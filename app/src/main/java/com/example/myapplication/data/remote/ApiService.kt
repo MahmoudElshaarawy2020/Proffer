@@ -7,6 +7,7 @@ import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
+import com.example.myapplication.data.response.ContractorProfileResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.GetContactTypesResponse
@@ -24,6 +25,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -112,4 +114,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body contactUsRequest: ContactUsRequest
     ): Response<EditProfileResponse>
+
+    @GET("clients/contractor/{contractorId}/profile")
+    suspend fun getContractorProfile(
+        @Header("Authorization") token: String,
+        @Path("contractorId") contractorId: Int
+    ): Response<ContractorProfileResponse>
 }

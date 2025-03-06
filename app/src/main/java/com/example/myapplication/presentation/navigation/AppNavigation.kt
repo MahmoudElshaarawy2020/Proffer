@@ -21,6 +21,7 @@ import com.example.myapplication.presentation.navigation.navbar_screens.home.Hom
 import com.example.myapplication.presentation.log_in.LoginScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bids.BidsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.bottom_navbar.BottomNavigationBar
+import com.example.myapplication.presentation.navigation.navbar_screens.home.contractor_profile.ContractorProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.MoreScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.about_us.AboutUsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.contact_us.ContactUsScreen
@@ -89,7 +90,8 @@ fun AppNavigation(
                 currentRoute != Screen.YourProfile.route &&
                 currentRoute != Screen.Notification.route &&
                 currentRoute != Screen.Terms.route &&
-                currentRoute != Screen.ContactUs.route
+                currentRoute != Screen.ContactUs.route &&
+                currentRoute != Screen.ContractorProfile.route
 
             ) {
                 BottomNavigationBar(
@@ -205,6 +207,9 @@ fun AppNavigation(
                     navController = navController,
                     onNotificationClick = {
                         navController.navigate(Screen.Notification.route)
+                    },
+                    onContractorClick = {
+                        navController.navigate(Screen.ContractorProfile.createRoute(it))
                     }
                 )
             }
@@ -255,6 +260,18 @@ fun AppNavigation(
                 SettingsScreen(
                     navController = navController,
                     modifier = modifier,
+                )
+            }
+
+            composable(
+                route = Screen.ContractorProfile.route,
+                arguments = listOf(navArgument("contractorId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val contractorId = backStackEntry.arguments?.getInt("contractorId") ?: 0
+
+                ContractorProfileScreen(
+                    navController = navController,
+                    contractorId = contractorId
                 )
             }
 

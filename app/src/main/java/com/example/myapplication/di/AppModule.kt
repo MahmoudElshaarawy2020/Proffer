@@ -1,12 +1,14 @@
 package com.example.myapplication.di
 
 import com.example.myapplication.data.remote.ApiService
+import com.example.myapplication.data.repository.ContractorProfileRepoImpl
 import com.example.myapplication.data.repository.HomeRepoImpl
 import com.example.myapplication.data.repository.YourProfileRepoImpl
 import com.example.myapplication.data.repository.LoginRepoImpl
 import com.example.myapplication.data.repository.ProfileRepoImpl
 import com.example.myapplication.data.repository.RegisterRepoImpl
 import com.example.myapplication.data.repository.VerificationRepoImpl
+import com.example.myapplication.domain.repository.ContractorProfileRepository
 import com.example.myapplication.domain.repository.HomeRepository
 import com.example.myapplication.domain.repository.YourProfileRepository
 import com.example.myapplication.domain.repository.LoginRepository
@@ -57,6 +59,12 @@ object AppModule {
     @Singleton
     fun provideHomeRepo(apiService: ApiService): HomeRepository {
         return HomeRepoImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideContractorProfileRepo(apiService: ApiService): ContractorProfileRepository {
+        return ContractorProfileRepoImpl(apiService)
     }
 
 
