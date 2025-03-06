@@ -3,6 +3,7 @@ package com.example.myapplication.data.repository
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.request.ChangePasswordRequest
+import com.example.myapplication.data.request.ContactUsRequest
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
@@ -229,6 +230,41 @@ class ProfileRepoImpl @Inject constructor(
 
             } else {
                 Log.d("getContactTypesImpl", "profile API call failed")
+                emit(
+                    Result.Error(
+                        "Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun contactUs(
+        token: String,
+        contactUsRequest: ContactUsRequest
+    ): Flow<Result<EditProfileResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.contactUs(token, contactUsRequest)
+
+            if (response.isSuccessful) {
+                Log.d("Contact us", "successful")
+                response.body()?.let {
+                    emit(Result.Success(it))
+                } ?: emit(Result.Error("Empty response body"))
+
+            } else {
+                Log.d("Contact us", "profile API call failed")
                 emit(
                     Result.Error(
                         "Error: ${

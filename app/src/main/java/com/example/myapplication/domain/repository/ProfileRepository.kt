@@ -1,6 +1,7 @@
 package com.example.myapplication.domain.repository
 
 import com.example.myapplication.data.request.ChangePasswordRequest
+import com.example.myapplication.data.request.ContactUsRequest
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
@@ -20,5 +21,6 @@ interface ProfileRepository {
     fun getAboutUs(): Flow<Result<AboutUsResponse>>
     fun getTerms(): Flow<Result<TermsResponse>>
     fun getContactTypes(): Flow<Result<GetContactTypesResponse>>
+    fun contactUs(token: String, contactUsRequest: ContactUsRequest): Flow<Result<EditProfileResponse>>
     fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>>
 }

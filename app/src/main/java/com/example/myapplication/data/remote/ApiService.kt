@@ -1,6 +1,7 @@
 package com.example.myapplication.data.remote
 
 import com.example.myapplication.data.request.ChangePasswordRequest
+import com.example.myapplication.data.request.ContactUsRequest
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
@@ -105,4 +106,10 @@ interface ApiService {
 
     @GET("contact-types")
     suspend fun getContactTypes(): Response<GetContactTypesResponse>
+
+    @POST("contact-us")
+    suspend fun contactUs(
+        @Header("Authorization") token: String,
+        @Body contactUsRequest: ContactUsRequest
+    ): Response<EditProfileResponse>
 }

@@ -4,12 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
+import com.example.myapplication.data.request.ContactUsRequest
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
+import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.TermsResponse
+import com.example.myapplication.domain.use_case.ContactUsUseCase
 import com.example.myapplication.domain.use_case.GetContactTypesUseCase
 import com.example.myapplication.domain.use_case.LogoutUseCase
 import com.example.myapplication.domain.use_case.ProfileUseCase
@@ -36,6 +39,7 @@ class MoreViewModel @Inject constructor(
     private val getAboutUsUseCase: getAboutUsUseCase,
     private val getTermsUseCase: getTermsUseCase,
     private val getContactTypesUseCase: GetContactTypesUseCase,
+    private val contactUsUseCase: ContactUsUseCase,
     private val dataStoreManager: DataStoreManager,
 ) : ViewModel() {
 
@@ -62,6 +66,10 @@ class MoreViewModel @Inject constructor(
 
     private val _getContactTypesState = MutableStateFlow<Result<GetContactTypesResponse>>(Result.Loading())
     val getContactTypesState: MutableStateFlow<Result<GetContactTypesResponse>> get() = _getContactTypesState
+
+
+    private val _contactUsState = MutableStateFlow<Result<EditProfileResponse>>(Result.Loading())
+    val contactUsState: MutableStateFlow<Result<EditProfileResponse>> get() = _contactUsState
 
     private val _getPrivacyState = MutableStateFlow<Result<PrivacyPolicyResponse>>(Result.Loading())
     val getPrivacyState: MutableStateFlow<Result<PrivacyPolicyResponse>> get() = _getPrivacyState
@@ -228,6 +236,21 @@ class MoreViewModel @Inject constructor(
                 Log.e("getContactTypesError", "Unexpected error", e)
                 _getContactTypesState.value = Result.Error("Unexpected Error: ${e.message}")
             }
+        }
+    }
+
+    fun contactUs(token: String, contactUsRequest: ContactUsRequest) {
+        viewModelScope.launch {
+            _contactUsState.value = Result.Loading()
+
+            contactUsUseCase.invoke(token, contactUsRequest)
+                .catch { e ->
+                    Log.e("contactUsError", "API call failed", e)
+                    _contactUsState.value = Result.Error("Failed to contactUsError: ${e.message}")
+                }
+                .collectLatest { result ->
+                    _contactUsState.value = result
+                }
         }
     }
 
