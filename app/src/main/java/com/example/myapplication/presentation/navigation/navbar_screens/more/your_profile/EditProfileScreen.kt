@@ -105,6 +105,7 @@ fun EditProfileScreen(
                 navController.navigate(Screen.Home.route)
             }
             is Result.Error -> Log.e("EditProfileScreen", "Error: ${state.message}")
+            is Result.Idle -> TODO()
         }
     }
 

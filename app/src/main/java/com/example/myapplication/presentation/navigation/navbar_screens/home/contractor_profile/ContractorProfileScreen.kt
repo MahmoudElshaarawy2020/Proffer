@@ -76,7 +76,7 @@ fun ContractorProfileScreen(
     val dataStoreManager = remember { DataStoreManager(context) }
     val token by dataStoreManager.getToken.collectAsState(initial = null)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(token) {
         token?.let { viewModel.getContractorProfile(it, contractorId) }
     }
 
@@ -247,6 +247,8 @@ fun ContractorProfileScreen(
                     }
                 }
             }
+
+            is Result.Idle -> TODO()
         }
         }
 

@@ -109,6 +109,8 @@ fun PrivacyScreen(
                         fontSize = 16.sp
                     )
                 }
+
+                is Result.Idle -> TODO()
             }
 
         }

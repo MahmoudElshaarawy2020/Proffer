@@ -166,6 +166,8 @@ fun MoreScreen(
                             "Error: ${(profileState as Result.Error).message}",
                             color = Color.Red
                         )
+
+                        is Result.Idle -> TODO()
                     }
                 }
 

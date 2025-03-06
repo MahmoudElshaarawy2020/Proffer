@@ -129,6 +129,8 @@ fun HomeScreen(
                         (sliderState as Result.Success<HomeSliderResponse>).data?.data
                     ImageProductPager(sliderImages)
                 }
+
+                is Result.Idle -> TODO()
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -218,6 +220,8 @@ fun HomeScreen(
                             }
                         }
                     }
+
+                    is Result.Idle -> TODO()
                 }
             }
 

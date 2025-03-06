@@ -110,6 +110,8 @@ fun AboutUsScreen(
                         fontSize = 16.sp
                     )
                 }
+
+                is Result.Idle -> TODO()
             }
 
         }

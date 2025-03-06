@@ -174,23 +174,24 @@ fun ContactUsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (contactUsState) {
-            is Result.Success -> {
-
-                Toast.makeText(context, "Message sent successfully!", Toast.LENGTH_SHORT).show()
-                LaunchedEffect(contactUsState) {
+        LaunchedEffect(contactUsState) {
+            when (contactUsState) {
+                is Result.Success -> {
+                    Toast.makeText(context, "Message sent successfully!", Toast.LENGTH_SHORT).show()
                     contactType = 0
                     message = ""
+                    viewModel.clearContactUsState()
                 }
+
+                is Result.Error -> {
+                    Toast.makeText(context, "Failed to send message!", Toast.LENGTH_SHORT).show()
+                    viewModel.clearContactUsState()
+                }
+
+                else -> Unit
             }
-
-            is Result.Error -> {
-
-                Toast.makeText(context, "Failed to send message!", Toast.LENGTH_SHORT).show()
-            }
-
-            else -> Unit
         }
+
     }
 }
 

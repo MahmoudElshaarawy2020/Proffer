@@ -180,6 +180,10 @@ class MoreViewModel @Inject constructor(
     }
 
 
+    fun clearContactUsState() {
+        _contactUsState.value = Result.Idle()
+    }
+
 
     fun getPrivacy() {
         viewModelScope.launch {
