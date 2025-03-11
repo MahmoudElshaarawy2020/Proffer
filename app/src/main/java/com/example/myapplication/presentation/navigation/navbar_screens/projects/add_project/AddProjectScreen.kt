@@ -1,6 +1,8 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project
 
+import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,13 +12,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
@@ -24,7 +22,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -36,15 +33,29 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
+import com.example.myapplication.data.data_store.DataStoreManager
+import com.example.myapplication.util.Result
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProjectScreen(navController: NavController) {
+fun AddProjectScreen(
+    navController: NavController,
+    viewModel: AddProjectViewModel = hiltViewModel()
+) {
 
     var selectedOption by remember { mutableStateOf("Project Info") }
+
 
     Column(
         modifier = Modifier
@@ -88,7 +99,7 @@ fun AddProjectScreen(navController: NavController) {
         ProjectTabs(selectedOption, onTabSelected = { selectedOption = it })
 
         when (selectedOption) {
-            "Project Info" -> ProjectInfo()
+            "Project Info" -> ProjectInfo(context = LocalContext.current)
             "Project Details" -> ProjectDetails()
         }
 
@@ -154,74 +165,12 @@ fun TabItem(title: String, isSelected: Boolean, onClick: () -> Unit = {}) {
 }
 
 
-@Composable
-fun ImageUploadBox() {
-    val context = LocalContext.current
-    val imageUri = remember { mutableStateOf<Uri?>(null) }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri.value = uri
-        uri?.let {
-            Toast.makeText(context, "Image Selected!", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .shadow(8.dp, RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
-            .clickable { launcher.launch("image/*") } // Open gallery on click
-            .background(
-                if (imageUri.value == null) colorResource(R.color.light_pink) else Color.Transparent,
-                RoundedCornerShape(10.dp)
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        if (imageUri.value == null) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Upload Image",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Project Image",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                Text(
-                    text = "Upload it in Format \n PNG, JPG, JPEG",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-        } else {
-            Image(
-                painter = rememberAsyncImagePainter(imageUri.value),
-                contentDescription = "Selected Image",
-                modifier = Modifier
-                    .fillMaxSize() // Make sure the image fills the box
-                    .clip(RoundedCornerShape(10.dp)), // Keep rounded corners
-                contentScale = ContentScale.Crop // Ensures image fills the space properly
-            )
-        }
-    }
-}
-
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputField(label: String, placeholder: String, value: String,onValueChange: (String) -> Unit,isNumber: Boolean = false) {
+fun InputField(modifier: Modifier = Modifier, label: String, placeholder: String, value: String, onValueChange: (String) -> Unit, isNumber: Boolean = false) {
     Column {
         Text(
             text = label,
@@ -240,8 +189,10 @@ fun InputField(label: String, placeholder: String, value: String,onValueChange: 
             keyboardOptions = KeyboardOptions(
                 keyboardType = if (isNumber) KeyboardType.Number else KeyboardType.Text
             ),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             shape = RoundedCornerShape(12.dp)
         )
     }
 }
+
+

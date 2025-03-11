@@ -2,18 +2,21 @@ package com.example.myapplication.data.remote
 
 import com.example.myapplication.data.request.ChangePasswordRequest
 import com.example.myapplication.data.request.ContactUsRequest
+import com.example.myapplication.data.request.CreateProjectRequest
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.ContractorProfileResponse
+import com.example.myapplication.data.response.CreateProjectResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.HomeResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.HomeSliderResponse
+import com.example.myapplication.data.response.ProjectTypesResponse
 import com.example.myapplication.data.response.TermsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -25,6 +28,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -109,6 +113,11 @@ interface ApiService {
     @GET("contact-types")
     suspend fun getContactTypes(): Response<GetContactTypesResponse>
 
+    @GET("project-types")
+    suspend fun getProjectTypes(
+        @Header("Accept") accept: String
+    ): Response<ProjectTypesResponse>
+
     @POST("contact-us")
     suspend fun contactUs(
         @Header("Authorization") token: String,
@@ -120,4 +129,23 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("contractorId") contractorId: Int
     ): Response<ContractorProfileResponse>
+
+    @Multipart
+    @POST("clients/projects")
+    suspend fun createProject(
+        @Part("name") name: RequestBody,
+        @Part("project_type_id") project_type_id: RequestBody,
+        @Part("area") area: RequestBody,
+        @Part("from_budget") from_budget: RequestBody,
+        @Part("to_budget") to_budget: RequestBody,
+        @Part("location") location: RequestBody,
+        @Part("lat") lat: RequestBody,
+        @Part("long") long: RequestBody,
+        @Part("start_date") start_date: RequestBody,
+        @Part("is_open_budget") is_open_budget: RequestBody,
+        @Part("project_image") project_image: RequestBody,
+        @Part image: MultipartBody.Part?,
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
+    ): Response<CreateProjectResponse>
 }
