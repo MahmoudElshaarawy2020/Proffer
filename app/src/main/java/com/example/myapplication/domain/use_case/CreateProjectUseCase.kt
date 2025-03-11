@@ -19,8 +19,9 @@ class CreateProjectUseCase @Inject constructor(
         long: RequestBody,
         area: RequestBody,
         start_date: RequestBody,
+        duration: RequestBody,
         is_open_budget: RequestBody,
-        image: MultipartBody.Part?
+        image: List<MultipartBody.Part>
     ) = createProjectRepository.createProject(
         token,
         name,
@@ -32,6 +33,7 @@ class CreateProjectUseCase @Inject constructor(
         long,
         area,
         start_date,
+        duration,
         is_open_budget,
         image
     )

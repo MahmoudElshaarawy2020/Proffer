@@ -59,9 +59,10 @@ class AddProjectViewModel @Inject constructor(
         lat: RequestBody,
         long: RequestBody,
         area: RequestBody,
+        duration: RequestBody,
         start_date: RequestBody,
         is_open_budget: RequestBody,
-        image: MultipartBody.Part?
+        image: List<MultipartBody.Part>
     ) {
         if (token.isBlank()) {
             Log.e("createProjectError", "Token is missing!")
@@ -82,6 +83,7 @@ class AddProjectViewModel @Inject constructor(
                 long,
                 area,
                 start_date,
+                duration,
                 is_open_budget,
                 image
             )

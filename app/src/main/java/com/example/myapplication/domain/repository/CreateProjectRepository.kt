@@ -18,7 +18,8 @@ interface CreateProjectRepository {
         long: RequestBody,
         area: RequestBody,
         start_date: RequestBody,
+        duration: RequestBody,
         is_open_budget: RequestBody,
-        image: MultipartBody.Part?
+        image: List<MultipartBody.Part>
     ): Flow<Result<CreateProjectResponse>>
 }

@@ -2,7 +2,6 @@ package com.example.myapplication.data.remote
 
 import com.example.myapplication.data.request.ChangePasswordRequest
 import com.example.myapplication.data.request.ContactUsRequest
-import com.example.myapplication.data.request.CreateProjectRequest
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
@@ -28,7 +27,6 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -142,9 +140,10 @@ interface ApiService {
         @Part("lat") lat: RequestBody,
         @Part("long") long: RequestBody,
         @Part("start_date") start_date: RequestBody,
+        @Part("duration") duration: RequestBody,
         @Part("is_open_budget") is_open_budget: RequestBody,
         @Part("project_image") project_image: RequestBody,
-        @Part image: MultipartBody.Part?,
+        @Part image: List<MultipartBody.Part>,
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
     ): Response<CreateProjectResponse>

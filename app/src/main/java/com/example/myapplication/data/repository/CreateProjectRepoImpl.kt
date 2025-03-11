@@ -31,9 +31,10 @@ class CreateProjectRepoImpl @Inject constructor(
         long: RequestBody,
         area: RequestBody,
         start_date: RequestBody,
+        duration: RequestBody,
         is_open_budget: RequestBody,
 
-        image: MultipartBody.Part?
+        image: List<MultipartBody.Part>
     ): Flow<Result<CreateProjectResponse>> = flow {
         emit(Result.Loading())
 
@@ -53,6 +54,7 @@ class CreateProjectRepoImpl @Inject constructor(
                 image = image,
                 project_image = imageFile,
                 token = token,
+                duration = duration ,
                 accept = "application/json"
             )
 
@@ -63,7 +65,7 @@ class CreateProjectRepoImpl @Inject constructor(
                 } ?: emit(Result.Error("Empty response body"))
 
             } else {
-                Log.d("createProjectImpl", "editProfile API call failed")
+                Log.d("createProjectImpl", "CreateProject API call failed")
                 emit(
                     Result.Error(
                         "Error: ${

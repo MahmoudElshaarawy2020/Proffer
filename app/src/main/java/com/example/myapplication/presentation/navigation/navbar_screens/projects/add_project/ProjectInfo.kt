@@ -1,6 +1,7 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +13,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,14 +26,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import com.example.myapplication.util.Result
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,6 +66,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,7 +84,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,9 +97,9 @@ fun ProjectInfo(
     context: Context
 ) {
 
+    var selectedProjectId by remember { mutableStateOf<Int?>(null) }
     var projectName by remember { mutableStateOf("") }
     var projectArea by remember { mutableStateOf("") }
-    var project_type_id by remember { mutableStateOf("") }
     var from_budget by remember { mutableStateOf("") }
     var to_budget by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
@@ -97,8 +107,9 @@ fun ProjectInfo(
     var long by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var start_date by remember { mutableStateOf("") }
+    var duration by remember { mutableStateOf("") }
     var is_open_budget by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
     val projectTypesState by viewModel.getProjectTypesState.collectAsState()
@@ -142,11 +153,13 @@ fun ProjectInfo(
     }
 
     val projectTypes = when (projectTypesState) {
-        is Result.Success -> (projectTypesState as Result.Success<ProjectTypesResponse>).data?.data?.map { it?.name }
-        is Result.Loading -> listOf("Loading...")
-        is Result.Error -> listOf("Error fetching types")
+        is Result.Success -> (projectTypesState as Result.Success<ProjectTypesResponse>)
+            .data?.data?.mapNotNull { it?.let { project -> project.name to project.id } }
+        is Result.Loading -> listOf("Loading..." to null)
+        is Result.Error -> listOf("Error fetching types" to null)
         else -> emptyList()
     }
+
 
     LaunchedEffect(Unit) {
         viewModel.getProjectTypes()
@@ -174,9 +187,8 @@ fun ProjectInfo(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ImageUploadBox(imageUri) { selectedUri ->
-            imageUri = selectedUri
-        }
+        ImageUploadBox(imageUris = imageUris, onImagesSelected = { imageUris = it })
+
         Spacer(modifier = Modifier.height(16.dp))
 
         InputField(
@@ -239,23 +251,20 @@ fun ProjectInfo(
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.background(color = colorResource(R.color.light_white))
                 ) {
-                    projectTypes?.forEach { option ->
+                    projectTypes!!.forEach { (name, id) ->
                         DropdownMenuItem(
-                            text = {
-                                if (option != null) {
-                                    Text(option)
-                                }
-                            },
+                            text = { Text(name ?: "Unknown") },
                             onClick = {
-                                if (option != null) {
-                                    selectedOption = option
+                                if (id != null) {
+                                    selectedOption = name ?: "Unknown"
+                                    selectedProjectId = id
                                 }
                                 expanded = false
-                            },
-                            modifier = Modifier
+                            }
                         )
                     }
                 }
+
 
             }
         }
@@ -275,68 +284,68 @@ fun ProjectInfo(
         Spacer(modifier = Modifier.height(8.dp))
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Project Location",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = Color(0xFF1D2136)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Project Location",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF1D2136)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
 
-                    OutlinedTextField(
-                        value = location,
-                        onValueChange = { location = it },
-                        singleLine = true,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Gray,
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        placeholder = { Text(text = "Project Location") },
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = {
-                        if (ContextCompat.checkSelfPermission(
-                                context,
-                                Manifest.permission.ACCESS_FINE_LOCATION
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            locationViewModel.getDeviceLocation()
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                        }
-                    },
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { location = it },
+                    singleLine = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray
+                    ),
+                    placeholder = { Text(text = "Project Location") },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
-                        .size(50.dp)
-                        .padding(top = 20.dp)
-                        .background(
-                            color = Color(0xFFFFF1E8),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.location_ic),
-                        contentDescription = "Location Icon",
-                        tint = Color.Black
-                    )
-                }
+                        .fillMaxWidth()
+                        .height(50.dp)
+                )
             }
 
+            Spacer(modifier = Modifier.width(8.dp))
 
+            IconButton(
+                onClick = {
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        locationViewModel.getDeviceLocation()
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                },
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(top = 20.dp)
+                    .background(
+                        color = colorResource(R.color.light_pink),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.location_ic),
+                    contentDescription = "Location Icon",
+                    tint = Color.Black
+                )
+            }
+        }
+
+        ProjectBudgetSection()
 
 
         Spacer(modifier = Modifier.height(60.dp))
@@ -344,20 +353,20 @@ fun ProjectInfo(
         Button(
             onClick = {
 
-                Log.d("EditProfileScreen", "Button clicked!")
-                val imagePart = prepareFilePart(imageUri, context)
-                if (imagePart != null) {
-                    Log.d("ProjectInfo", "Image part created: ${imagePart.body.contentType()}")
+                Log.d("ProjectInfo", "Button clicked!")
+                val imageParts = prepareFileParts(imageUris, context)
+                if (imageParts.isNotEmpty()) {
+                    Log.d("ProjectInfo", "Images ready: ${imageParts.size}")
                 }
-
                 val requestProjectName = projectName.toRequestBody("text/plain".toMediaType())
-                val requestProjectTypeId = project_type_id.toRequestBody("text/plain".toMediaType())
-                val requestFromBudget = from_budget.toRequestBody("text/plain".toMediaType())
-                val requestToBudget = to_budget.toRequestBody("text/plain".toMediaType())
+                val requestProjectTypeId = selectedProjectId.toString().toRequestBody("text/plain".toMediaType())
+                val requestFromBudget = from_budget.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
+                val requestToBudget = to_budget.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
+                val requestDuration = duration.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
                 val requestLocation = location.toRequestBody("text/plain".toMediaType())
                 val requestLat = lat.toRequestBody("text/plain".toMediaType())
                 val requestLong = long.toRequestBody("text/plain".toMediaType())
-                val requestArea = area.toRequestBody("text/plain".toMediaType())
+                val requestArea = area.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
                 val requestStartDate = start_date.toRequestBody("text/plain".toMediaType())
                 val requestIsOpenBudget = is_open_budget.toRequestBody("text/plain".toMediaType())
 
@@ -374,13 +383,14 @@ fun ProjectInfo(
                         requestLat,
                         requestLong,
                         requestArea,
+                        requestDuration,
                         requestStartDate,
                         requestIsOpenBudget,
-                        image = imagePart
+                        image = imageParts
                     )
                 }
 
-                Log.d("EditProfileScreen", "editYourProfile called")
+                Log.d("ProjectInfo", "ProjectInfo called")
 
             },
             modifier = Modifier
@@ -395,6 +405,36 @@ fun ProjectInfo(
         }
     }
 }
+
+fun prepareFileParts(uris: List<Uri>, context: Context): List<MultipartBody.Part> {
+    return uris.mapNotNull { uri ->
+        val file = uriToFile(uri, context) // Convert URI to File
+        file?.let {
+            val requestBody = it.asRequestBody("image/*".toMediaTypeOrNull())
+            MultipartBody.Part.createFormData("images[]", it.name, requestBody) // Use "images[]" for array
+        }
+    }
+}
+
+fun uriToFile(uri: Uri, context: Context): File? {
+    val contentResolver = context.contentResolver
+
+    val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)
+
+    try {
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+            tempFile.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream) // Copy data from URI to the file
+            }
+        }
+        return tempFile
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+
+    return null
+}
+
 
 fun prepareFilePart(uri: Uri?, context: Context): MultipartBody.Part? {
     uri ?: return null
@@ -424,14 +464,14 @@ fun getFileName(context: Context, uri: Uri): String {
 }
 
 @Composable
-fun ImageUploadBox(imageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
+fun ImageUploadBox(imageUris: List<Uri>, onImagesSelected: (List<Uri>) -> Unit) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        onImageSelected(uri)
-        uri?.let {
-            Toast.makeText(context, "Image Selected!", Toast.LENGTH_SHORT).show()
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            onImagesSelected(uris)
+            Toast.makeText(context, "${uris.size} Images Selected!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -443,12 +483,12 @@ fun ImageUploadBox(imageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
             .clip(RoundedCornerShape(10.dp))
             .clickable { launcher.launch("image/*") }
             .background(
-                if (imageUri == null) colorResource(R.color.light_pink) else Color.Transparent,
+                if (imageUris.isEmpty()) colorResource(R.color.light_pink) else Color.Transparent,
                 RoundedCornerShape(10.dp)
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (imageUri == null) {
+        if (imageUris.isEmpty()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
@@ -458,27 +498,223 @@ fun ImageUploadBox(imageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Project Image",
+                    text = "Project Images",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
                 Text(
-                    text = "Upload it in Format \n PNG, JPG, JPEG",
+                    text = "Upload images in PNG, JPG, JPEG format",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
             }
         } else {
-            Image(
-                painter = rememberAsyncImagePainter(imageUri),
-                contentDescription = "Selected Image",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
-            )
+            LazyRow {
+                items(  imageUris) { uri ->
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = "Selected Image",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProjectBudgetSection() {
+    var fromBudget by remember { mutableStateOf("") }
+    var toBudget by remember { mutableStateOf("") }
+    var openBudget by remember { mutableStateOf(false) }
+    var estimatedDays by remember { mutableStateOf("") }
+    var startDate by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Project Budget",
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = Color(0xFF1D2136)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (!openBudget){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = fromBudget,
+                    onValueChange = { fromBudget = it },
+                    placeholder = { Text(text = "From") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(55.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray
+                    ),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                OutlinedTextField(
+                    value = toBudget,
+                    onValueChange = { toBudget = it },
+                    placeholder = { Text(text = "To") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(55.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray
+                    ),
+                    singleLine = true
+                )
+            }
+        }else{
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = fromBudget,
+                    onValueChange = { fromBudget = it },
+                    placeholder = { Text(text = "From") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray
+                    ),
+                    singleLine = true
+                )
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = openBudget,
+                onCheckedChange = { openBudget = it },
+                colors = CheckboxDefaults.colors(colorResource(R.color.orange))
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(text = "Open Budget", fontSize = 14.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Estimated Time",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF1D2136)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                OutlinedTextField(
+                    value = estimatedDays,
+                    onValueChange = { estimatedDays = it },
+                    placeholder = { Text(text = "Day") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Start Date",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF1D2136)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                        .clickable {
+                            showDatePicker(context) { selectedDate ->
+                                startDate = selectedDate
+                            }
+                        }
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = if (startDate.isEmpty()) "Date" else startDate,
+                        fontSize = 14.sp,
+                        color = if (startDate.isEmpty()) Color.Gray else Color.Black
+                    )
+
+                    Icon(
+                        painter = painterResource(R.drawable.calendar_ic),
+                        contentDescription = "Calendar Icon",
+                        tint = Color.Black
+                    )
+                }
+            }
+        }
+    }
+}
+
+fun showDatePicker(context: Context, onDateSelected: (String) -> Unit) {
+    val calendar = Calendar.getInstance()
+    val datePicker = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            onDateSelected("$dayOfMonth/${month + 1}/$year")
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH),
+    )
+    datePicker.show()
 }
