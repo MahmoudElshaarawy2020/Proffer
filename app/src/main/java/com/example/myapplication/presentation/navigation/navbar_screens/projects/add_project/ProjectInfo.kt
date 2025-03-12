@@ -169,7 +169,7 @@ fun ProjectInfo(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            locationViewModel.getDeviceLocation() // Fetch location if permission granted
+            locationViewModel.getDeviceLocation()
         } else {
             Toast.makeText(context, "Permission Denied!", Toast.LENGTH_SHORT).show()
         }
@@ -360,9 +360,9 @@ fun ProjectInfo(
                 }
                 val requestProjectName = projectName.toRequestBody("text/plain".toMediaType())
                 val requestProjectTypeId = selectedProjectId.toString().toRequestBody("text/plain".toMediaType())
-                val requestFromBudget = from_budget.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
-                val requestToBudget = to_budget.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
-                val requestDuration = duration.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
+                val requestFromBudget = from_budget.toRequestBody("text/plain".toMediaType())
+                val requestToBudget = to_budget.toRequestBody("text/plain".toMediaType())
+                val requestDuration = duration.toRequestBody("text/plain".toMediaType())
                 val requestLocation = location.toRequestBody("text/plain".toMediaType())
                 val requestLat = lat.toRequestBody("text/plain".toMediaType())
                 val requestLong = long.toRequestBody("text/plain".toMediaType())
