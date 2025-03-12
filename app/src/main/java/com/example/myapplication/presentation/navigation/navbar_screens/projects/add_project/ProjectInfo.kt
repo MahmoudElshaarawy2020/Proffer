@@ -99,16 +99,17 @@ fun ProjectInfo(
 
     var selectedProjectId by remember { mutableStateOf<Int?>(null) }
     var projectName by remember { mutableStateOf("") }
-    var projectArea by remember { mutableStateOf("") }
+    var projectArea by remember { mutableStateOf(0.0) }
     var from_budget by remember { mutableStateOf("") }
     var to_budget by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var lat by remember { mutableStateOf("") }
     var long by remember { mutableStateOf("") }
-    var area by remember { mutableStateOf("") }
     var start_date by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
-    var is_open_budget by remember { mutableStateOf("") }
+    var is_open_budget by remember { mutableStateOf(0) }
+    var governorateId by remember { mutableStateOf("") }
+    var cityId by remember { mutableStateOf("") }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
@@ -155,6 +156,7 @@ fun ProjectInfo(
     val projectTypes = when (projectTypesState) {
         is Result.Success -> (projectTypesState as Result.Success<ProjectTypesResponse>)
             .data?.data?.mapNotNull { it?.let { project -> project.name to project.id } }
+
         is Result.Loading -> listOf("Loading..." to null)
         is Result.Error -> listOf("Error fetching types" to null)
         else -> emptyList()
@@ -274,8 +276,10 @@ fun ProjectInfo(
         InputField(
             label = "Project Area (M²)",
             placeholder = "Project Area",
-            value = projectArea,
-            onValueChange = { projectArea = it },
+            value = if (projectArea == 0.0) "" else projectArea.toString(),
+            onValueChange = { newValue ->
+                projectArea = newValue.toDoubleOrNull() ?: 0.0
+            },
             isNumber = true,
             modifier = modifier.fillMaxWidth()
 
@@ -345,7 +349,175 @@ fun ProjectInfo(
             }
         }
 
-        ProjectBudgetSection()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Project Budget",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color(0xFF1D2136)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (is_open_budget == 0) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    OutlinedTextField(
+                        value = from_budget,
+                        onValueChange = {
+                            from_budget = it
+                        },
+                        placeholder = { Text(text = "From") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(55.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.LightGray
+                        ),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    OutlinedTextField(
+                        value = to_budget,
+                        onValueChange = { to_budget = it },
+                        placeholder = { Text(text = "To") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(55.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.LightGray
+                        ),
+                        singleLine = true
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    OutlinedTextField(
+                        value = from_budget,
+                        onValueChange = { from_budget = it },
+                        placeholder = { Text(text = "From") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .height(55.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.LightGray
+                        ),
+                        singleLine = true
+                    )
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                checked = is_open_budget == 1,
+                onCheckedChange = { isChecked ->
+                    is_open_budget = if (isChecked) 1 else 0
+                },
+                colors = CheckboxDefaults.colors(colorResource(R.color.orange))
+            )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "Open Budget", fontSize = 14.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Estimated Time",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = Color(0xFF1D2136)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    OutlinedTextField(
+                        value = duration,
+                        onValueChange = { duration = it },
+                        placeholder = { Text(text = "Day") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.LightGray
+                        ),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Start Date",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = Color(0xFF1D2136)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp)
+                            .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                            .clickable {
+                                showDatePicker(context) { selectedDate ->
+                                    start_date = selectedDate
+                                }
+                            }
+                            .padding(horizontal = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = if (start_date.isEmpty()) "Date" else start_date,
+                            fontSize = 14.sp,
+                            color = if (start_date.isEmpty()) Color.Gray else Color.Black
+                        )
+
+                        Icon(
+                            painter = painterResource(R.drawable.calendar_ic),
+                            contentDescription = "Calendar Icon",
+                            tint = Color.Black
+                        )
+                    }
+                }
+            }
+        }
 
 
         Spacer(modifier = Modifier.height(60.dp))
@@ -359,18 +531,19 @@ fun ProjectInfo(
                     Log.d("ProjectInfo", "Images ready: ${imageParts.size}")
                 }
                 val requestProjectName = projectName.toRequestBody("text/plain".toMediaType())
-                val requestProjectTypeId = selectedProjectId.toString().toRequestBody("text/plain".toMediaType())
+                val requestProjectTypeId =
+                    selectedProjectId.toString().toRequestBody("text/plain".toMediaType())
                 val requestFromBudget = from_budget.toRequestBody("text/plain".toMediaType())
                 val requestToBudget = to_budget.toRequestBody("text/plain".toMediaType())
                 val requestDuration = duration.toRequestBody("text/plain".toMediaType())
                 val requestLocation = location.toRequestBody("text/plain".toMediaType())
                 val requestLat = lat.toRequestBody("text/plain".toMediaType())
                 val requestLong = long.toRequestBody("text/plain".toMediaType())
-                val requestArea = area.ifEmpty { "0" }.toRequestBody("text/plain".toMediaType())
+                val requestArea = projectArea.toString().toRequestBody("text/plain".toMediaType())
                 val requestStartDate = start_date.toRequestBody("text/plain".toMediaType())
-                val requestIsOpenBudget = is_open_budget.toRequestBody("text/plain".toMediaType())
-
-
+                val requestIsOpenBudget = is_open_budget.toString().toRequestBody("text/plain".toMediaType())
+                val requestCityId = cityId.toRequestBody("text/plain".toMediaType())
+                val requestGovernorateId = governorateId.toRequestBody("text/plain".toMediaType())
 
                 token?.let {
                     viewModel.createProject(
@@ -386,6 +559,8 @@ fun ProjectInfo(
                         requestDuration,
                         requestStartDate,
                         requestIsOpenBudget,
+                        requestCityId,
+                        requestGovernorateId,
                         image = imageParts
                     )
                 }
@@ -408,10 +583,14 @@ fun ProjectInfo(
 
 fun prepareFileParts(uris: List<Uri>, context: Context): List<MultipartBody.Part> {
     return uris.mapNotNull { uri ->
-        val file = uriToFile(uri, context) // Convert URI to File
+        val file = uriToFile(uri, context)
         file?.let {
             val requestBody = it.asRequestBody("image/*".toMediaTypeOrNull())
-            MultipartBody.Part.createFormData("images[]", it.name, requestBody) // Use "images[]" for array
+            MultipartBody.Part.createFormData(
+                "images[]",
+                it.name,
+                requestBody
+            ) // Use "images[]" for array
         }
     }
 }
@@ -512,7 +691,7 @@ fun ImageUploadBox(imageUris: List<Uri>, onImagesSelected: (List<Uri>) -> Unit) 
             }
         } else {
             LazyRow {
-                items(  imageUris) { uri ->
+                items(imageUris) { uri ->
                     Image(
                         painter = rememberAsyncImagePainter(uri),
                         contentDescription = "Selected Image",
@@ -552,7 +731,7 @@ fun ProjectBudgetSection() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (!openBudget){
+        if (!openBudget) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -589,7 +768,7 @@ fun ProjectBudgetSection() {
                     singleLine = true
                 )
             }
-        }else{
+        } else {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -710,7 +889,9 @@ fun showDatePicker(context: Context, onDateSelected: (String) -> Unit) {
     val datePicker = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            onDateSelected("$dayOfMonth/${month + 1}/$year")
+
+            val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+            onDateSelected(formattedDate)
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),

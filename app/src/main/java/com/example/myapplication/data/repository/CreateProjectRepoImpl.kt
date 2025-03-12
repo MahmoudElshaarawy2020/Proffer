@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class CreateProjectRepoImpl @Inject constructor(
     private val apiService: ApiService,
-): CreateProjectRepository {
+) : CreateProjectRepository {
     override fun createProject(
         token: String,
         name: RequestBody,
@@ -33,46 +33,42 @@ class CreateProjectRepoImpl @Inject constructor(
         start_date: RequestBody,
         duration: RequestBody,
         is_open_budget: RequestBody,
-
-        image: List<MultipartBody.Part>
+        city_id: RequestBody,  // ✅ Added
+        governorate_id: RequestBody,  // ✅ Added
+        image: List<MultipartBody.Part>  // ✅ Already correct
     ): Flow<Result<CreateProjectResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val imageFile = "image".toRequestBody("multipart/form-data".toMediaTypeOrNull())
             val response = apiService.createProject(
                 name = name,
                 project_type_id = project_type_id,
-                from_budget =  from_budget,
+                from_budget = from_budget,
                 to_budget = to_budget,
                 location = location,
                 lat = lat,
                 long = long,
                 start_date = start_date,
-                is_open_budget =  is_open_budget,
+                is_open_budget = is_open_budget,
                 area = area,
-                image = image,
-                project_image = imageFile,
+                duration = duration,
+                city_id = city_id,
+                governorate_id = governorate_id,
+                images = image,
                 token = token,
-                duration = duration ,
                 accept = "application/json"
             )
 
             if (response.isSuccessful) {
-                Log.d("createProjectImpl", "editProfile API call successful")
+                Log.d("createProjectImpl", "CreateProject API call successful")
                 response.body()?.let {
                     emit(Result.Success(it))
                 } ?: emit(Result.Error("Empty response body"))
 
             } else {
-                Log.d("createProjectImpl", "CreateProject API call failed")
-                emit(
-                    Result.Error(
-                        "Error: ${
-                            response.errorBody()?.string()
-                        }"
-                    )
-                )
+                val errorMsg = response.errorBody()?.string() ?: "Unknown error"
+                Log.e("createProjectImpl", "CreateProject API call failed: $errorMsg")
+                emit(Result.Error("Error: $errorMsg"))
             }
 
         } catch (e: HttpException) {

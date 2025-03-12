@@ -142,9 +142,11 @@ interface ApiService {
         @Part("start_date") start_date: RequestBody,
         @Part("duration") duration: RequestBody,
         @Part("is_open_budget") is_open_budget: RequestBody,
-        @Part("project_image") project_image: RequestBody,
-        @Part image: List<MultipartBody.Part>,
+        @Part("city_id") city_id: RequestBody,
+        @Part("governorate_id") governorate_id: RequestBody,
+        @Part images: List<MultipartBody.Part>,
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
     ): Response<CreateProjectResponse>
+
 }

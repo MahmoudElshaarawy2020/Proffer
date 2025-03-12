@@ -62,6 +62,8 @@ class AddProjectViewModel @Inject constructor(
         duration: RequestBody,
         start_date: RequestBody,
         is_open_budget: RequestBody,
+        city_id: RequestBody,
+        governorate_id: RequestBody,
         image: List<MultipartBody.Part>
     ) {
         if (token.isBlank()) {
@@ -85,15 +87,18 @@ class AddProjectViewModel @Inject constructor(
                 start_date,
                 duration,
                 is_open_budget,
+                city_id,
+                governorate_id,
                 image
             )
                 .catch { e ->
                     Log.e("createProjectError", "API call failed", e)
-                    _createProjectState.value = Result.Error("Failed to edit profile: ${e.message}")
+                    _createProjectState.value = Result.Error("Failed to create project: ${e.message}")
                 }
                 .collectLatest { result ->
                     _createProjectState.value = result
                 }
         }
     }
+
 }

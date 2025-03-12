@@ -21,6 +21,8 @@ class CreateProjectUseCase @Inject constructor(
         start_date: RequestBody,
         duration: RequestBody,
         is_open_budget: RequestBody,
+        city_id: RequestBody,
+        governorate_id: RequestBody,
         image: List<MultipartBody.Part>
     ) = createProjectRepository.createProject(
         token,
@@ -35,6 +37,8 @@ class CreateProjectUseCase @Inject constructor(
         start_date,
         duration,
         is_open_budget,
+        city_id,
+        governorate_id,
         image
     )
 }
