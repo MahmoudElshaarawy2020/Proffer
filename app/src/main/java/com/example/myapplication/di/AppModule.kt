@@ -3,6 +3,7 @@ package com.example.myapplication.di
 import android.app.Application
 import android.content.Context
 import com.example.myapplication.data.remote.ApiService
+import com.example.myapplication.data.repository.BidsRepoImpl
 import com.example.myapplication.data.repository.ContractorProfileRepoImpl
 import com.example.myapplication.data.repository.CreateProjectRepoImpl
 import com.example.myapplication.data.repository.HomeRepoImpl
@@ -12,6 +13,7 @@ import com.example.myapplication.data.repository.ProfileRepoImpl
 import com.example.myapplication.data.repository.ProjectTypesRepoImpl
 import com.example.myapplication.data.repository.RegisterRepoImpl
 import com.example.myapplication.data.repository.VerificationRepoImpl
+import com.example.myapplication.domain.repository.BidsRepository
 import com.example.myapplication.domain.repository.ContractorProfileRepository
 import com.example.myapplication.domain.repository.CreateProjectRepository
 import com.example.myapplication.domain.repository.HomeRepository
@@ -62,6 +64,12 @@ object AppModule {
     @Singleton
     fun provideProfileRepo(apiService: ApiService): ProfileRepository {
         return ProfileRepoImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBidsRepo(apiService: ApiService): BidsRepository {
+        return BidsRepoImpl(apiService)
     }
 
     @Provides

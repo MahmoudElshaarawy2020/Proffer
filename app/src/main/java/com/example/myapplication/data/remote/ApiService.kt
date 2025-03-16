@@ -7,6 +7,7 @@ import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AboutUsResponse
 import com.example.myapplication.data.response.AuthResponse
+import com.example.myapplication.data.response.BidsResponse
 import com.example.myapplication.data.response.ContractorProfileResponse
 import com.example.myapplication.data.response.CreateProjectResponse
 import com.example.myapplication.data.response.EditProfileResponse
@@ -83,6 +84,18 @@ interface ApiService {
         @Body changePasswordRequest: ChangePasswordRequest
     ): Response<EditProfileResponse>
 
+    @GET("clients/bids")
+    suspend fun getBids(
+        @Query("skip") skip: Int,
+        @Query("take") take: Int,
+        @Query("project_id") projectId: Int,
+        @Query("rate") rate: Int,
+        @Query("min_price") minPrice: Int,
+        @Query("max_price") maxPrice: Int,
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String
+    ): Response<BidsResponse>
+
     @GET("faqs")
     suspend fun getFAQ(
         @Query("skip") skip: Int,
@@ -144,7 +157,7 @@ interface ApiService {
         @Part("is_open_budget") is_open_budget: RequestBody,
         @Part("city_id") city_id: RequestBody,
         @Part("governorate_id") governorate_id: RequestBody,
-        @Part images: List<MultipartBody.Part>,
+       // @Part images: List<MultipartBody.Part>,
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
     ): Response<CreateProjectResponse>

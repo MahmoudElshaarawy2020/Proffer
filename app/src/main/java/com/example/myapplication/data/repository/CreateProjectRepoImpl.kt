@@ -33,9 +33,9 @@ class CreateProjectRepoImpl @Inject constructor(
         start_date: RequestBody,
         duration: RequestBody,
         is_open_budget: RequestBody,
-        city_id: RequestBody,  // ✅ Added
-        governorate_id: RequestBody,  // ✅ Added
-        image: List<MultipartBody.Part>  // ✅ Already correct
+        city_id: RequestBody,
+        governorate_id: RequestBody,
+        image: List<MultipartBody.Part>
     ): Flow<Result<CreateProjectResponse>> = flow {
         emit(Result.Loading())
 
@@ -54,7 +54,7 @@ class CreateProjectRepoImpl @Inject constructor(
                 duration = duration,
                 city_id = city_id,
                 governorate_id = governorate_id,
-                images = image,
+                //images = image,
                 token = token,
                 accept = "application/json"
             )
