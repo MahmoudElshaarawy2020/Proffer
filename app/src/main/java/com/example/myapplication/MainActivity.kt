@@ -45,9 +45,6 @@ class MainActivity : ComponentActivity() {
                     popUpTo(Screen.Splash.route) { inclusive = true }
                 }
             }
-
-
-
             AppNavigation(
                 navController = navController,
                 startDestination = Screen.Splash.route,

@@ -57,6 +57,8 @@ fun MoreScreen(
     val token by dataStoreManager.getToken.collectAsState(initial = null)
     val profileState by viewModel.profileState.collectAsState()
 
+    val isAuthenticated by viewModel.isAuthenticated.collectAsState()
+
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -74,6 +76,13 @@ fun MoreScreen(
         )
     }
 
+    LaunchedEffect(isAuthenticated) {
+        if (!isAuthenticated) {
+            navController.navigate(Screen.Login.route) {
+                popUpTo(Screen.More.route) { inclusive = true }
+            }
+        }
+    }
 
 
     LaunchedEffect(token) {

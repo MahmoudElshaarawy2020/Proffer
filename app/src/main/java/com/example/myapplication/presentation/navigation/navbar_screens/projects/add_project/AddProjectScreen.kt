@@ -99,7 +99,7 @@ fun AddProjectScreen(
         ProjectTabs(selectedOption, onTabSelected = { selectedOption = it })
 
         when (selectedOption) {
-            "Project Info" -> ProjectInfo(context = LocalContext.current)
+            "Project Info" -> ProjectInfo(context = LocalContext.current, navController = navController)
             "Project Details" -> ProjectDetails()
         }
 

@@ -3,9 +3,7 @@ package com.example.myapplication.presentation.navigation.navbar_screens.bids
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.response.BidsResponse
-import com.example.myapplication.data.response.FAQResponse
 import com.example.myapplication.domain.use_case.GetBidsUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel

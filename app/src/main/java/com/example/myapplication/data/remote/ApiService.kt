@@ -30,6 +30,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface ApiService {
     @POST("auth/register")
@@ -157,9 +158,29 @@ interface ApiService {
         @Part("is_open_budget") is_open_budget: RequestBody,
         @Part("city_id") city_id: RequestBody,
         @Part("governorate_id") governorate_id: RequestBody,
-       // @Part images: List<MultipartBody.Part>,
+        @Part images: List<MultipartBody.Part>,
         @Header("Authorization") token: String,
         @Header("Accept") accept: String
+    ): Response<CreateProjectResponse>
+
+
+    @Multipart
+    @POST("clients/projects")
+    suspend fun createProject2(
+        @Url string: String = "https://proffer.appssquare.com/api/clients/projects",
+        @Part("project_type_id") projectTypeId: String,
+        @Part("area") area: String,
+        @Part("from_budget") fromBudget: String,
+        @Part("to_budget") toBudget: String,
+        @Part("duration") duration: String,
+        @Part("is_open_budget") isOpenBudget: String,
+        @Part("name") name: String,
+        @Part("location") location: String,
+        @Part("lat") lat: String,
+        @Part("long") long: String,
+        @Part("start_date") startDate: String,
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String = "application/json"
     ): Response<CreateProjectResponse>
 
 }

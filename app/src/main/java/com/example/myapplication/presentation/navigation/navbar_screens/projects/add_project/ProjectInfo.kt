@@ -72,11 +72,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.location.LocationViewModel
 import com.example.myapplication.data.response.ProjectTypesResponse
+import com.example.myapplication.presentation.navigation.Screen
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -94,7 +96,8 @@ fun ProjectInfo(
     modifier: Modifier = Modifier,
     viewModel: AddProjectViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
-    context: Context
+    context: Context,
+    navController: NavController
 ) {
 
     var selectedProjectId by remember { mutableStateOf<Int?>(null) }
@@ -141,6 +144,7 @@ fun ProjectInfo(
 
             is Result.Success -> {
                 Toast.makeText(context, "Project created successfully!", Toast.LENGTH_LONG).show()
+                navController.navigate(Screen.RoomDetails.route)
             }
 
             is Result.Error -> Toast.makeText(

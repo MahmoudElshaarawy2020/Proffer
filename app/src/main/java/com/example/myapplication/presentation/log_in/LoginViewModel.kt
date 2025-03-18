@@ -40,11 +40,21 @@ class LoginViewModel @Inject constructor(
                         result.data?.token?.let { token ->
                             Log.d("New Token", token)
                             dataStoreManager.saveAuthToken(token)
+
+                            val savedToken = dataStoreManager.getToken
+                            savedToken.collectLatest { storedToken ->
+                                if (storedToken == token) {
+                                    Log.d("Token Saved", "Token successfully saved in DataStore")
+                                } else {
+                                    Log.e("Token Save Error", "Token was not saved correctly!")
+                                }
+                            }
                         }
                     }
                 }
         }
     }
+
 
     fun getAuthToken(): Flow<String?> = dataStoreManager.getToken
 

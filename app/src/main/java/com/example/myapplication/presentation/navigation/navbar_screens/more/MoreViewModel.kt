@@ -75,6 +75,10 @@ class MoreViewModel @Inject constructor(
     val getPrivacyState: MutableStateFlow<Result<PrivacyPolicyResponse>> get() = _getPrivacyState
 
 
+
+    private val _isAuthenticated = MutableStateFlow(true)
+    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
+
     private val _logoutState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
     val logoutState: MutableStateFlow<Result<AuthResponse>> get() = _logoutState
 
@@ -115,11 +119,17 @@ class MoreViewModel @Inject constructor(
                     if (result is Result.Success) {
                         viewModelScope.launch {
                             dataStoreManager.clearToken()
+
+                            dataStoreManager.getToken.collectLatest { storedToken ->
+                                Log.d("Token Cleared", "After logout: $storedToken")
+                            }
                         }
                     }
                 }
         }
     }
+
+
 
     fun getFAQ(skip: Int = 0, take: Int = 10) {
         viewModelScope.launch {

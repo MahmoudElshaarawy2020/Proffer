@@ -163,27 +163,27 @@ fun BidsScreen(
                             fontSize = 16.sp
                         )
                     }
+                }else {
 
-                }
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        items(bidsList) { bid ->
+                            bid?.let { BidCard("Ahmed", "Apartment", "30000 L.E") }
+                        }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    items(bidsList) { bid ->
-                        bid?.let { BidCard("Ahmed", "Apartment", "30000 L.E") }
-                    }
-
-                    item {
-                        if (isLoadingMore.value) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                        item {
+                            if (isLoadingMore.value) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
                     }

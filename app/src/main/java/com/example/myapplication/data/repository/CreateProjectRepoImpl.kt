@@ -54,9 +54,9 @@ class CreateProjectRepoImpl @Inject constructor(
                 duration = duration,
                 city_id = city_id,
                 governorate_id = governorate_id,
-                //images = image,
+                images = image,
                 token = token,
-                accept = "application/json"
+                accept = "application/json",
             )
 
             if (response.isSuccessful) {

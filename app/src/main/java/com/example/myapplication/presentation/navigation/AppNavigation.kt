@@ -33,6 +33,7 @@ import com.example.myapplication.presentation.navigation.navbar_screens.more.you
 import com.example.myapplication.presentation.navigation.navbar_screens.more.your_profile.YourProfileScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.navbar_items.BottomNavItem
 import com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project.AddProjectScreen
+import com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project.add_room.RoomDetailsScreen
 import com.example.myapplication.presentation.navigation.navbar_screens.projects.project_home.ProjectsScreen
 import com.example.myapplication.presentation.new_password.NewPasswordScreen
 import com.example.myapplication.presentation.onboarding.OnBoardingScreen
@@ -91,7 +92,8 @@ fun AppNavigation(
                 currentRoute != Screen.Notification.route &&
                 currentRoute != Screen.Terms.route &&
                 currentRoute != Screen.ContactUs.route &&
-                currentRoute != Screen.ContractorProfile.route
+                currentRoute != Screen.ContractorProfile.route &&
+                currentRoute != Screen.RoomDetails.route
 
             ) {
                 BottomNavigationBar(
@@ -263,6 +265,8 @@ fun AppNavigation(
                 )
             }
 
+
+
             composable(
                 route = Screen.ContractorProfile.route,
                 arguments = listOf(navArgument("contractorId") { type = NavType.IntType })
@@ -295,6 +299,13 @@ fun AppNavigation(
                     modifier = modifier,
                 )
             }
+
+            composable(Screen.RoomDetails.route) {
+                RoomDetailsScreen(
+                    navController = navController,
+                )
+            }
+
             composable(Screen.FAQ.route) {
                 FAQScreen(
                     navController = navController,
