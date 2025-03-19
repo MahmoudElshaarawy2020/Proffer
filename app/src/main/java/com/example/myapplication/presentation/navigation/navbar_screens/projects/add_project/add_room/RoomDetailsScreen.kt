@@ -1,6 +1,11 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project.add_room
 
 
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,18 +34,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.R
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -65,7 +67,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +84,8 @@ fun RoomDetailsScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var selectedRoom by remember { mutableStateOf("Select Room") }
     val roomTypes = listOf("Bedroom", "Living Room", "Kitchen", "Bathroom")
+    val context = LocalContext.current
+
 
     val categoryList by remember(selectedRoom) {
         mutableStateOf(
@@ -81,11 +93,30 @@ fun RoomDetailsScreen(navController: NavController) {
         )
     }
 
-   val roomMaterials = listOf("Floor", "Cell", "Wall")
-   var length by remember { mutableStateOf("") }
-   var width by remember { mutableStateOf("") }
-   var height by remember { mutableStateOf("") }
-   var description by remember { mutableStateOf("") }
+    val roomMaterials = listOf("Floor", "Cell", "Wall")
+    var length by remember { mutableStateOf("") }
+    var width by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("0.0") }
+
+    //need to revision
+    var image1 by remember { mutableStateOf<Uri?>(null) }
+    var image2 by remember { mutableStateOf<Uri?>(null) }
+    var image3 by remember { mutableStateOf<Uri?>(null) }
+    var image4 by remember { mutableStateOf<Uri?>(null) }
+    var image5 by remember { mutableStateOf<Uri?>(null) }
+    var image6 by remember { mutableStateOf<Uri?>(null) }
+    var imageList by remember { mutableStateOf<ArrayList<Uri>>(arrayListOf()) }
+    image1?.let { imageList.add(it) }
+    image2?.let { imageList.add(it) }
+    image3?.let { imageList.add(it) }
+    image4?.let { imageList.add(it) }
+    image5?.let { imageList.add(it) }
+    image6?.let { imageList.add(it) }
+
+
+
 
     Column(
         modifier = Modifier
@@ -147,9 +178,11 @@ fun RoomDetailsScreen(navController: NavController) {
 
             item {
 
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(4.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                ) {
                     // Room Zone Selection
                     Text(text = "Room Zone", fontWeight = FontWeight.Bold)
 
@@ -273,34 +306,95 @@ fun RoomDetailsScreen(navController: NavController) {
             }
 
             // Additions
-           items(categoryList, key = { it.id }) { category ->
-               AdditionCard(
-                   category = category,
-                   expanded = expandedCardId == category.id,
-                   onExpand = { expandedCardId = if (expandedCardId == category.id) null else category.id }
-               )
-           }
+            items(categoryList, key = { it.id }) { category ->
+                AdditionCard(
+                    category = category,
+                    expanded = expandedCardId == category.id,
+                    onExpand = {
+                        expandedCardId = if (expandedCardId == category.id) null else category.id
+                    }
+                )
+            }
 
             // Room Images
             item {
                 Text(text = "Room Images", fontWeight = FontWeight.Bold)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    repeat(4) {
-                        Box(
-                            modifier = Modifier
-                                .size(80.dp)
-                                .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-                                .clickable { }
-                        ) {
-                            Text(
-                                text = "+ Image",
-                                modifier = Modifier.align(Alignment.Center),
-                                color = Color.White
-                            )
-                        }
+                Spacer(modifier = Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+
+                        AddImageButton(
+                            image1,
+                            onImageSelected = { uri -> image1 = uri },
+                            context
+                        )
+                        AddImageButton(
+                            image2,
+                            onImageSelected = { uri -> image2 = uri },
+                            context
+                        )
+                        AddImageButton(
+                            image3,
+                            onImageSelected = { uri -> image3 = uri },
+                            context
+                        )
+
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        AddImageButton(
+                            image4,
+                            onImageSelected = { uri -> image4= uri },
+                            context
+                        )
+                        AddImageButton(
+                            image5,
+                            onImageSelected = { uri -> image5 = uri },
+                            context
+                        )
+                        AddImageButton(
+                            image6,
+                            onImageSelected = { uri -> image6 = uri },
+                            context
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {},
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF57C00)), // Orange color
+                        shape = RoundedCornerShape(50),
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth(0.7f)
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Add ")
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
+                                ) {
+                                    append(price)
+                                }
+                                append(" L.E")
+                            },
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
                     }
                 }
+
             }
+
+
         }
     }
 }
@@ -358,6 +452,7 @@ fun RoomDimensionsInput(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomOutlinedTextField(
@@ -392,8 +487,10 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .border(BorderStroke(1.dp, Color.LightGray), RoundedCornerShape(16.dp))
             .clickable { onExpand() },
-        colors = CardDefaults.cardColors(containerColor = if (!expanded) colorResource(R.color.light_white) else colorResource(
-            R.color.light_pink)
+        colors = CardDefaults.cardColors(
+            containerColor = if (!expanded) colorResource(R.color.light_white) else colorResource(
+                R.color.light_pink
+            )
         ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -430,12 +527,23 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
             // Animated Visibility for Expanded Content
             AnimatedVisibility(
                 visible = expanded,
-                enter = fadeIn(animationSpec = tween(300)) + expandVertically(animationSpec = tween(300)),
-                exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(animationSpec = tween(300))
+                enter = fadeIn(animationSpec = tween(300)) + expandVertically(
+                    animationSpec = tween(
+                        300
+                    )
+                ),
+                exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(
+                    animationSpec = tween(
+                        300
+                    )
+                )
             ) {
 
                 // Move Title to the top of the TextField when expanded
-                Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         painter = painterResource(category.img),
                         contentDescription = category.name,
@@ -482,9 +590,11 @@ fun ExpandedCard(
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
         shape = RoundedCornerShape(16.dp),
     ) {
-        Column(modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        ) {
             Spacer(modifier = Modifier.height(8.dp))
             // Dropdown Menu
             ExposedDropdownMenuBox(
@@ -538,7 +648,7 @@ fun ExpandedCard(
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
-            // Total Price
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -559,8 +669,74 @@ fun ExpandedCard(
     }
 }
 
+@Composable
+fun AddImageButton(
+    imageUri: Uri?,
+    onImageSelected: (Uri) -> Unit,
+    context: Context
+) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            onImageSelected(it)
+            Toast.makeText(context, "Image Selected!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFFFF3E9)) // Light peach background
+            .clickable { launcher.launch("image/*") }
+    ) {
+        Canvas(modifier = Modifier.matchParentSize()) {
+            val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+            drawRoundRect(
+                color = Color.Gray.copy(alpha = 0.5f),
+                size = size,
+                style = Stroke(width = 2.dp.toPx(), pathEffect = pathEffect),
+                cornerRadius = CornerRadius(16.dp.toPx())
+            )
+        }
+
+        if (imageUri == null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Image",
+                    tint = Color.Gray.copy(alpha = 0.7f),
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Image",
+                    fontSize = 12.sp,
+                    color = Color.Gray.copy(alpha = 0.7f)
+                )
+            }
+        } else {
+            Image(
+                painter = rememberAsyncImagePainter(imageUri),
+                contentDescription = "Selected Image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+
+
 data class CategUI(val id: Int, val img: Int, val name: String, val list: List<AdditionModel>)
 data class AdditionModel(val name: String)
+
 fun Int.getAdditionIconByID(): Int {
     return when (this) {
         1 -> R.drawable.outlet_img
@@ -575,6 +751,7 @@ fun Int.getAdditionIconByID(): Int {
         else -> R.drawable.outlet_img
     }
 }
+
 fun getWetList(): List<CategUI> = listOf(
     CategUI(1, 1.getAdditionIconByID(), "Outlets", emptyList()),
     CategUI(5, 5.getAdditionIconByID(), "Bath Tube", emptyList()),
@@ -583,6 +760,7 @@ fun getWetList(): List<CategUI> = listOf(
     CategUI(8, 8.getAdditionIconByID(), "Water Mixer", emptyList()),
     CategUI(9, 9.getAdditionIconByID(), "Water Heater", emptyList())
 )
+
 fun getDryList(): List<CategUI> = listOf(
     CategUI(1, 1.getAdditionIconByID(), "Outlets", emptyList()),
     CategUI(2, 2.getAdditionIconByID(), "AC Switch", emptyList()),

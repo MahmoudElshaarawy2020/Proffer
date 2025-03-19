@@ -100,7 +100,7 @@ fun AddProjectScreen(
 
         when (selectedOption) {
             "Project Info" -> ProjectInfo(context = LocalContext.current, navController = navController)
-            "Project Details" -> ProjectDetails()
+            "Project Details" -> ProjectDetails(navController = navController)
         }
 
 

@@ -31,19 +31,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.presentation.navigation.Screen
 
 
 @Composable
-fun ProjectDetails(modifier: Modifier = Modifier) {
+fun ProjectDetails(modifier: Modifier = Modifier,navController: NavController) {
 
-    val rooms = List(6) { index ->
-        Room(
-            name = if (index % 2 == 0) "Bedroom" else "Bathroom",
-            size = "143*154*123 M²",
-            price = "7.000 LE"
-        )
-    }
+//    val rooms = List(6) { index ->
+//        Room(
+//            name = if (index % 2 == 0) "Bedroom" else "Bathroom",
+//            size = "143*154*123 M²",
+//            price = "7.000 LE"
+//        )
+//    }
 
     Column(
         modifier = Modifier
@@ -51,7 +53,7 @@ fun ProjectDetails(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { },
+            onClick = { navController.navigate(Screen.RoomDetails.route)},
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, color = colorResource(R.color.orange)),
@@ -69,14 +71,14 @@ fun ProjectDetails(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .background(color = colorResource(R.color.lighter_white))
         ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                items(rooms.size) { index ->
-                    RoomCard(rooms[index])
-                }
-            }
+//            LazyVerticalGrid(
+//                columns = GridCells.Fixed(2),
+//                contentPadding = PaddingValues(8.dp)
+//            ) {
+//                items(rooms.size) { index ->
+//                    RoomCard(rooms[index])
+//                }
+//            }
         }
 
         Button(
@@ -154,9 +156,3 @@ fun RoomCard(room: Room) {
 
 data class Room(val name: String, val size: String, val price: String)
 
-
-@Preview(showBackground = true)
-@Composable
-private fun ProjectDetailsPrev() {
-    ProjectDetails()
-}
