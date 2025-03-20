@@ -16,7 +16,9 @@ import com.example.myapplication.data.response.GetContactTypesResponse
 import com.example.myapplication.data.response.HomeResponse
 import com.example.myapplication.data.response.PrivacyPolicyResponse
 import com.example.myapplication.data.response.HomeSliderResponse
+import com.example.myapplication.data.response.MaterialsResponse
 import com.example.myapplication.data.response.ProjectTypesResponse
+import com.example.myapplication.data.response.RoomZonesResponse
 import com.example.myapplication.data.response.TermsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -163,24 +165,15 @@ interface ApiService {
         @Header("Accept") accept: String
     ): Response<CreateProjectResponse>
 
+    @GET("room-zones")
+    suspend fun getRoomZones(
+        @Header("Accept") accept: String
+    ): Response<RoomZonesResponse>
 
-    @Multipart
-    @POST("clients/projects")
-    suspend fun createProject2(
-        @Url string: String = "https://proffer.appssquare.com/api/clients/projects",
-        @Part("project_type_id") projectTypeId: String,
-        @Part("area") area: String,
-        @Part("from_budget") fromBudget: String,
-        @Part("to_budget") toBudget: String,
-        @Part("duration") duration: String,
-        @Part("is_open_budget") isOpenBudget: String,
-        @Part("name") name: String,
-        @Part("location") location: String,
-        @Part("lat") lat: String,
-        @Part("long") long: String,
-        @Part("start_date") startDate: String,
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String = "application/json"
-    ): Response<CreateProjectResponse>
+    @GET("materials")
+    suspend fun getMaterials(
+        @Header("Accept") accept: String,
+        @Query("filter[category]") category: Int,
+    ): Response<MaterialsResponse>
 
 }

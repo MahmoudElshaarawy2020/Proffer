@@ -63,6 +63,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,15 +77,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.myapplication.data.response.ProjectTypesResponse
+import com.example.myapplication.data.response.RoomZonesResponse
+import com.example.myapplication.util.Result
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoomDetailsScreen(navController: NavController) {
+fun RoomDetailsScreen(
+    navController: NavController,
+    viewModel: RoomViewModel = hiltViewModel()
+) {
     var expandedCardId by remember { mutableStateOf<Int?>(null) }
     var expanded by remember { mutableStateOf(false) }
     var selectedRoom by remember { mutableStateOf("Select Room") }
-    val roomTypes = listOf("Bedroom", "Living Room", "Kitchen", "Bathroom")
+    val roomTypesState by viewModel.getRoomZonesState.collectAsState()
     val context = LocalContext.current
 
 
@@ -115,6 +124,18 @@ fun RoomDetailsScreen(navController: NavController) {
     image5?.let { imageList.add(it) }
     image6?.let { imageList.add(it) }
 
+    val roomTypes = when (roomTypesState) {
+        is Result.Success -> (roomTypesState as Result.Success<RoomZonesResponse>)
+            .data?.data?.mapNotNull { it?.let { project -> project.name to project.id } }
+
+        is Result.Loading -> listOf("Loading..." to null)
+        is Result.Error -> listOf("Error fetching types" to null)
+        else -> emptyList()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getRoomZones()
+    }
 
 
 
@@ -197,44 +218,46 @@ fun RoomDetailsScreen(navController: NavController) {
                                 .clickable { expanded = true }
                                 .background(
                                     color = colorResource(R.color.light_white),
-                                    shape = RoundedCornerShape(12.dp)
+                                    RoundedCornerShape(12.dp)
                                 )
                         ) {
                             OutlinedTextField(
-                                value = selectedRoom.ifEmpty { "Select Room" }, // Default text
+                                value = selectedRoom.ifEmpty { "Room zone" },
                                 onValueChange = {},
                                 readOnly = true,
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
                                     focusedBorderColor = Color.Gray,
-                                    unfocusedBorderColor = Color.LightGray,
-                                    disabledTextColor = Color.Black
+                                    unfocusedBorderColor = Color.LightGray
                                 ),
                                 shape = RoundedCornerShape(12.dp),
                                 trailingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropDown,
                                         contentDescription = null,
-                                        modifier = Modifier.clickable { expanded = true }
+                                        modifier = Modifier
+                                            .clickable { expanded = true }
                                     )
                                 }
                             )
-                        }
 
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.background(color = colorResource(R.color.light_white))
-                        ) {
-                            roomTypes.forEach { room ->
-                                DropdownMenuItem(
-                                    text = { Text(room) },
-                                    onClick = {
-                                        selectedRoom = room
-                                        expanded = false
-                                    }
-                                )
+                            ExposedDropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                                modifier = Modifier.background(color = colorResource(R.color.light_white))
+                            ) {
+                                roomTypes!!.forEach { (name) ->
+                                    DropdownMenuItem(
+                                        text = { Text(name ?: "Unknown") },
+                                        onClick = {
+                                                selectedRoom = name ?: "Unknown"
+                                            expanded = false
+                                        }
+                                    )
+                                }
                             }
+
+
                         }
                     }
                 }
@@ -348,7 +371,7 @@ fun RoomDetailsScreen(navController: NavController) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         AddImageButton(
                             image4,
-                            onImageSelected = { uri -> image4= uri },
+                            onImageSelected = { uri -> image4 = uri },
                             context
                         )
                         AddImageButton(

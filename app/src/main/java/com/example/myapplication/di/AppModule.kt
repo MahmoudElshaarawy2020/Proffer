@@ -12,6 +12,7 @@ import com.example.myapplication.data.repository.LoginRepoImpl
 import com.example.myapplication.data.repository.ProfileRepoImpl
 import com.example.myapplication.data.repository.ProjectTypesRepoImpl
 import com.example.myapplication.data.repository.RegisterRepoImpl
+import com.example.myapplication.data.repository.RoomRepoImpl
 import com.example.myapplication.data.repository.VerificationRepoImpl
 import com.example.myapplication.domain.repository.BidsRepository
 import com.example.myapplication.domain.repository.ContractorProfileRepository
@@ -22,6 +23,7 @@ import com.example.myapplication.domain.repository.LoginRepository
 import com.example.myapplication.domain.repository.ProfileRepository
 import com.example.myapplication.domain.repository.ProjectTypesRepository
 import com.example.myapplication.domain.repository.RegisterRepository
+import com.example.myapplication.domain.repository.RoomRepository
 import com.example.myapplication.domain.repository.VerificationRepo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -95,6 +97,12 @@ object AppModule {
     @Singleton
     fun provideCreateProjectRepo(apiService: ApiService): CreateProjectRepository {
         return CreateProjectRepoImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateRoomRepo(apiService: ApiService): RoomRepository {
+        return RoomRepoImpl(apiService)
     }
 
     @Provides
