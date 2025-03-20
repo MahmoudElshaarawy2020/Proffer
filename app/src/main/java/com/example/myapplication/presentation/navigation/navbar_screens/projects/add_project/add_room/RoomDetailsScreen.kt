@@ -87,6 +87,7 @@ import com.example.myapplication.util.Result
 @Composable
 fun RoomDetailsScreen(
     navController: NavController,
+    onMaterialSelected: (Int) -> Unit,
     viewModel: RoomViewModel = hiltViewModel()
 ) {
     var expandedCardId by remember { mutableStateOf<Int?>(null) }
@@ -94,6 +95,8 @@ fun RoomDetailsScreen(
     var selectedRoom by remember { mutableStateOf("Select Room") }
     val roomTypesState by viewModel.getRoomZonesState.collectAsState()
     val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf<Int?>(null) }
 
 
     val categoryList by remember(selectedRoom) {
@@ -102,7 +105,6 @@ fun RoomDetailsScreen(
         )
     }
 
-    val roomMaterials = listOf("Floor", "Cell", "Wall")
     var length by remember { mutableStateOf("") }
     var width by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
@@ -250,7 +252,7 @@ fun RoomDetailsScreen(
                                     DropdownMenuItem(
                                         text = { Text(name ?: "Unknown") },
                                         onClick = {
-                                                selectedRoom = name ?: "Unknown"
+                                            selectedRoom = name ?: "Unknown"
                                             expanded = false
                                         }
                                     )
@@ -278,37 +280,54 @@ fun RoomDetailsScreen(
                 }
             }
 
+            //Room Materials
             item {
-                Text(
-                    text = "Room Material",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    roomMaterials.forEach { material ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .size(100.dp)
-                                .padding(horizontal = 4.dp)
-                                .clip(RoundedCornerShape(16.dp)),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.house_img),
-                                contentDescription = material,
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                            Text(
-                                text = material,
-                                color = Color.White,
-                                fontSize = 16.sp
-                            )
+                Column(Modifier.fillMaxSize()) {
 
-                        }
+                    if (showDialog && selectedCategory != null) {
+                        MaterialsDialog(
+                            onDismiss = { showDialog = false },
+                            onVerifyClick = { showDialog = false },
+                            categoryId = selectedCategory!!,
+                            viewModel = viewModel
+                        )
                     }
+
+                    Text(
+                        text = "Room Material",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        MaterialCategoryItem(
+                            title = "Floor",
+                            imageRes = R.drawable.house_img,
+                            onClick = {
+                                selectedCategory = 1
+                                showDialog = true
+                            }
+                        )
+
+                        MaterialCategoryItem(
+                            title = "Cell",
+                            imageRes = R.drawable.house_img,
+                            onClick = {
+                                selectedCategory = 2
+                                showDialog = true
+                            }
+                        )
+
+                        MaterialCategoryItem(
+                            title = "Wall",
+                            imageRes = R.drawable.house_img,
+                            onClick = {
+                                selectedCategory = 3
+                                showDialog = true
+                            }
+                        )
+                    }
+
                 }
             }
 
@@ -756,6 +775,29 @@ fun AddImageButton(
     }
 }
 
+@Composable
+fun MaterialCategoryItem(title: String, imageRes: Int, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .padding(horizontal = 4.dp)
+            .clip(RoundedCornerShape(16.dp)),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = title,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Text(
+            text = title,
+            color = Color.White,
+            fontSize = 16.sp
+        )
+    }
+}
+
 
 data class CategUI(val id: Int, val img: Int, val name: String, val list: List<AdditionModel>)
 data class AdditionModel(val name: String)
@@ -791,9 +833,4 @@ fun getDryList(): List<CategUI> = listOf(
     CategUI(4, 4.getAdditionIconByID(), "Data Point", emptyList())
 )
 
-@Preview
-@Composable
-private fun RoomDetailsScreenPrev() {
-    RoomDetailsScreen(rememberNavController())
-}
 

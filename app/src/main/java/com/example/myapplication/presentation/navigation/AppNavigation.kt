@@ -303,6 +303,7 @@ fun AppNavigation(
             composable(Screen.RoomDetails.route) {
                 RoomDetailsScreen(
                     navController = navController,
+                    onMaterialSelected = {}
                 )
             }
 

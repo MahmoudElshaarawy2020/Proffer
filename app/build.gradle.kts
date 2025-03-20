@@ -117,6 +117,9 @@ dependencies {
     //data store
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
 
+    //gson
+    implementation("com.google.code.gson:gson:2.9.0")
+
 
     // OkHttp Logging (Updated)
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
