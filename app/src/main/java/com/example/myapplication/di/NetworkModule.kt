@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -46,9 +47,16 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthInterceptor(dataStoreManager: DataStoreManager): AuthInterceptor {
-        return AuthInterceptor(tokenProvider = { dataStoreManager.getToken.firstOrNull().orEmpty() })
-    }
+        return AuthInterceptor(
 
+            tokenProvider = {
+                runBlocking { dataStoreManager.getToken.firstOrNull().orEmpty() }
+            }, // Fetch token safely inside a coroutine
+            tokenUpdater = { newToken ->
+                runBlocking { dataStoreManager.saveAuthToken(newToken) }
+            } // Allow interceptor to update token if refreshed
+        )
+    }
 
     @Provides
     @Singleton
@@ -65,5 +73,4 @@ object NetworkModule {
             .writeTimeout(20, TimeUnit.SECONDS)
             .build()
     }
-
 }

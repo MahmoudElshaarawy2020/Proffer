@@ -9,12 +9,11 @@ class EditYourProfileUseCase @Inject constructor(
     private val repository: YourProfileRepository
 ) {
     operator fun invoke(
-        token: String,
         method: RequestBody,
         userName: RequestBody,
         phoneNumber: RequestBody,
         address: RequestBody,
         image: MultipartBody.Part?
-        ) = repository.editYourProfile(token, method, userName, phoneNumber, address, image)
+        ) = repository.editYourProfile(method, userName, phoneNumber, address, image)
 
 }

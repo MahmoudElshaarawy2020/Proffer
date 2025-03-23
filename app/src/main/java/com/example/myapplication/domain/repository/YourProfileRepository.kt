@@ -11,7 +11,6 @@ interface YourProfileRepository {
     fun deleteAccount(token: String): Flow<Result<AuthResponse>>
     fun getYourProfileData(token: String): Flow<Result<AuthResponse>>
     fun editYourProfile(
-        token: String,
         method: RequestBody,
         userName: RequestBody,
         phoneNumber: RequestBody,

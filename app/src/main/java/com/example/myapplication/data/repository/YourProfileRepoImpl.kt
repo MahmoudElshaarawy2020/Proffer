@@ -86,7 +86,6 @@ class YourProfileRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun editYourProfile(
-        token: String,
         method: RequestBody,
         userName: RequestBody,
         phoneNumber: RequestBody,
@@ -97,15 +96,15 @@ class YourProfileRepoImpl @Inject constructor(
 
         try {
             val imageFile = "image".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-            val response = apiService.editProfile(
+            val response = apiService.
+            editProfile(
                 method,
                 userName,
                 phoneNumber,
                 address,
                 image,
-                imageFile,
-                token = token,
-                accept = "application/json")
+                imageFile
+            )
 
             if (response.isSuccessful) {
                 Log.d("editProfileRepoImpl", "editProfile API call successful")

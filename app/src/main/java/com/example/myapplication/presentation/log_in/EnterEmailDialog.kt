@@ -107,9 +107,6 @@ fun EnterEmailDialog(
                     ) {
                         Text(text = "Verify")
                     }
-
-
-
             }
         }
     }

@@ -95,7 +95,7 @@ class YourProfileViewModel @Inject constructor(
             if (userName != null) {
                 if (phoneNumber != null) {
                     if (address != null) {
-                        editProfileUseCase.invoke(token, method, userName, phoneNumber, address, image)
+                        editProfileUseCase.invoke(method, userName, phoneNumber, address, image)
                             .catch { e ->
                                 Log.e("EditYourProfileError", "API call failed", e)
                                 _editYourProfileState.value = Result.Error("Failed to edit profile: ${e.message}")

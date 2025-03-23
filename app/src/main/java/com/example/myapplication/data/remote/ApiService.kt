@@ -77,8 +77,6 @@ interface ApiService {
         @Part("address") address: RequestBody,
         @Part image: MultipartBody.Part?,
         @Part("profile_image") requestBody: RequestBody,
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
     ): Response<EditProfileResponse>
 
     @POST("auth/change-password")
