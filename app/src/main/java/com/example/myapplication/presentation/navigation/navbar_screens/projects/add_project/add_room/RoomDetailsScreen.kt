@@ -30,12 +30,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.animation.core.tween
-import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -79,7 +77,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.response.ProjectTypesResponse
 import com.example.myapplication.data.response.RoomZonesResponse
 import com.example.myapplication.util.Result
 
@@ -139,6 +136,17 @@ fun RoomDetailsScreen(
         viewModel.getRoomZones()
     }
 
+    if (showDialog && selectedCategory != null) {
+        MaterialsDialog(
+            onDismiss = { showDialog = false },
+            onMaterialClick = { material ->
+                onMaterialSelected(material?.id ?: 0)
+                showDialog = false
+            },
+            categoryId = selectedCategory!!,
+            viewModel = viewModel
+        )
+    }
 
 
     Column(
@@ -206,7 +214,6 @@ fun RoomDetailsScreen(
                         .fillMaxSize()
                         .padding(4.dp)
                 ) {
-                    // Room Zone Selection
                     Text(text = "Room Zone", fontWeight = FontWeight.Bold)
 
                     ExposedDropdownMenuBox(
@@ -265,7 +272,6 @@ fun RoomDetailsScreen(
                 }
             }
 
-            // Room Area Inputs
             item {
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
                     Text(text = "Room Area (㎡)", fontWeight = FontWeight.Bold)
@@ -287,7 +293,7 @@ fun RoomDetailsScreen(
                     if (showDialog && selectedCategory != null) {
                         MaterialsDialog(
                             onDismiss = { showDialog = false },
-                            onVerifyClick = { showDialog = false },
+                            onMaterialClick = { showDialog = false },
                             categoryId = selectedCategory!!,
                             viewModel = viewModel
                         )
@@ -781,7 +787,8 @@ fun MaterialCategoryItem(title: String, imageRes: Int, onClick: () -> Unit) {
         modifier = Modifier
             .size(100.dp)
             .padding(horizontal = 4.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() },
         contentAlignment = Alignment.BottomCenter
     ) {
         Image(

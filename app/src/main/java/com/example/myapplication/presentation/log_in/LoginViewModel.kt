@@ -5,15 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.LoginRequest
-import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AuthResponse
-import com.example.myapplication.data.response.VerificationResponse
 import com.example.myapplication.domain.use_case.LoginUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

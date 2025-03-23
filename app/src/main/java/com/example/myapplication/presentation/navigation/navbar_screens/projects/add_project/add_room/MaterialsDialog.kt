@@ -1,6 +1,8 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.projects.add_project.add_room
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,20 +22,19 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.myapplication.R
 import com.example.myapplication.util.Result
 import com.example.myapplication.data.response.MaterialItem
+import com.example.myapplication.data.response.MaterialsResponse
 
 @Composable
 fun MaterialsDialog(
     onDismiss: () -> Unit,
-    onVerifyClick: (MaterialItem?) -> Unit,
+    onMaterialClick: (MaterialItem?) -> Unit,
     categoryId: Int,
     viewModel: RoomViewModel = hiltViewModel()
 ) {
     val materialsState by viewModel.getMaterialsState.collectAsState()
     var selectedMaterial by remember { mutableStateOf<MaterialItem?>(null) }
-    var price by remember { mutableStateOf(0.0) }
 
     LaunchedEffect(categoryId) {
         viewModel.getMaterials(categoryId)
@@ -43,6 +44,7 @@ fun MaterialsDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(600.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.White)
                 .padding(16.dp)
@@ -51,10 +53,9 @@ fun MaterialsDialog(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Title
                 Text(
                     text = "Material Name",
-                    fontSize = 20.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFFF6F00)
                 )
@@ -63,21 +64,30 @@ fun MaterialsDialog(
                     text = "Select Your Favorite Material",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = colorResource(R.color.black)
+                    color = Color.Gray
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Handle API states (Loading, Success, Error)
-                when (materialsState) {
-                    is Result.Loading -> {
-                        CircularProgressIndicator(color = Color(0xFFFF6F00))
-                    }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
 
-                    is Result.Success -> {
-                        val materials = (materialsState as Result.Success<List<MaterialItem>>).data
 
-                        if (materials != null) {
+                    when (materialsState) {
+                        is Result.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                                color = Color(0xFFFF6F00))
+                        }
+
+                        is Result.Success -> {
+                            val materials =
+                                (materialsState as Result.Success<MaterialsResponse>).data?.data
+                                    ?: emptyList()
+
                             if (materials.isEmpty()) {
                                 Text("No materials available", color = Color.Gray)
                             } else {
@@ -85,46 +95,51 @@ fun MaterialsDialog(
                                     columns = GridCells.Fixed(2),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.height(400.dp)
+                                    modifier = Modifier.fillMaxSize()
                                 ) {
                                     items(materials) { material ->
-                                        MaterialItemCard(
-                                            material = material,
-                                            isSelected = selectedMaterial == material,
-                                            onClick = { selectedMaterial = material }
-                                        )
+                                        if (material != null) {
+                                            MaterialItemCard(
+                                                material = material,
+                                                isSelected = selectedMaterial == material,
+                                                onClick = { selectedMaterial = material }
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        is Result.Error -> {
+                            Text(
+                                text = "Error: ${(materialsState as Result.Error).message}",
+                                color = Color.Red
+                            )
+                        }
+
+                        is Result.Idle -> {
+                            Text("No data available", color = Color.Gray)
+                        }
                     }
 
-                    is Result.Error -> {
-                        Text(
-                            text = "Error: ${(materialsState as Result.Error).message}",
-                            color = Color.Red
-                        )
-                    }
-
-                    is Result.Idle -> TODO()
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Confirm Button
                 Button(
-                    onClick = { onVerifyClick(selectedMaterial) },
+                    onClick = { onMaterialClick(selectedMaterial) },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
+                        .padding(vertical = 16.dp)
+                        .height(50.dp)
+                        .width(220.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF8C00) // Orange button color
+                        containerColor = Color(0xFFFF6F00)
                     ),
                     shape = RoundedCornerShape(25.dp),
                     enabled = selectedMaterial != null
                 ) {
                     Text(
-                        text = "Add $price L.E",
+                        text = "Add ${selectedMaterial?.price ?: 0} L.E",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -143,15 +158,49 @@ fun MaterialItemCard(
 ) {
     Box(
         modifier = Modifier
-            .size(150.dp)
+            .size(160.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(if (isSelected) Color(0xFFFF8C00) else Color.White)
             .clickable { onClick() }
+            .border(
+                width = if (isSelected) 4.dp else 0.dp,
+                color = if (isSelected) Color(0xFFFF6F00) else Color.Transparent,
+                shape = RoundedCornerShape(16.dp)
+            )
     ) {
         AsyncImage(
             model = material.materialImage,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize()
+            contentDescription = "Material Image",
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
         )
+
+        // Text overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .padding(bottom = 8.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                material.name?.let {
+                    Text(
+                        text = it,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        maxLines = 1,
+                        modifier = Modifier.basicMarquee()
+                    )
+                }
+                Text(
+                    text = "${material.price} M²",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
