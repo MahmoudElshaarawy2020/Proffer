@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.ChangePasswordRequest
-import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.EditProfileResponse
 import com.example.myapplication.domain.use_case.ChangePasswordUseCase
 import com.example.myapplication.util.Result
@@ -20,18 +19,20 @@ import javax.inject.Inject
 class ChangePasswordViewModel @Inject constructor(
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val dataStoreManager: DataStoreManager,
-): ViewModel() {
-    private val _changePasswordState = MutableStateFlow<Result<EditProfileResponse>>(Result.Loading())
+) : ViewModel() {
+    private val _changePasswordState =
+        MutableStateFlow<Result<EditProfileResponse>>(Result.Loading())
     val changePasswordState: MutableStateFlow<Result<EditProfileResponse>> get() = _changePasswordState
 
     fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest) {
         viewModelScope.launch {
             _changePasswordState.value = Result.Loading()
 
-            changePasswordUseCase.invoke(token, changePasswordRequest)
+            changePasswordUseCase.invoke(changePasswordRequest)
                 .catch { e ->
                     Log.e("changePassword Error", "API call failed", e)
-                    _changePasswordState.value = Result.Error("Failed to change password: ${e.message}")
+                    _changePasswordState.value =
+                        Result.Error("Failed to change password: ${e.message}")
                 }
                 .collectLatest { result ->
                     _changePasswordState.value = result

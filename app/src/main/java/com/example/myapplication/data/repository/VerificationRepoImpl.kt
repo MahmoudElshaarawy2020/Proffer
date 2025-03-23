@@ -23,14 +23,11 @@ class VerificationRepoImpl @Inject constructor(
             emit(Result.Loading())
 
             try {
-                // Call the verify endpoint on the API
                 val response = apiService.verify(verificationRequest)
 
-                // Check if the response was successful
                 if (response.isSuccessful) {
                     Log.d("VerificationRepoImpl", "API call successful")
                     response.body()?.let {
-                        // Emit success with the AuthResponse
                         emit(Result.Success(it))
                     } ?: emit(Result.Error("Empty response body"))
 

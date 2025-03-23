@@ -75,7 +75,6 @@ class AddProjectViewModel @Inject constructor(
         viewModelScope.launch {
             _createProjectState.value = Result.Loading()
             createProjectUseCase.invoke(
-                token,
                 name,
                 project_type_id,
                 from_budget,

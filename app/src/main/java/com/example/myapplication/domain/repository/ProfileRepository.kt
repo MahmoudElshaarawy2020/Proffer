@@ -14,13 +14,13 @@ import com.example.myapplication.util.Result
 
 
 interface ProfileRepository {
-    fun getMoreAboutUser(token: String): Flow<Result<AuthResponse>>
-    fun logout(token: String): Flow<Result<AuthResponse>>
+    fun getMoreAboutUser(): Flow<Result<AuthResponse>>
+    fun logout(): Flow<Result<AuthResponse>>
     fun getFAQ(skip: Int, take: Int): Flow<Result<FAQResponse>>
     fun getPrivacyPolicy(): Flow<Result<PrivacyPolicyResponse>>
     fun getAboutUs(): Flow<Result<AboutUsResponse>>
     fun getTerms(): Flow<Result<TermsResponse>>
     fun getContactTypes(): Flow<Result<GetContactTypesResponse>>
-    fun contactUs(token: String, contactUsRequest: ContactUsRequest): Flow<Result<EditProfileResponse>>
-    fun changePassword(token: String, changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>>
+    fun contactUs(contactUsRequest: ContactUsRequest): Flow<Result<EditProfileResponse>>
+    fun changePassword(changePasswordRequest: ChangePasswordRequest): Flow<Result<EditProfileResponse>>
 }

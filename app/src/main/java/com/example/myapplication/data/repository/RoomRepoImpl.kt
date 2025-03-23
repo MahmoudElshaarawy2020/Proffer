@@ -21,7 +21,7 @@ class RoomRepoImpl @Inject constructor(
         emit(Result.Loading())
 
         try {
-            val response = apiService.getRoomZones("application/json")
+            val response = apiService.getRoomZones()
 
             if (response.isSuccessful) {
                 Log.d("getRoomZones", "successful")
@@ -55,7 +55,7 @@ class RoomRepoImpl @Inject constructor(
         emit(Result.Loading())
 
         try {
-            val response = apiService.getMaterials("application/json", category)
+            val response = apiService.getMaterials(category)
 
             if (response.isSuccessful) {
                 Log.d("getMaterials", "successful")

@@ -8,7 +8,6 @@
 
     interface CreateProjectRepository {
         fun createProject(
-            token: String,
             name: RequestBody,
             project_type_id: RequestBody,
             from_budget: RequestBody,

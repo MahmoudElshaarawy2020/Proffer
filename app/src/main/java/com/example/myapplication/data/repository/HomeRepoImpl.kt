@@ -49,11 +49,11 @@ class HomeRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getContractors(token: String): Flow<Result<HomeResponse>> = flow {
+    override fun getContractors(): Flow<Result<HomeResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.getContractors(token, "application/json")
+            val response = apiService.getContractors()
 
             if (response.isSuccessful) {
                 Log.d("getContractorsImpl", "successful")

@@ -86,7 +86,7 @@ class MoreViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (token.isNotEmpty()) {
-                    profileUseCase.invoke(token)
+                    profileUseCase.invoke()
                         .catch { e ->
                             Log.e("ProfileRequestError", "API call failed", e)
                             _profileState.value = Result.Error("Unexpected Error: ${e.message}")
@@ -109,7 +109,7 @@ class MoreViewModel @Inject constructor(
         viewModelScope.launch {
             _logoutState.value = Result.Loading()
 
-            logoutUseCase.invoke(token)
+            logoutUseCase.invoke()
                 .catch { e ->
                     Log.e("LogoutError", "API call failed", e)
                     _logoutState.value = Result.Error("Failed to logout: ${e.message}")
@@ -257,7 +257,7 @@ class MoreViewModel @Inject constructor(
         viewModelScope.launch {
             _contactUsState.value = Result.Loading()
 
-            contactUsUseCase.invoke(token, contactUsRequest)
+            contactUsUseCase.invoke(contactUsRequest)
                 .catch { e ->
                     Log.e("contactUsError", "API call failed", e)
                     _contactUsState.value = Result.Error("Failed to contactUsError: ${e.message}")

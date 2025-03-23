@@ -32,7 +32,7 @@ class BidsViewModel @Inject constructor(
     fun getBids(skip: Int = 0, take: Int = 10, projectId: Int, rate: Int, minPrice: Int, maxPrice: Int, token: String) {
         viewModelScope.launch {
             try {
-                getBidsUseCase.invoke(skip, take, projectId, rate, minPrice, maxPrice, token)
+                getBidsUseCase.invoke(skip, take, projectId, rate, minPrice, maxPrice)
                     .catch { e ->
                         Log.e("getBidsRequestError", "API call failed", e)
                         _getBidsState.value = Result.Error("Unexpected Error: ${e.message}")
@@ -62,7 +62,7 @@ class BidsViewModel @Inject constructor(
             val newTake = pageSize
 
             try {
-                getBidsUseCase.invoke(newSkip, newTake, projectId, rate, minPrice, maxPrice, token)
+                getBidsUseCase.invoke(newSkip, newTake, projectId, rate, minPrice, maxPrice)
                     .catch { e ->
                         Log.e("LoadMoreBidsError", "API call failed", e)
                         _isLoadingMore.value = false

@@ -17,13 +17,12 @@ class ContractorProfileRepoImpl @Inject constructor(
     private val apiService: ApiService
 ): ContractorProfileRepository {
     override fun getContractorProfile(
-        token: String,
         id: Int
     ): Flow<Result<ContractorProfileResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.getContractorProfile(token, id)
+            val response = apiService.getContractorProfile(id)
 
             if (response.isSuccessful) {
                 Log.d("getContractorProfile", "successful")

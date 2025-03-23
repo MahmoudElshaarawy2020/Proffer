@@ -8,8 +8,8 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 interface YourProfileRepository {
-    fun deleteAccount(token: String): Flow<Result<AuthResponse>>
-    fun getYourProfileData(token: String): Flow<Result<AuthResponse>>
+    fun deleteAccount(): Flow<Result<AuthResponse>>
+    fun getYourProfileData(): Flow<Result<AuthResponse>>
     fun editYourProfile(
         method: RequestBody,
         userName: RequestBody,

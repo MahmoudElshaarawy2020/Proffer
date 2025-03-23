@@ -9,7 +9,6 @@ class CreateProjectUseCase @Inject constructor(
     private val createProjectRepository: CreateProjectRepository
 ) {
     operator fun invoke(
-        token: String,
         name: RequestBody,
         project_type_id: RequestBody,
         from_budget: RequestBody,
@@ -25,7 +24,6 @@ class CreateProjectUseCase @Inject constructor(
         governorate_id: RequestBody,
         image: List<MultipartBody.Part>
     ) = createProjectRepository.createProject(
-        token,
         name,
         project_type_id,
         from_budget,

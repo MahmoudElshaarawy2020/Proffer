@@ -6,6 +6,6 @@ import javax.inject.Inject
 class GetContractorsUseCase @Inject constructor(
     private val repository: HomeRepository
 ) {
-    operator fun invoke(token: String) = repository.getContractors(token)
+    operator fun invoke() = repository.getContractors()
 
 }

@@ -7,7 +7,7 @@ import javax.inject.Inject
 class ContactUsUseCase @Inject constructor(
     private val profileRepository: ProfileRepository
 ) {
-    operator fun invoke(token: String, contactUsRequest: ContactUsRequest) =
-        profileRepository.contactUs(token, contactUsRequest)
+    operator fun invoke( contactUsRequest: ContactUsRequest) =
+        profileRepository.contactUs(contactUsRequest)
 
 }

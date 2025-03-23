@@ -6,6 +6,6 @@ import javax.inject.Inject
 class GetContactTypesUseCase @Inject constructor(
     private val repository: ProfileRepository
 ) {
-    suspend operator fun invoke() = repository.getContactTypes()
+     operator fun invoke() = repository.getContactTypes()
 
 }

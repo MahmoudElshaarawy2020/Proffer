@@ -8,5 +8,5 @@ import com.example.myapplication.util.Result
 
 interface HomeRepository {
     fun getSliders(): Flow<Result<HomeSliderResponse>>
-    fun getContractors(token: String): Flow<Result<HomeResponse>>
+    fun getContractors(): Flow<Result<HomeResponse>>
 }

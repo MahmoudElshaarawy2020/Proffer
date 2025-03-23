@@ -9,5 +9,5 @@ import com.example.myapplication.util.Result
 class DeleteProfileUseCase @Inject constructor(
     private val repository: YourProfileRepository
 ) {
-    operator fun invoke(token: String) = repository.deleteAccount(token)
+    operator fun invoke() = repository.deleteAccount()
 }

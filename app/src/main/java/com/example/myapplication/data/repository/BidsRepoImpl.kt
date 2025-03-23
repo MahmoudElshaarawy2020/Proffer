@@ -23,12 +23,11 @@ class BidsRepoImpl @Inject constructor(
         rate: Int,
         minPrice: Int,
         maxPrice: Int,
-        token: String
     ): Flow<Result<BidsResponse>>  = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.getBids(skip, take, projectId, rate, minPrice, maxPrice, token, "application/json")
+            val response = apiService.getBids(skip, take, projectId, rate, minPrice, maxPrice)
 
             if (response.isSuccessful) {
                 Log.d("getBidsImpl", "successful")

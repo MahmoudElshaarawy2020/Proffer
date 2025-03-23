@@ -7,5 +7,5 @@ import javax.inject.Inject
 class ChangePasswordUseCase @Inject constructor(
     private val repository: ProfileRepository
 ) {
-    operator fun invoke(token: String, changePasswordRequest: ChangePasswordRequest) = repository.changePassword(token, changePasswordRequest)
+    operator fun invoke(changePasswordRequest: ChangePasswordRequest) = repository.changePassword(changePasswordRequest)
 }

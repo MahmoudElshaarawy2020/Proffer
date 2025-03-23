@@ -21,7 +21,6 @@ class CreateProjectRepoImpl @Inject constructor(
     private val apiService: ApiService,
 ) : CreateProjectRepository {
     override fun createProject(
-        token: String,
         name: RequestBody,
         project_type_id: RequestBody,
         from_budget: RequestBody,
@@ -55,8 +54,6 @@ class CreateProjectRepoImpl @Inject constructor(
                 city_id = city_id,
                 governorate_id = governorate_id,
                 images = image,
-                token = token,
-                accept = "application/json",
             )
 
             if (response.isSuccessful) {

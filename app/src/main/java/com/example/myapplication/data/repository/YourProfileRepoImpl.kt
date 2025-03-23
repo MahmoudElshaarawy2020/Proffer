@@ -21,11 +21,11 @@ import javax.inject.Inject
 class YourProfileRepoImpl @Inject constructor(
     private val apiService: ApiService
 ) : YourProfileRepository {
-    override fun deleteAccount(token: String): Flow<Result<AuthResponse>> = flow {
+    override fun deleteAccount(): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.deleteAccount(token, "application/json")
+            val response = apiService.deleteAccount()
 
             if (response.isSuccessful) {
                 Log.d("profileDeletion", "successful")
@@ -53,11 +53,11 @@ class YourProfileRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getYourProfileData(token: String): Flow<Result<AuthResponse>> = flow {
+    override fun getYourProfileData(): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.getMoreAboutUser(token, "application/json")
+            val response = apiService.getMoreAboutUser()
 
             if (response.isSuccessful) {
                 Log.d("YourProfileData", "successful")

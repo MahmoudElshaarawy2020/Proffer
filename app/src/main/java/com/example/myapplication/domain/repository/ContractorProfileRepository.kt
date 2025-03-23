@@ -5,5 +5,5 @@ import com.example.myapplication.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface ContractorProfileRepository {
-    fun getContractorProfile(token: String, id: Int): Flow<Result<ContractorProfileResponse>>
+    fun getContractorProfile( id: Int): Flow<Result<ContractorProfileResponse>>
 }

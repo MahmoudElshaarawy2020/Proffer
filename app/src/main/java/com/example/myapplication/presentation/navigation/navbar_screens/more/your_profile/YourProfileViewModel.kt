@@ -43,7 +43,7 @@ class YourProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            profileUseCase.invoke(token)
+            profileUseCase.invoke()
                 .catch { e ->
                     Log.e("YourProfileRequestError", "API call failed", e)
                     _yourProfileState.value = Result.Error("Unexpected Error: ${e.message}")
@@ -64,7 +64,7 @@ class YourProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _deleteAccountState.value = Result.Loading()
 
-            deleteAccountUseCase.invoke(token)
+            deleteAccountUseCase.invoke()
                 .catch { e ->
                     Log.e("DeleteAccountError", "API call failed", e)
                     _deleteAccountState.value = Result.Error("Failed to delete account: ${e.message}")

@@ -13,6 +13,5 @@ class GetBidsUseCase @Inject constructor(
         rate: Int,
         minPrice: Int,
         maxPrice: Int,
-        token: String
-    ) = bidsRepository.getBids(skip, take, projectId, rate, minPrice, maxPrice, token)
+    ) = bidsRepository.getBids(skip, take, projectId, rate, minPrice, maxPrice)
 }

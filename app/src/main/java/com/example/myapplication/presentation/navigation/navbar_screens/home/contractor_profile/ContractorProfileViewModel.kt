@@ -25,7 +25,7 @@ class ContractorProfileViewModel @Inject constructor(
     fun getContractorProfile(token: String, id: Int) {
         viewModelScope.launch {
             try {
-                getContractorProfileUseCase.invoke(token, id)
+                getContractorProfileUseCase.invoke(id)
                     .catch { e ->
                         Log.e("getContractorProfileError", "API call failed", e)
                         _getContractorProfileState.value = Result.Error("Unexpected Error: ${e.message}")

@@ -9,5 +9,5 @@ import com.example.myapplication.util.Result
 class LogoutUseCase @Inject constructor(
     private val repository: ProfileRepository
 ) {
-    operator fun invoke(token: String) = repository.logout(token = token)
+    operator fun invoke() = repository.logout()
 }

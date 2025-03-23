@@ -24,11 +24,11 @@ import javax.inject.Inject
 class ProfileRepoImpl @Inject constructor(
     private val apiService: ApiService
 ) : ProfileRepository {
-    override fun getMoreAboutUser(token: String): Flow<Result<AuthResponse>> = flow {
+    override fun getMoreAboutUser(): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.getMoreAboutUser(token, "application/json")
+            val response = apiService.getMoreAboutUser()
 
             if (response.isSuccessful) {
                 Log.d("profileRepoImpl", "successful")
@@ -56,11 +56,11 @@ class ProfileRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun logout(token: String): Flow<Result<AuthResponse>> = flow {
+    override fun logout(): Flow<Result<AuthResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.logout(token, "application/json")
+            val response = apiService.logout()
 
             if (response.isSuccessful) {
                 Log.d("Account Logout", "successful")
@@ -249,13 +249,12 @@ class ProfileRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun contactUs(
-        token: String,
         contactUsRequest: ContactUsRequest
     ): Flow<Result<EditProfileResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.contactUs(token, contactUsRequest)
+            val response = apiService.contactUs(contactUsRequest)
 
             if (response.isSuccessful) {
                 Log.d("Contact us", "successful")
@@ -284,13 +283,12 @@ class ProfileRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun changePassword(
-        token: String,
         changePasswordRequest: ChangePasswordRequest
     ): Flow<Result<EditProfileResponse>> = flow {
         emit(Result.Loading())
 
         try {
-            val response = apiService.changePassword(token, changePasswordRequest)
+            val response = apiService.changePassword(changePasswordRequest)
 
             if (response.isSuccessful) {
                 Log.d("change password", "successful")

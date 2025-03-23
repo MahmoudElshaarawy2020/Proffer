@@ -55,7 +55,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            getContractorsUseCase.invoke(token)
+            getContractorsUseCase.invoke()
                 .catch { e ->
                     Log.e("getContractorsError", "API call failed", e)
                     _getContractorsState.value = Result.Error("Unexpected Error: ${e.message}")

@@ -51,22 +51,13 @@ interface ApiService {
     ): Response<AuthResponse>
 
     @GET("auth/profile")
-    suspend fun getMoreAboutUser(
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
-    ): Response<AuthResponse>
+    suspend fun getMoreAboutUser(): Response<AuthResponse>
 
     @DELETE("auth/delete-account")
-    suspend fun deleteAccount(
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
-    ): Response<AuthResponse>
+    suspend fun deleteAccount(): Response<AuthResponse>
 
     @POST("auth/logout")
-    suspend fun logout(
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
-    ): Response<AuthResponse>
+    suspend fun logout(): Response<AuthResponse>
 
     @Multipart
     @POST("auth/edit-profile")
@@ -81,7 +72,6 @@ interface ApiService {
 
     @POST("auth/change-password")
     suspend fun changePassword(
-        @Header("Authorization") token: String,
         @Body changePasswordRequest: ChangePasswordRequest
     ): Response<EditProfileResponse>
 
@@ -93,8 +83,6 @@ interface ApiService {
         @Query("rate") rate: Int,
         @Query("min_price") minPrice: Int,
         @Query("max_price") maxPrice: Int,
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
     ): Response<BidsResponse>
 
     @GET("faqs")
@@ -116,10 +104,7 @@ interface ApiService {
     suspend fun getSliders(): Response<HomeSliderResponse>
 
     @GET("clients/home?filter[status]=pending")
-    suspend fun getContractors(
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
-    ): Response<HomeResponse>
+    suspend fun getContractors(): Response<HomeResponse>
 
 
     @GET("contact-types")
@@ -132,13 +117,11 @@ interface ApiService {
 
     @POST("contact-us")
     suspend fun contactUs(
-        @Header("Authorization") token: String,
         @Body contactUsRequest: ContactUsRequest
     ): Response<EditProfileResponse>
 
     @GET("clients/contractor/{contractorId}/profile")
     suspend fun getContractorProfile(
-        @Header("Authorization") token: String,
         @Path("contractorId") contractorId: Int
     ): Response<ContractorProfileResponse>
 
@@ -159,18 +142,14 @@ interface ApiService {
         @Part("city_id") city_id: RequestBody,
         @Part("governorate_id") governorate_id: RequestBody,
         @Part images: List<MultipartBody.Part>,
-        @Header("Authorization") token: String,
-        @Header("Accept") accept: String
     ): Response<CreateProjectResponse>
 
     @GET("room-zones")
     suspend fun getRoomZones(
-        @Header("Accept") accept: String
     ): Response<RoomZonesResponse>
 
     @GET("materials")
     suspend fun getMaterials(
-        @Header("Accept") accept: String,
         @Query("filter[category]") category: Int,
     ): Response<MaterialsResponse>
 

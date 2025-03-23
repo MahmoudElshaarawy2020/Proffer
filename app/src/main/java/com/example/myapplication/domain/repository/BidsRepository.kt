@@ -6,5 +6,5 @@ import com.example.myapplication.util.Result
 
 
 interface BidsRepository {
-    fun getBids(skip: Int, take: Int, projectId: Int, rate: Int, minPrice: Int, maxPrice: Int, token: String): Flow<Result<BidsResponse>>
+    fun getBids(skip: Int, take: Int, projectId: Int, rate: Int, minPrice: Int, maxPrice: Int): Flow<Result<BidsResponse>>
 }
