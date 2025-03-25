@@ -33,6 +33,11 @@ class DataStoreManager @Inject constructor(@ApplicationContext private val conte
             preferences[TOKEN_KEY] = token
         }
     }
+    val getUserData: Flow<Data?> = dataStore.data.map { preferences ->
+        preferences[USER_DATA_KEY]?.let { userJson ->
+            Gson().fromJson(userJson, Data::class.java)
+        }
+    }
 
     suspend fun clearToken() {
         Log.d("DataStoreManager", "Clearing token")
@@ -44,7 +49,7 @@ class DataStoreManager @Inject constructor(@ApplicationContext private val conte
 
     /** Save User Data **/
     suspend fun saveUserData(user: Data) {
-        val userJson = Gson().toJson(user) // Convert object to JSON
+        val userJson = Gson().toJson(user)
         dataStore.edit { preferences ->
             preferences[USER_DATA_KEY] = userJson
         }

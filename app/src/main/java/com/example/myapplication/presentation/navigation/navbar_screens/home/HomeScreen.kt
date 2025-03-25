@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,14 +53,19 @@ fun HomeScreen(
     val dataStoreManager = remember { DataStoreManager(context) }
     val token by dataStoreManager.getToken.collectAsState(initial = null)
 
+    val userData by homeViewModel.userData.observeAsState()
 
     val sliderState by homeViewModel.getSliderState.collectAsState()
     val contractorsState by homeViewModel.getContractorsState.collectAsState()
     val isLoading = sliderState is Result.Loading || contractorsState is Result.Loading
 
-    LaunchedEffect(Unit) {
-        homeViewModel.getSliders()
-        token?.let { homeViewModel.getContractors(it) }
+    LaunchedEffect(token) {
+        if (sliderState !is Result.Success) {
+            homeViewModel.getSliders()
+        }
+        if (contractorsState !is Result.Success && token != null) {
+            homeViewModel.getContractors(token!!)
+        }
     }
 
 
@@ -98,13 +104,15 @@ fun HomeScreen(
                             fontSize = 14.sp,
                             textAlign = TextAlign.Start
                         )
-                        Text(
-                            text = "Apps Square!",
-                            color = Color.Black,
-                            fontSize = 17.sp,
-                            textAlign = TextAlign.Start,
-                            fontWeight = FontWeight.Bold
-                        )
+                        userData?.name?.let {
+                            Text(
+                                text = it,
+                                color = Color.Black,
+                                fontSize = 17.sp,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.weight(1f))
 

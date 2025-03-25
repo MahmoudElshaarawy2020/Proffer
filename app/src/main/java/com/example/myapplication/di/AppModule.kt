@@ -2,6 +2,7 @@ package com.example.myapplication.di
 
 import android.app.Application
 import android.content.Context
+import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.repository.BidsRepoImpl
 import com.example.myapplication.data.repository.ContractorProfileRepoImpl
@@ -46,8 +47,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRegisterRepo(apiService: ApiService): RegisterRepository {
-        return RegisterRepoImpl(apiService)
+    fun provideRegisterRepo(apiService: ApiService, dataStoreManager: DataStoreManager): RegisterRepository {
+        return RegisterRepoImpl(apiService, dataStoreManager)
     }
 
     @Provides
@@ -58,8 +59,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepo(apiService: ApiService): LoginRepository {
-        return LoginRepoImpl(apiService)
+    fun provideLoginRepo(apiService: ApiService, dataStoreManager: DataStoreManager): LoginRepository {
+        return LoginRepoImpl(apiService, dataStoreManager)
     }
 
     @Provides

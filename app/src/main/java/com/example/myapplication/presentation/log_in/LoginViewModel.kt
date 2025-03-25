@@ -1,11 +1,14 @@
 package com.example.myapplication.presentation.log_in
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.response.AuthResponse
+import com.example.myapplication.data.response.Data
 import com.example.myapplication.domain.use_case.LoginUseCase
 import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +24,9 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val dataStoreManager: DataStoreManager
 ): ViewModel() {
+
+    val userData: LiveData<Data?> = dataStoreManager.getUserData.asLiveData()
+
     private val _loginState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
     val loginState: MutableStateFlow<Result<AuthResponse>> get() = _loginState
 
