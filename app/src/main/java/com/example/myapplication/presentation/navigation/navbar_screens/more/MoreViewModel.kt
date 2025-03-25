@@ -45,6 +45,7 @@ class MoreViewModel @Inject constructor(
 
     private val _profileState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
     val profileState: MutableStateFlow<Result<AuthResponse>> get() = _profileState
+    private var isProfileFetched = false
 
     private val _getFaqState = MutableStateFlow<Result<FAQResponse>>(Result.Loading())
     val getFaqState: MutableStateFlow<Result<FAQResponse>> get() = _getFaqState
@@ -75,7 +76,6 @@ class MoreViewModel @Inject constructor(
     val getPrivacyState: MutableStateFlow<Result<PrivacyPolicyResponse>> get() = _getPrivacyState
 
 
-
     private val _isAuthenticated = MutableStateFlow(true)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
 
@@ -83,6 +83,9 @@ class MoreViewModel @Inject constructor(
     val logoutState: MutableStateFlow<Result<AuthResponse>> get() = _logoutState
 
     fun getMoreAboutUser(token: String) {
+        if (isProfileFetched) return
+        isProfileFetched = true
+
         viewModelScope.launch {
             try {
                 if (token.isNotEmpty()) {
@@ -90,6 +93,7 @@ class MoreViewModel @Inject constructor(
                         .catch { e ->
                             Log.e("ProfileRequestError", "API call failed", e)
                             _profileState.value = Result.Error("Unexpected Error: ${e.message}")
+                            isProfileFetched = false
                         }
                         .collectLatest { result ->
                             _profileState.value = result
@@ -101,6 +105,8 @@ class MoreViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("ProfileRequestError", "Unexpected error", e)
                 _profileState.value = Result.Error("Unexpected Error: ${e.message}")
+                isProfileFetched = false
+
             }
         }
     }
@@ -126,6 +132,7 @@ class MoreViewModel @Inject constructor(
                         }
                     }
                 }
+
         }
     }
 
