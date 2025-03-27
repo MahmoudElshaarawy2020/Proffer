@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/light_pink" /> <!-- Change to your splash color -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/logo_img" /> <!-- Change to your logo -->
+    </item>
+</layer-list>

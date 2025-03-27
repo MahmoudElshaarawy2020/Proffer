@@ -22,12 +22,10 @@ fun SplashScreen(
     navController: NavController,
     dataStoreManager: DataStoreManager
 ) {
-    // Collect token value from DataStoreManager
     val token = dataStoreManager.getToken.collectAsState(initial = null).value
 
-    // Navigate based on the token value
     LaunchedEffect(token) {
-        delay(2000) // Optional delay for splash screen effect
+        delay(2000)
 
         if (token.isNullOrEmpty()) {
             navController.navigate(Screen.OnBoarding.route) {

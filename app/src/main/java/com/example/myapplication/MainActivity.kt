@@ -6,6 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.data_store.DataStoreManager
@@ -29,7 +34,19 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val systemUiController =
                 com.google.accompanist.systemuicontroller.rememberSystemUiController()
+            var startDestination by remember { mutableStateOf(Screen.Home.route) }
 
+//            val token = dataStoreManager.getToken.collectAsState(initial = null).value
+//
+//            if (token.isNullOrEmpty()) {
+//                navController.navigate(Screen.OnBoarding.route) {
+//                    popUpTo(Screen.Splash.route) { inclusive = true }
+//                }
+//            } else {
+//                navController.navigate(Screen.Home.route) {
+//                    popUpTo(Screen.Splash.route) { inclusive = true }
+//                }
+//            }
             SideEffect {
                 systemUiController.setStatusBarColor(
                     color = Color.Transparent, darkIcons = true
@@ -38,16 +55,12 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                val token = dataStoreManager.getToken.first()
-                navController.navigate(
-                    if (token.isNullOrEmpty()) Screen.OnBoarding.route else Screen.Home.route
-                ) {
-                    popUpTo(Screen.Splash.route) { inclusive = true }
-                }
+                val token = dataStoreManager.getToken.first() // Read token **before** navigation starts
+                startDestination = if (token.isNullOrEmpty()) Screen.OnBoarding.route else Screen.Home.route
             }
             AppNavigation(
                 navController = navController,
-                startDestination = Screen.Splash.route,
+                startDestination = startDestination,
                 dataStoreManager = dataStoreManager
             )
         }
