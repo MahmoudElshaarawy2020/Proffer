@@ -12,13 +12,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProjectsList(selectedTabIndex: Int) {
     val currentProjects = listOf(
-        Project("In progress", "Project Alpha", "Contractor Ahmed", "15000 L.E", "12/3/2023"),
-        Project("In progress", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
-        Project("In progress", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
-        Project("In progress", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
-        Project("In progress", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
-        Project("In progress", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
-        Project("In progress", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
+        Project("In progress", "Project 1", "Contractor Ahmed", "15000 L.E", "12/3/2023"),
+        Project("Done", "Project Beta", "Contractor Karim", "20000 L.E", "14/3/2023"),
+        Project("In progress", "Project 3", "Contractor khalid", "20000 L.E", "14/3/2023"),
+        Project("In progress", "Project 4", "Contractor Ramy", "20000 L.E", "14/3/2023"),
+        Project("Delayed", "Project 5", "Contractor Ahmed", "20000 L.E", "14/3/2023"),
+        Project("In progress", "Project 6", "Contractor Karim", "20000 L.E", "14/3/2023"),
+        Project("In progress", "Project 7", "Contractor Karim", "20000 L.E", "14/3/2023"),
     )
 
     val historyProjects = listOf(

@@ -51,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.request.VerificationRequest
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +71,17 @@ fun VerificationScreen(
     var context = LocalContext.current
 
     val verificationState by viewModel.verificationState.collectAsState()
+
+    var timer by remember { mutableStateOf(60) }
+    var isTimerActive by remember { mutableStateOf(true) }
+
+    LaunchedEffect(isTimerActive) {
+        while (timer > 0 && isTimerActive) {
+            delay(1000L) // Wait for 1 second
+            timer -= 1
+        }
+        isTimerActive = false // Stop verification after timer reaches zero
+    }
 
     LaunchedEffect(verificationState.data) {
         if (verificationState.data?.status == true) {
@@ -183,10 +195,10 @@ fun VerificationScreen(
         }
 
         Text(
-            text = "00:28",
+            text = "00:${if (timer < 10) "0$timer" else timer}",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Gray
+            color = if (timer > 5) Color.Gray else Color.Red
         )
 
         Spacer(modifier = modifier.size(height = 120.dp, width = 0.dp))
@@ -195,18 +207,14 @@ fun VerificationScreen(
             modifier = modifier
                 .size(width = 230.dp, height = 50.dp),
             onClick = {
-                if (isOtpComplete) {
+                if (isOtpComplete && isTimerActive) {
                     val request = VerificationRequest(email = email, code = otp.joinToString(""))
                     viewModel.verification(request)
-                    if (viewModel.verificationState.value.data?.status == true ) {
-                        onNavigateToHome()
-                        Log.w("can Verify", "VerificationScreen: Successful Verification")
-                    }
-                }else {
-                    Toast.makeText(context, "Verification failed", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Verification time expired!", Toast.LENGTH_SHORT).show()
                 }
             },
-            enabled = isOtpComplete,
+            enabled = isOtpComplete && isTimerActive,
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
         ) {
             Text(
@@ -221,13 +229,20 @@ fun VerificationScreen(
         }
 
         Text(
-            modifier = modifier.clickable {},
+            modifier = modifier
+                .clickable {
+                    if (!isTimerActive) {
+                        timer = 60
+                        isTimerActive = true
+                        otp = List(otpLength) { "" }
+                    }
+                },
             text = "Resend code",
             textDecoration = TextDecoration.Underline,
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.orange),
+            color = if (isTimerActive) Color.Gray else colorResource(id = R.color.orange),
         )
 
         Spacer(modifier = modifier.size(height = 64.dp, width = 0.dp))
