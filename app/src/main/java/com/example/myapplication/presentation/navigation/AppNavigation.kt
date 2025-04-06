@@ -241,7 +241,6 @@ fun AppNavigation(
 
             composable(Screen.Splash.route) {
                 SplashScreen(
-
                     navController = navController,
                     dataStoreManager = dataStoreManager
                 )

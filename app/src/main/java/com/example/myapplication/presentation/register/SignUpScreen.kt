@@ -55,7 +55,6 @@ fun SignUpScreen(
     onNavigateToLogin: () -> Unit = {}
 ) {
 
-    Log.d("TAG", "SignUpScreen: $role")
     var userName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }

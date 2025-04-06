@@ -11,10 +11,8 @@ interface YourProfileRepository {
     fun deleteAccount(): Flow<Result<AuthResponse>>
     fun getYourProfileData(): Flow<Result<AuthResponse>>
     fun editYourProfile(
-        method: RequestBody,
-        userName: RequestBody,
-        phoneNumber: RequestBody,
-        address: RequestBody,
+        partMap: Map<String, RequestBody>,
         image: MultipartBody.Part?
     ): Flow<Result<EditProfileResponse>>
+
 }

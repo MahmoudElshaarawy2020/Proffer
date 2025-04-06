@@ -8,19 +8,7 @@
 
     interface CreateProjectRepository {
         fun createProject(
-            name: RequestBody,
-            project_type_id: RequestBody,
-            from_budget: RequestBody,
-            to_budget: RequestBody,
-            location: RequestBody,
-            lat: RequestBody,
-            long: RequestBody,
-            area: RequestBody,
-            start_date: RequestBody,
-            duration: RequestBody,
-            is_open_budget: RequestBody,
-            city_id: RequestBody,
-            governorate_id: RequestBody,
-            image: List<MultipartBody.Part>
+            partMap: Map<String, @JvmSuppressWildcards RequestBody>,
+            images: List<MultipartBody.Part>
         ): Flow<Result<CreateProjectResponse>>
     }

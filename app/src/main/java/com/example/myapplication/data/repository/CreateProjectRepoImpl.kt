@@ -9,10 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -21,39 +19,15 @@ class CreateProjectRepoImpl @Inject constructor(
     private val apiService: ApiService,
 ) : CreateProjectRepository {
     override fun createProject(
-        name: RequestBody,
-        project_type_id: RequestBody,
-        from_budget: RequestBody,
-        to_budget: RequestBody,
-        location: RequestBody,
-        lat: RequestBody,
-        long: RequestBody,
-        area: RequestBody,
-        start_date: RequestBody,
-        duration: RequestBody,
-        is_open_budget: RequestBody,
-        city_id: RequestBody,
-        governorate_id: RequestBody,
-        image: List<MultipartBody.Part>
+        partMap: Map<String, @JvmSuppressWildcards RequestBody>,
+        images: List<MultipartBody.Part>
     ): Flow<Result<CreateProjectResponse>> = flow {
         emit(Result.Loading())
 
         try {
             val response = apiService.createProject(
-                name = name,
-                project_type_id = project_type_id,
-                from_budget = from_budget,
-                to_budget = to_budget,
-                location = location,
-                lat = lat,
-                long = long,
-                start_date = start_date,
-                is_open_budget = is_open_budget,
-                area = area,
-                duration = duration,
-                city_id = city_id,
-                governorate_id = governorate_id,
-                images = image,
+                partMap = partMap,
+                images = images
             )
 
             if (response.isSuccessful) {

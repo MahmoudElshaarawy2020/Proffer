@@ -9,34 +9,10 @@ class CreateProjectUseCase @Inject constructor(
     private val createProjectRepository: CreateProjectRepository
 ) {
     operator fun invoke(
-        name: RequestBody,
-        project_type_id: RequestBody,
-        from_budget: RequestBody,
-        to_budget: RequestBody,
-        location: RequestBody,
-        lat: RequestBody,
-        long: RequestBody,
-        area: RequestBody,
-        start_date: RequestBody,
-        duration: RequestBody,
-        is_open_budget: RequestBody,
-        city_id: RequestBody,
-        governorate_id: RequestBody,
+        partMap : Map<String, @JvmSuppressWildcards RequestBody>,
         image: List<MultipartBody.Part>
     ) = createProjectRepository.createProject(
-        name,
-        project_type_id,
-        from_budget,
-        to_budget,
-        location,
-        lat,
-        long,
-        area,
-        start_date,
-        duration,
-        is_open_budget,
-        city_id,
-        governorate_id,
+        partMap,
         image
     )
 }

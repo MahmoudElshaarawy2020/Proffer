@@ -74,25 +74,26 @@ class AddProjectViewModel @Inject constructor(
 
         viewModelScope.launch {
             _createProjectState.value = Result.Loading()
-            createProjectUseCase.invoke(
-                name,
-                project_type_id,
-                from_budget,
-                to_budget,
-                location,
-                lat,
-                long,
-                area,
-                start_date,
-                duration,
-                is_open_budget,
-                city_id,
-                governorate_id,
-                image
-            )
+            val partMap = mutableMapOf<String, RequestBody>().apply {
+                put("name", name)
+                put("project_type_id", project_type_id)
+                put("from_budget", from_budget)
+                put("to_budget", to_budget)
+                put("location", location)
+                put("lat", lat)
+                put("long", long)
+                put("area", area)
+                put("duration", duration)
+                put("start_date", start_date)
+                put("is_open_budget", is_open_budget)
+                put("city_id", city_id)
+                put("governorate_id", governorate_id)
+            }
+            createProjectUseCase.invoke(partMap, image)
                 .catch { e ->
                     Log.e("createProjectError", "API call failed", e)
-                    _createProjectState.value = Result.Error("Failed to create project: ${e.message}")
+                    _createProjectState.value =
+                        Result.Error("Failed to create project: ${e.message}")
                 }
                 .collectLatest { result ->
                     _createProjectState.value = result

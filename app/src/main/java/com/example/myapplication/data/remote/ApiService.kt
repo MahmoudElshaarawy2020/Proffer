@@ -19,6 +19,7 @@ import com.example.myapplication.data.response.HomeSliderResponse
 import com.example.myapplication.data.response.MaterialsResponse
 import com.example.myapplication.data.response.ProjectTypesResponse
 import com.example.myapplication.data.response.RoomZonesResponse
+import com.example.myapplication.data.response.TermsData
 import com.example.myapplication.data.response.TermsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -30,6 +31,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
@@ -62,12 +64,8 @@ interface ApiService {
     @Multipart
     @POST("auth/edit-profile")
     suspend fun editProfile(
-        @Part("_method") method: RequestBody,
-        @Part("name") userName: RequestBody,
-        @Part("phone") phoneNumber: RequestBody,
-        @Part("address") address: RequestBody,
-        @Part image: MultipartBody.Part?,
-        @Part("profile_image") requestBody: RequestBody,
+        @PartMap partMap: Map<String, @JvmSuppressWildcards RequestBody>,
+        @Part image: MultipartBody.Part?
     ): Response<EditProfileResponse>
 
     @POST("auth/change-password")
@@ -128,19 +126,7 @@ interface ApiService {
     @Multipart
     @POST("clients/projects")
     suspend fun createProject(
-        @Part("name") name: RequestBody,
-        @Part("project_type_id") project_type_id: RequestBody,
-        @Part("area") area: RequestBody,
-        @Part("from_budget") from_budget: RequestBody,
-        @Part("to_budget") to_budget: RequestBody,
-        @Part("location") location: RequestBody,
-        @Part("lat") lat: RequestBody,
-        @Part("long") long: RequestBody,
-        @Part("start_date") start_date: RequestBody,
-        @Part("duration") duration: RequestBody,
-        @Part("is_open_budget") is_open_budget: RequestBody,
-        @Part("city_id") city_id: RequestBody,
-        @Part("governorate_id") governorate_id: RequestBody,
+        @PartMap partMap: Map<String, @JvmSuppressWildcards RequestBody>,
         @Part images: List<MultipartBody.Part>,
     ): Response<CreateProjectResponse>
 

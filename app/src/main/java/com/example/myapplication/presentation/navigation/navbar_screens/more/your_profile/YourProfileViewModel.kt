@@ -92,20 +92,22 @@ class YourProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _editYourProfileState.value = Result.Loading()
 
-            if (userName != null) {
-                if (phoneNumber != null) {
-                    if (address != null) {
-                        editProfileUseCase.invoke(method, userName, phoneNumber, address, image)
-                            .catch { e ->
-                                Log.e("EditYourProfileError", "API call failed", e)
-                                _editYourProfileState.value = Result.Error("Failed to edit profile: ${e.message}")
-                            }
-                            .collectLatest { result ->
-                                _editYourProfileState.value = result
-                            }
-                    }
-                }
+            val partMap = mutableMapOf<String, RequestBody>().apply {
+                put("_method", method)
+                put("name", userName)
+                phoneNumber?.let { put("phone", it) }
+                address?.let { put("address", it) }
             }
+
+            editProfileUseCase.invoke(partMap, image)
+                .catch { e ->
+                    Log.e("EditYourProfileError", "API call failed", e)
+                    _editYourProfileState.value = Result.Error("Failed to edit profile: ${e.message}")
+                }
+                .collectLatest { result ->
+                    _editYourProfileState.value = result
+                }
         }
     }
+
 }
