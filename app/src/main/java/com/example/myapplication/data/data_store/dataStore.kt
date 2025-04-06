@@ -22,20 +22,32 @@ class DataStoreManager @Inject constructor(@ApplicationContext val context: Cont
         private val Context.dataStore by preferencesDataStore(name = "user_prefs")
         val TOKEN_KEY = stringPreferencesKey("auth_token")
         val USER_DATA_KEY = stringPreferencesKey("user_data")
+        val PROFILE_IMAGE_KEY = stringPreferencesKey("profile_image")
+
     }
 
     val getToken: Flow<String?> = dataStore.data.map { preferences ->
         preferences[TOKEN_KEY]
     }
 
+    val getProfileImage: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PROFILE_IMAGE_KEY] ?: "" // Default to an empty string if no image URL is stored
+    }
+
     suspend fun saveAuthToken(token: String) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
+
         }
     }
     val getUserData: Flow<Data?> = dataStore.data.map { preferences ->
         preferences[USER_DATA_KEY]?.let { userJson ->
             Gson().fromJson(userJson, Data::class.java)
+        }
+    }
+     suspend fun saveProfileImage(profileImageUri: String) {
+        dataStore.edit { preferences ->
+            preferences[PROFILE_IMAGE_KEY] = profileImageUri
         }
     }
 

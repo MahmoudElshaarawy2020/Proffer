@@ -74,7 +74,7 @@ fun EditProfileScreen(
     var address by remember { mutableStateOf("") }
     val yourProfileState by viewModel.yourProfileState.collectAsState()
     val context = LocalContext.current
-    val dataStoreManager = remember { DataStoreManager(context) }
+    val dataStoreManager = remember {DataStoreManager(context)}
     val token by dataStoreManager.getToken.collectAsState(initial = null)
     val editYourProfileState by viewModel.yourProfileState.collectAsState()
     val phoneNumberNullable =
@@ -83,12 +83,13 @@ fun EditProfileScreen(
         (yourProfileState as? Result.Success)?.data?.userData?.address ?: ""
     val userNameNullable = (yourProfileState as? Result.Success)?.data?.userData?.name ?: ""
 
-    val imageUrl = (editYourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
+    val imageUrl by dataStoreManager.getProfileImage.collectAsState(initial = "")
 
 
-    var selectedImageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
+
+var selectedImageUri by remember {
+    mutableStateOf<Uri?>(null)
+}
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -97,225 +98,236 @@ fun EditProfileScreen(
         }
     )
 
-    viewModel.editYourProfileState.collectAsState().value.let { state ->
-        when (state) {
-            is Result.Loading -> Log.d("EditProfileScreen", "Loading...")
-            is Result.Success ->{
-                Log.d("EditProfileScreen", "Success: ${state.data}")
-                navController.navigate(Screen.Home.route)
+    if (selectedImageUri != null) {
+        LaunchedEffect(selectedImageUri) {
+            selectedImageUri?.let {
+                dataStoreManager.saveProfileImage(it.toString())
             }
-            is Result.Error -> Log.e("EditProfileScreen", "Error: ${state.message}")
-            is Result.Idle -> TODO()
         }
     }
 
-    LaunchedEffect(token) {
-        if (!token.isNullOrEmpty()) {
-            Log.d("Using Token", token!!)
-            viewModel.getYourProfileData(token!!)
+viewModel.editYourProfileState.collectAsState().value .let {
+    state ->
+    when (state) {
+        is Result.Loading -> Log.d("EditProfileScreen", "Loading...")
+        is Result.Success -> {
+            Log.d("EditProfileScreen", "Success: ${state.data}")
+            navController.navigate(Screen.Home.route)
         }
+
+        is Result.Error -> Log.e("EditProfileScreen", "Error: ${state.message}")
+        is Result.Idle -> TODO()
     }
+}
+
+LaunchedEffect(token) {
+    if (!token.isNullOrEmpty()) {
+        Log.d("Using Token", token!!)
+        viewModel.getYourProfileData(token!!)
+    }
+}
 
 
+
+Column(
+modifier = Modifier
+.fillMaxSize()
+.background(color = colorResource(R.color.light_white)),
+horizontalAlignment = Alignment.CenterHorizontally,
+verticalArrangement = Arrangement.Top
+) {
+    TopAppBar(
+        title = {
+            Text(
+                "Edit Profile",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 35.dp),
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = colorResource(R.color.light_white)),
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    painter = painterResource(R.drawable.back_arrow_img),
+                    contentDescription = "Back",
+                    tint = Color.Unspecified
+                )
+            }
+        },
+    )
+
+    Box(
+        modifier
+            .size(100.dp)
+            .fillMaxWidth(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+
+        AsyncImage(
+            modifier = modifier
+                .clip(CircleShape)
+                .size(70.dp),
+            model = ImageRequest.Builder(context)
+                .data(selectedImageUri ?: imageUrl)
+                .crossfade(true)
+                .placeholder(R.drawable.client_img)
+                .error(R.drawable.client_img)
+                .build(),
+            contentDescription = "Profile Image",
+        )
+
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.edit_ic),
+                contentDescription = "Edit",
+                modifier = Modifier
+                    .size(23.dp)
+                    .clickable {
+                        singlePhotoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                tint = colorResource(R.color.dark_blue)
+            )
+        }
+
+
+    }
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = colorResource(R.color.light_white)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center
     ) {
-        TopAppBar(
-            title = {
-                Text(
-                    "Edit Profile",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 35.dp),
-                    fontSize = 24.sp,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = colorResource(R.color.light_white)),
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        painter = painterResource(R.drawable.back_arrow_img),
-                        contentDescription = "Back",
-                        tint = Color.Unspecified
-                    )
-                }
-            },
+        Text(
+            "User Name",
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black,
         )
 
-        Box(
-            modifier
-                .size(100.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
+        CustomTextField(
+            value = userName,
+            onValueChange = { userName = it },
+            label = userNameNullable,
+            focusedBorderColor = colorResource(id = R.color.lighter_grey),
+            unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
+            cursorColor = colorResource(id = R.color.light_grey),
+            isFocused = false
+        )
+    }
 
-            AsyncImage(
-                modifier = modifier
-                    .clip(CircleShape)
-                    .size(70.dp),
-                model = ImageRequest.Builder(context)
-                    .data(selectedImageUri ?: imageUrl)
-                    .crossfade(true)
-                    .placeholder(R.drawable.client_img)
-                    .error(R.drawable.client_img)
-                    .build(),
-                contentDescription = "Profile Image",
-            )
+    Column(
+        modifier = Modifier
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            "Phone Number",
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black,
+        )
 
-            Row(
-                modifier
-                    .fillMaxWidth()
-                    .padding(end = 16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.edit_ic),
-                    contentDescription = "Edit",
-                    modifier = Modifier
-                        .size(23.dp)
-                        .clickable {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                        },
-                    tint = colorResource(R.color.dark_blue)
+        CustomTextField(
+            value = phoneNumber,
+            onValueChange = { phoneNumber = it },
+            label = phoneNumberNullable,
+            focusedBorderColor = colorResource(id = R.color.lighter_grey),
+            unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
+            cursorColor = colorResource(id = R.color.light_grey),
+            isFocused = false,
+            isPhoneNumber = true
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            "Address",
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black,
+        )
+
+        CustomTextField(
+            value = address,
+            onValueChange = { address = it },
+            label = addressNullable,
+            focusedBorderColor = colorResource(id = R.color.lighter_grey),
+            unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
+            cursorColor = colorResource(id = R.color.light_grey),
+            isFocused = false
+        )
+    }
+
+    Spacer(
+        modifier = Modifier
+            .size(height = 100.dp, width = 0.dp)
+    )
+
+
+    Button(
+        modifier = modifier
+            .size(width = 230.dp, height = 50.dp),
+        onClick = {
+            Log.d("EditProfileScreen", "Button clicked!")
+            val imagePart = prepareFilePart(selectedImageUri, context)
+            val finalUserName = if (userName.isNotEmpty()) userName else userNameNullable
+            val finalPhoneNumber =
+                if (phoneNumber.isNotEmpty()) phoneNumber else phoneNumberNullable
+            val finalAddress = if (address.isNotEmpty()) address else addressNullable
+
+            val requestUserName = finalUserName.toRequestBody("text/plain".toMediaType())
+            val requestPhoneNumber = finalPhoneNumber.toRequestBody("text/plain".toMediaType())
+            val requestAddress = finalAddress.toRequestBody("text/plain".toMediaType())
+            val requestMethod = "put".toRequestBody("text/plain".toMediaType())
+
+            token?.let {
+                viewModel.editYourProfile(
+                    it,
+                    method = requestMethod,
+                    userName = requestUserName,
+                    phoneNumber = requestPhoneNumber,
+                    address = requestAddress,
+                    image = imagePart
                 )
             }
 
-
-        }
-
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                "User Name",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
-            )
-
-            CustomTextField(
-                value = userName,
-                onValueChange = { userName = it },
-                label = userNameNullable,
-                focusedBorderColor = colorResource(id = R.color.lighter_grey),
-                unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
-                cursorColor = colorResource(id = R.color.light_grey),
-                isFocused = false
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                "Phone Number",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
-            )
-
-            CustomTextField(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = phoneNumberNullable,
-                focusedBorderColor = colorResource(id = R.color.lighter_grey),
-                unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
-                cursorColor = colorResource(id = R.color.light_grey),
-                isFocused = false,
-                isPhoneNumber = true
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                "Address",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
-            )
-
-            CustomTextField(
-                value = address,
-                onValueChange = { address = it },
-                label = addressNullable,
-                focusedBorderColor = colorResource(id = R.color.lighter_grey),
-                unfocusedBorderColor = colorResource(id = R.color.lighter_grey),
-                cursorColor = colorResource(id = R.color.light_grey),
-                isFocused = false
-            )
-        }
-
-        Spacer(
-            modifier = Modifier
-                .size(height = 100.dp, width = 0.dp)
+            Log.d("EditProfileScreen", "editYourProfile called")
+        },
+        colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
+    ) {
+        Text(
+            text = "Save changes",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 2,
+            textAlign = TextAlign.Center,
+            color = colorResource(id = R.color.light_white),
+            lineHeight = 25.sp
         )
-
-
-        Button(
-            modifier = modifier
-                .size(width = 230.dp, height = 50.dp),
-            onClick = {
-                Log.d("EditProfileScreen", "Button clicked!")
-                val imagePart = prepareFilePart(selectedImageUri, context)
-                val finalUserName = if (userName.isNotEmpty()) userName else userNameNullable
-                val finalPhoneNumber = if (phoneNumber.isNotEmpty()) phoneNumber else phoneNumberNullable
-                val finalAddress = if (address.isNotEmpty()) address else addressNullable
-
-                val requestUserName = finalUserName.toRequestBody("text/plain".toMediaType())
-                val requestPhoneNumber = finalPhoneNumber.toRequestBody("text/plain".toMediaType())
-                val requestAddress = finalAddress.toRequestBody("text/plain".toMediaType())
-                val requestMethod = "put".toRequestBody("text/plain".toMediaType())
-
-                token?.let {
-                    viewModel.editYourProfile(
-                        it,
-                        method = requestMethod,
-                        userName = requestUserName,
-                        phoneNumber = requestPhoneNumber,
-                        address = requestAddress,
-                        image = imagePart
-                    )
-                }
-
-                Log.d("EditProfileScreen", "editYourProfile called")
-            },
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
-        ) {
-            Text(
-                text = "Save changes",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 2,
-                textAlign = TextAlign.Center,
-                color = colorResource(id = R.color.light_white),
-                lineHeight = 25.sp
-            )
-        }
-
     }
+
+}
 
 
 }

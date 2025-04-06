@@ -43,7 +43,7 @@ fun YourProfileScreen(
     val yourProfileState by viewModel.yourProfileState.collectAsState()
     val deleteAccountState by viewModel.deleteAccountState.collectAsState()
     val name = (yourProfileState as? Result.Success)?.data?.userData?.name ?: "Unknown"
-    val imageUrl = (yourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
+    val imageUrl by dataStoreManager.getProfileImage.collectAsState(initial = "")
     val email = (yourProfileState as? Result.Success)?.data?.userData?.email ?: "example@gmail.com"
     val phoneNumber = (yourProfileState as? Result.Success)?.data?.userData?.phone ?: "0000000000"
     val location = (yourProfileState as? Result.Success)?.data?.userData?.address ?: "Unknown Location"
