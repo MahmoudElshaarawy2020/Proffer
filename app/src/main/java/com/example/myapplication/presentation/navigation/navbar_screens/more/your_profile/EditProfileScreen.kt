@@ -78,10 +78,10 @@ fun EditProfileScreen(
     val token by dataStoreManager.getToken.collectAsState(initial = null)
     val editYourProfileState by viewModel.yourProfileState.collectAsState()
     val phoneNumberNullable =
-        (yourProfileState as? Result.Success)?.data?.userData?.phone ?: "0000000000"
+        (yourProfileState as? Result.Success)?.data?.userData?.phone ?: ""
     val addressNullable =
-        (yourProfileState as? Result.Success)?.data?.userData?.address ?: "Unknown Location"
-    val userNameNullable = (yourProfileState as? Result.Success)?.data?.userData?.name ?: "John Doe"
+        (yourProfileState as? Result.Success)?.data?.userData?.address ?: ""
+    val userNameNullable = (yourProfileState as? Result.Success)?.data?.userData?.name ?: ""
 
     val imageUrl = (editYourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
 

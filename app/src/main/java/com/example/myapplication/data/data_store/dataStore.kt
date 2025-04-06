@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 
-class DataStoreManager @Inject constructor(@ApplicationContext private val context: Context) {
+class DataStoreManager @Inject constructor(@ApplicationContext val context: Context) {
     private val dataStore = context.dataStore
 
     companion object {

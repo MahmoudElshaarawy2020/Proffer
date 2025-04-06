@@ -22,7 +22,7 @@ import javax.inject.Inject
 class YourProfileViewModel @Inject constructor(
     private val profileUseCase: GetYourProfileUseCase,
     private val deleteAccountUseCase: DeleteProfileUseCase,
-    private val editProfileUseCase: EditYourProfileUseCase
+    private val editProfileUseCase: EditYourProfileUseCase,
 ) : ViewModel() {
 
     private val _yourProfileState = MutableStateFlow<Result<AuthResponse>>(Result.Loading())
@@ -109,5 +109,6 @@ class YourProfileViewModel @Inject constructor(
                 }
         }
     }
+
 
 }

@@ -75,7 +75,6 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-navigation-animation:0.31.2-alpha")
 
-
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 //    kapt("androidx.room:room-compiler:2.6.1")
 
