@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.MyApplication" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="windowSplashScreenBackground">@color/light_pink</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/contractor_img</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/light_pink</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyApplication</item>
     </style>
 </resources>

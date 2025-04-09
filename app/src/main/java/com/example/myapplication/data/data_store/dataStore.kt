@@ -31,7 +31,7 @@ class DataStoreManager @Inject constructor(@ApplicationContext val context: Cont
     }
 
     val getProfileImage: Flow<String> = dataStore.data.map { preferences ->
-        preferences[PROFILE_IMAGE_KEY] ?: "" // Default to an empty string if no image URL is stored
+        preferences[PROFILE_IMAGE_KEY] ?: ""
     }
 
     suspend fun saveAuthToken(token: String) {

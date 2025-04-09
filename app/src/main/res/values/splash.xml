@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    <style name="Theme.SplashScreen.ComposeSplash" parent="Theme.SplashScreen.IconBackground">-->
+<!--        <item name="windowSplashScreenBackground">@color/light_pink</item>-->
+<!--        <item name="windowSplashScreenAnimatedIcon">@drawable/contractor_img</item>-->
+<!--        <item name="windowSplashScreenIconBackgroundColor">@color/light_pink</item>-->
+<!--        <item name="postSplashScreenTheme">@style/Theme.SplashScreen.ComposeSplash</item>-->
+<!--    </style>-->
+</resources>

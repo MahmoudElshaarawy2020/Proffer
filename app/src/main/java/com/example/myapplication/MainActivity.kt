@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,48 +21,42 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject
     lateinit var dataStoreManager: DataStoreManager
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+//      installSplashScreen()
         setContent {
             val navController = rememberNavController()
             val systemUiController =
                 com.google.accompanist.systemuicontroller.rememberSystemUiController()
-            var startDestination by remember { mutableStateOf(Screen.Home.route) }
 
-//            val token = dataStoreManager.getToken.collectAsState(initial = null).value
-//
-//            if (token.isNullOrEmpty()) {
-//                navController.navigate(Screen.OnBoarding.route) {
-//                    popUpTo(Screen.Splash.route) { inclusive = true }
-//                }
-//            } else {
-//                navController.navigate(Screen.Home.route) {
-//                    popUpTo(Screen.Splash.route) { inclusive = true }
-//                }
-//            }
+            var startDestination by remember { mutableStateOf<String?>(null) }
+
+            // SideEffect for system UI colors
             SideEffect {
                 systemUiController.setStatusBarColor(
                     color = Color.Transparent, darkIcons = true
                 )
-                systemUiController.setNavigationBarColor(Color.White, true)
+                systemUiController.setNavigationBarColor(Color.White, false)
             }
 
             LaunchedEffect(Unit) {
-                val token = dataStoreManager.getToken.first() // Read token **before** navigation starts
-                startDestination = if (token.isNullOrEmpty()) Screen.OnBoarding.route else Screen.Home.route
+                val token = dataStoreManager.getToken.first()
+                startDestination = Screen.Splash.route // Always start with Splash
             }
-            AppNavigation(
-                navController = navController,
-                startDestination = startDestination,
-                dataStoreManager = dataStoreManager
-            )
+
+            // Only show navigation when ready
+            startDestination?.let {
+                AppNavigation(
+                    navController = navController,
+                    startDestination = it,
+                    dataStoreManager = dataStoreManager
+                )
+            }
         }
+
     }
 
 }
