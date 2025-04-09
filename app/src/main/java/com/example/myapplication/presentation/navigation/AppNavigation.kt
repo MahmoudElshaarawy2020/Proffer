@@ -2,11 +2,19 @@ package com.example.myapplication.presentation.navigation
 
 import NotificationScreen
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -45,7 +53,7 @@ import com.example.myapplication.presentation.verification.VerificationScreen
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
-    startDestination: String,
+    startDestination: String = Screen.Splash.route,
     navController: NavHostController,
     dataStoreManager: DataStoreManager
 ) {
@@ -73,7 +81,238 @@ fun AppNavigation(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        bottomBar = {
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = startDestination,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+
+            ) {
+                composable(Screen.Login.route) {
+                    LoginScreen(
+                        modifier = modifier,
+                        navController = navController,
+                        onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
+                        onNavigateToHome = { navController.navigate(Screen.Home.route) }
+                    )
+                }
+                composable(Screen.OnBoarding.route) {
+                    OnBoardingScreen(
+                        modifier = modifier,
+                        navController = navController,
+                        onRoleClickBoarding = { role ->
+                            navController.navigate(Screen.SignUp.createRoute(role))
+                        },
+                        onNavigateToLogin = { navController.navigate(Screen.Login.route) },
+
+                        )
+                }
+
+                composable(
+                    route = "signUp_screen/{role}",
+                    arguments = listOf(navArgument("role") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val role = backStackEntry.arguments?.getInt("role") ?: 1
+
+                    SignUpScreen(
+                        modifier = modifier,
+                        navController = navController,
+                        role = role,
+                        onNavigateToLogin = { navController.navigate(Screen.Login.route) },
+                        onNavigateToVerification = {
+                            navController.navigate(
+                                Screen.Verification.createRoute(
+                                    email = it
+                                )
+                            )
+                        }
+                    )
+                }
+
+
+                composable(
+                    route = "verification_screen/{email}",
+                    arguments = listOf(navArgument("email") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val email = backStackEntry.arguments?.getString("email") ?: ""
+                    VerificationScreen(
+                        modifier = modifier,
+                        email = email,
+                        navController = navController,
+                        onNavigateToHome = { navController.navigate(Screen.Home.route) }
+                    )
+                }
+                composable(Screen.NewPassword.route) {
+                    NewPasswordScreen(
+                        modifier = modifier,
+                    )
+                }
+
+
+                composable(Screen.Notification.route) {
+                    NotificationScreen(
+                        modifier = modifier,
+                        navController = navController
+                    )
+                }
+
+                composable(Screen.More.route) {
+                    MoreScreen(
+                        navController = navController,
+                        modifier = modifier,
+                    )
+                }
+
+                composable(Screen.Home.route) {
+                    HomeScreen(
+                        modifier = modifier,
+                        navController = navController,
+                        onNotificationClick = {
+                            navController.navigate(Screen.Notification.route)
+                        },
+                        onContractorClick = {
+                            navController.navigate(Screen.ContractorProfile.createRoute(it))
+                        }
+                    )
+                }
+
+                composable(Screen.Projects.route) {
+                    ProjectsScreen(
+                        modifier = modifier,
+                        navController = navController,
+                        onTypeClickProject = {
+                            navController.navigate(Screen.AddProject.route)
+                        }
+                    )
+                }
+
+                composable(Screen.Bids.route) {
+                    BidsScreen(
+                        modifier = modifier,
+                        navController = navController
+                    )
+                }
+
+                composable(Screen.AddProject.route) {
+                    AddProjectScreen(
+                        navController = navController
+                    )
+                }
+
+                composable(Screen.Splash.route) {
+                    SplashScreen(
+                        navController = navController,
+                        dataStoreManager = dataStoreManager
+                    )
+                }
+                composable(Screen.EditProfile.route) {
+                    EditProfileScreen(
+                        navController = navController,
+                    )
+                }
+
+                composable(Screen.ContactUs.route) {
+                    ContactUsScreen(
+                        navController = navController,
+                    )
+                }
+
+                composable(Screen.Settings.route) {
+                    SettingsScreen(
+                        navController = navController,
+                        modifier = modifier,
+                    )
+                }
+
+
+
+                composable(
+                    route = Screen.ContractorProfile.route,
+                    arguments = listOf(navArgument("contractorId") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val contractorId = backStackEntry.arguments?.getInt("contractorId") ?: 0
+
+                    ContractorProfileScreen(
+                        navController = navController,
+                        contractorId = contractorId
+                    )
+                }
+
+                composable(Screen.Privacy.route) {
+                    PrivacyScreen(
+                        navController = navController,
+                        modifier = modifier,
+                    )
+                }
+
+                composable(Screen.AboutUs.route) {
+                    AboutUsScreen(
+                        navController = navController,
+                        modifier = modifier,
+                    )
+                }
+
+                composable(Screen.Terms.route) {
+                    TermsConditions(
+                        navController = navController,
+                        modifier = modifier,
+                    )
+                }
+
+                composable(Screen.RoomDetails.route) {
+                    RoomDetailsScreen(
+                        navController = navController,
+                        onMaterialSelected = {}
+                    )
+                }
+
+                composable(Screen.FAQ.route) {
+                    FAQScreen(
+                        navController = navController,
+                        modifier = modifier,
+                    )
+                }
+
+
+                composable(Screen.ChangePassword.route) {
+                    ChangePasswordScreen(
+                        navController = navController,
+                        onNavigateToLogin = {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
+                }
+
+
+
+                composable(Screen.YourProfile.route) {
+                    YourProfileScreen(
+                        modifier = modifier,
+                        onNavigateToOnboarding = {
+                            navController.navigate(Screen.OnBoarding.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        onNavigateToEditProfile = {
+                            navController.navigate(Screen.EditProfile.route)
+                        }
+                    )
+                }
+            }
+
             if (
                 currentRoute?.startsWith(Screen.Verification.route) != true &&
                 currentRoute != Screen.Login.route &&
@@ -97,6 +336,11 @@ fun AppNavigation(
 
             ) {
                 BottomNavigationBar(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(Color.Transparent),
                     items = bottomNavItems,
                     selectedItem = if (selectedItemIndex != -1) selectedItemIndex else 0,
                     onItemSelected = { index ->
@@ -114,233 +358,6 @@ fun AppNavigation(
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
-                )
-            }
-
-        }
-    ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-
-        ) {
-            composable(Screen.Login.route) {
-                LoginScreen(
-                    modifier = modifier,
-                    navController = navController,
-                    onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
-                    onNavigateToHome = { navController.navigate(Screen.Home.route) }
-                )
-            }
-            composable(Screen.OnBoarding.route) {
-                OnBoardingScreen(
-                    modifier = modifier,
-                    navController = navController,
-                    onRoleClickBoarding = { role ->
-                        navController.navigate(Screen.SignUp.createRoute(role))
-                    },
-                    onNavigateToLogin = { navController.navigate(Screen.Login.route) },
-
-                    )
-            }
-
-            composable(
-                route = "signUp_screen/{role}",
-                arguments = listOf(navArgument("role") { type = NavType.IntType })
-            ) { backStackEntry ->
-                val role = backStackEntry.arguments?.getInt("role") ?: 1
-
-                SignUpScreen(
-                    modifier = modifier,
-                    navController = navController,
-                    role = role,
-                    onNavigateToLogin = { navController.navigate(Screen.Login.route) },
-                    onNavigateToVerification = {
-                        navController.navigate(
-                            Screen.Verification.createRoute(
-                                email = it
-                            )
-                        )
-                    }
-                )
-            }
-
-
-            composable(
-                route = "verification_screen/{email}",
-                arguments = listOf(navArgument("email") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val email = backStackEntry.arguments?.getString("email") ?: ""
-                VerificationScreen(
-                    modifier = modifier,
-                    email = email,
-                    navController = navController,
-                    onNavigateToHome = { navController.navigate(Screen.Home.route) }
-                )
-            }
-            composable(Screen.NewPassword.route) {
-                NewPasswordScreen(
-                    modifier = modifier,
-                )
-            }
-
-
-            composable(Screen.Notification.route) {
-                NotificationScreen(
-                    modifier = modifier,
-                    navController = navController
-                )
-            }
-
-            composable(Screen.More.route) {
-                MoreScreen(
-                    navController = navController,
-                    modifier = modifier,
-                )
-            }
-
-            composable(Screen.Home.route) {
-                HomeScreen(
-                    modifier = modifier,
-                    navController = navController,
-                    onNotificationClick = {
-                        navController.navigate(Screen.Notification.route)
-                    },
-                    onContractorClick = {
-                        navController.navigate(Screen.ContractorProfile.createRoute(it))
-                    }
-                )
-            }
-
-            composable(Screen.Projects.route) {
-                ProjectsScreen(
-                    modifier = modifier,
-                    navController = navController,
-                    onTypeClickProject = {
-                        navController.navigate(Screen.AddProject.route)
-                    }
-                )
-            }
-
-            composable(Screen.Bids.route) {
-                BidsScreen(
-                    modifier = modifier,
-                    navController = navController
-                )
-            }
-
-            composable(Screen.AddProject.route) {
-                AddProjectScreen(
-                    navController = navController
-                )
-            }
-
-            composable(Screen.Splash.route) {
-                SplashScreen(
-                    navController = navController,
-                    dataStoreManager = dataStoreManager
-                )
-            }
-            composable(Screen.EditProfile.route) {
-                EditProfileScreen(
-                    navController = navController,
-                )
-            }
-
-            composable(Screen.ContactUs.route) {
-                ContactUsScreen(
-                    navController = navController,
-                )
-            }
-
-            composable(Screen.Settings.route) {
-                SettingsScreen(
-                    navController = navController,
-                    modifier = modifier,
-                )
-            }
-
-
-
-            composable(
-                route = Screen.ContractorProfile.route,
-                arguments = listOf(navArgument("contractorId") { type = NavType.IntType })
-            ) { backStackEntry ->
-                val contractorId = backStackEntry.arguments?.getInt("contractorId") ?: 0
-
-                ContractorProfileScreen(
-                    navController = navController,
-                    contractorId = contractorId
-                )
-            }
-
-            composable(Screen.Privacy.route) {
-                PrivacyScreen(
-                    navController = navController,
-                    modifier = modifier,
-                )
-            }
-
-            composable(Screen.AboutUs.route) {
-                AboutUsScreen(
-                    navController = navController,
-                    modifier = modifier,
-                )
-            }
-
-            composable(Screen.Terms.route) {
-                TermsConditions(
-                    navController = navController,
-                    modifier = modifier,
-                )
-            }
-
-            composable(Screen.RoomDetails.route) {
-                RoomDetailsScreen(
-                    navController = navController,
-                    onMaterialSelected = {}
-                )
-            }
-
-            composable(Screen.FAQ.route) {
-                FAQScreen(
-                    navController = navController,
-                    modifier = modifier,
-                )
-            }
-
-
-            composable(Screen.ChangePassword.route) {
-                ChangePasswordScreen(
-                    navController = navController,
-                    onNavigateToLogin = {
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
-            }
-
-
-
-            composable(Screen.YourProfile.route) {
-                YourProfileScreen(
-                    modifier = modifier,
-                    onNavigateToOnboarding = {
-                        navController.navigate(Screen.OnBoarding.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    onNavigateToEditProfile = {
-                        navController.navigate(Screen.EditProfile.route)
                     }
                 )
             }

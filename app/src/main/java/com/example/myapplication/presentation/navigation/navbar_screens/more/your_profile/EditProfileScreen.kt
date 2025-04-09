@@ -83,7 +83,7 @@ fun EditProfileScreen(
         (yourProfileState as? Result.Success)?.data?.userData?.address ?: ""
     val userNameNullable = (yourProfileState as? Result.Success)?.data?.userData?.name ?: ""
 
-    val imageUrl by dataStoreManager.getProfileImage.collectAsState(initial = "")
+    val imageUrl = (yourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
 
 
 
