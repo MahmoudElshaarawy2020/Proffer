@@ -20,7 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
 
-        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAA45Wu-wl6asCn2rM1rq-9TsplfTQAcpc" />
