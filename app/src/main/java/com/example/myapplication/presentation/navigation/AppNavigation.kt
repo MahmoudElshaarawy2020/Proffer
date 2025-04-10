@@ -338,8 +338,7 @@ fun AppNavigation(
                 BottomNavigationBar(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 32.dp, start = 16.dp, end = 16.dp)
-                        .clip(RoundedCornerShape(32.dp))
+                        .padding(bottom = 26.dp, start = 16.dp, end = 16.dp)
                         .background(Color.Transparent),
                     items = bottomNavItems,
                     selectedItem = if (selectedItemIndex != -1) selectedItemIndex else 0,
