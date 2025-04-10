@@ -64,6 +64,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -77,6 +78,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.myapplication.data.response.MaterialItem
 import com.example.myapplication.data.response.RoomZonesResponse
 import com.example.myapplication.util.Result
 
@@ -94,6 +96,8 @@ fun RoomDetailsScreen(
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Int?>(null) }
+    val selectedMaterials = remember { mutableStateMapOf<Int, MaterialItem?>() }
+
 
 
     val categoryList by remember(selectedRoom) {
@@ -136,19 +140,6 @@ fun RoomDetailsScreen(
         viewModel.getRoomZones()
     }
 
-    if (showDialog && selectedCategory != null) {
-        MaterialsDialog(
-            onDismiss = { showDialog = false },
-            onMaterialClick = { material ->
-                onMaterialSelected(material?.id ?: 0)
-                showDialog = false
-            },
-            categoryId = selectedCategory!!,
-            viewModel = viewModel
-        )
-    }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -159,7 +150,7 @@ fun RoomDetailsScreen(
         TopAppBar(
             title = {
                 Text(
-                    "Add Project",
+                    "Add Room",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 35.dp),
@@ -286,15 +277,21 @@ fun RoomDetailsScreen(
                 }
             }
 
-            //Room Materials
             item {
                 Column(Modifier.fillMaxSize()) {
 
                     if (showDialog && selectedCategory != null) {
                         MaterialsDialog(
                             onDismiss = { showDialog = false },
-                            onMaterialClick = { showDialog = false },
                             categoryId = selectedCategory!!,
+                            preSelectedMaterial = selectedMaterials[selectedCategory],
+                            onMaterialClick = { material ->
+                                material?.let {
+                                    selectedMaterials[selectedCategory!!] = it
+                                    it.id?.let { it1 -> onMaterialSelected(it1) }
+                                }
+                                showDialog = false
+                            },
                             viewModel = viewModel
                         )
                     }

@@ -8,19 +8,19 @@ data class MaterialsResponse(
 	val data: List<MaterialItem?>? = null,
 
 	@field:SerializedName("count")
-	val count: Int? = null,
+	val count: Int? = 0,
 
 	@field:SerializedName("message")
 	val message: String? = null,
 
 	@field:SerializedName("status")
-	val status: Boolean? = null
+	val status: Boolean? = true
 )
 
 data class MaterialItem(
 
 	@field:SerializedName("price")
-	val price: Int? = null,
+	val price: Double? = null,
 
 	@field:SerializedName("name")
 	val name: String? = null,

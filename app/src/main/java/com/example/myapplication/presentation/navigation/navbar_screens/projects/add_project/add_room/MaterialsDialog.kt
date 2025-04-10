@@ -31,10 +31,11 @@ fun MaterialsDialog(
     onDismiss: () -> Unit,
     onMaterialClick: (MaterialItem?) -> Unit,
     categoryId: Int,
+    preSelectedMaterial: MaterialItem? = null,
     viewModel: RoomViewModel = hiltViewModel()
 ) {
     val materialsState by viewModel.getMaterialsState.collectAsState()
-    var selectedMaterial by remember { mutableStateOf<MaterialItem?>(null) }
+    var selectedMaterial by remember { mutableStateOf(preSelectedMaterial)}
 
     LaunchedEffect(categoryId) {
         viewModel.getMaterials(categoryId)
@@ -195,7 +196,7 @@ fun MaterialItemCard(
                     )
                 }
                 Text(
-                    text = "${material.price} M²",
+                    text = "${"%.2f".format(material.price ?: 0.0)} L.E / M²",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White

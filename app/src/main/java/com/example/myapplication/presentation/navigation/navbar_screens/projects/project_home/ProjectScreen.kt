@@ -82,7 +82,7 @@ fun ProjectsScreen(
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp),
+                .padding(bottom = 75.dp, end = 16.dp),
             containerColor = Color(0xFFE96C32),
             contentColor = Color.White
         ) {

@@ -58,16 +58,20 @@ class RoomRepoImpl @Inject constructor(
             val response = apiService.getMaterials(category)
 
             if (response.isSuccessful) {
-                Log.d("getMaterials", "successful")
-                response.body()?.let {
-                    emit(Result.Success(it))
-                } ?: emit(Result.Error("Empty response body"))
+                val body = response.body()
+                Log.d("getMaterials", "Body: $body")
+
+                if (body?.status == true) {
+                    emit(Result.Success(body))
+                } else {
+                    emit(Result.Error(body?.message ?: "Unknown error"))
+                }
 
             } else {
-                Log.d("getMaterials", "profile API call failed")
+                Log.d("getMaterials", "API call failed")
                 emit(
                     Result.Error(
-                        "Error: ${
+                        "Server Error: ${
                             response.errorBody()?.string()
                         }"
                     )
@@ -82,4 +86,5 @@ class RoomRepoImpl @Inject constructor(
             emit(Result.Error("Unexpected Error: ${e.message}"))
         }
     }.flowOn(Dispatchers.IO)
+
 }
