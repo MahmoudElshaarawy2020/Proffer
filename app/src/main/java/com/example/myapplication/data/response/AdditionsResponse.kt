@@ -20,7 +20,7 @@ data class AdditionsResponse(
 data class AdditionsItem(
 
 	@field:SerializedName("price")
-	val price: Any? = null,
+	val price: Double? = null,
 
 	@field:SerializedName("name")
 	val name: String? = null,

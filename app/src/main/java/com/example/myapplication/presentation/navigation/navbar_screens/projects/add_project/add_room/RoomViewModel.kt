@@ -5,17 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.response.AdditionsResponse
 import com.example.myapplication.data.response.MaterialsResponse
-import com.example.myapplication.data.response.ProjectTypesResponse
 import com.example.myapplication.data.response.RoomZonesResponse
 import com.example.myapplication.domain.use_case.GetAdditionsUseCase
 import com.example.myapplication.domain.use_case.GetMaterialsUseCase
 import com.example.myapplication.domain.use_case.GetRoomZonesUseCase
-import com.example.myapplication.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.example.myapplication.util.Result
 import javax.inject.Inject
 
 @HiltViewModel
