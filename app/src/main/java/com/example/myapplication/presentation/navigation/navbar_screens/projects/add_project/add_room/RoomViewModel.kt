@@ -3,9 +3,11 @@ package com.example.myapplication.presentation.navigation.navbar_screens.project
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.response.AdditionsResponse
 import com.example.myapplication.data.response.MaterialsResponse
 import com.example.myapplication.data.response.ProjectTypesResponse
 import com.example.myapplication.data.response.RoomZonesResponse
+import com.example.myapplication.domain.use_case.GetAdditionsUseCase
 import com.example.myapplication.domain.use_case.GetMaterialsUseCase
 import com.example.myapplication.domain.use_case.GetRoomZonesUseCase
 import com.example.myapplication.util.Result
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RoomViewModel @Inject constructor(
     private val getRoomZonesUseCase: GetRoomZonesUseCase,
-    private val getMaterialsUseCase: GetMaterialsUseCase
+    private val getMaterialsUseCase: GetMaterialsUseCase,
+    private val getAdditionsUseCase: GetAdditionsUseCase
 ) : ViewModel() {
 
     private val _getRoomZonesState =
@@ -30,6 +33,11 @@ class RoomViewModel @Inject constructor(
     private val _getMaterialsState =
         MutableStateFlow<Result<MaterialsResponse>>(Result.Loading())
     val getMaterialsState: MutableStateFlow<Result<MaterialsResponse>> get() = _getMaterialsState
+
+
+    private val _getAdditionsState =
+        MutableStateFlow<Result<AdditionsResponse>>(Result.Loading())
+    val getAdditionsState: MutableStateFlow<Result<AdditionsResponse>> get() = _getAdditionsState
 
     fun getRoomZones() {
         viewModelScope.launch {
@@ -65,6 +73,25 @@ class RoomViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("getMaterialError", "Unexpected error", e)
                 _getMaterialsState.value = Result.Error("Unexpected Error: ${e.message}")
+            }
+        }
+    }
+
+    fun getAdditions(category: Int) {
+        viewModelScope.launch {
+            try {
+                getAdditionsUseCase.invoke(category)
+                    .catch { e ->
+                        Log.e("getAdditionsError", "API call failed", e)
+                        _getAdditionsState.value = Result.Error("Unexpected Error: ${e.message}")
+                    }
+                    .collectLatest { result ->
+                        _getAdditionsState.value = result
+                    }
+
+            } catch (e: Exception) {
+                Log.e("getAdditionsError", "Unexpected error", e)
+                _getAdditionsState.value = Result.Error("Unexpected Error: ${e.message}")
             }
         }
     }

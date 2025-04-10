@@ -1,5 +1,6 @@
 package com.example.myapplication.domain.repository
 
+import com.example.myapplication.data.response.AdditionsResponse
 import com.example.myapplication.data.response.MaterialsResponse
 import com.example.myapplication.data.response.RoomZonesResponse
 import kotlinx.coroutines.flow.Flow
@@ -10,4 +11,8 @@ interface RoomRepository {
     fun getMaterials(
         category: Int
     ): Flow<Result<MaterialsResponse>>
+
+    fun getAdditions(
+        category: Int
+    ): Flow<Result<AdditionsResponse>>
 }

@@ -6,6 +6,7 @@ import com.example.myapplication.data.request.LoginRequest
 import com.example.myapplication.data.request.RegisterRequest
 import com.example.myapplication.data.request.VerificationRequest
 import com.example.myapplication.data.response.AboutUsResponse
+import com.example.myapplication.data.response.AdditionsResponse
 import com.example.myapplication.data.response.AuthResponse
 import com.example.myapplication.data.response.BidsResponse
 import com.example.myapplication.data.response.ContractorProfileResponse
@@ -138,5 +139,11 @@ interface ApiService {
     suspend fun getMaterials(
         @Query("filter[category]") category: Int,
     ): Response<MaterialsResponse>
+
+
+    @GET("additions")
+    suspend fun getAdditions(
+        @Query("filter[category]") category: Int,
+    ): Response<AdditionsResponse>
 
 }

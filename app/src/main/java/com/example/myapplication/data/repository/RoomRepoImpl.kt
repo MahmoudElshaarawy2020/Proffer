@@ -2,6 +2,7 @@ package com.example.myapplication.data.repository
 
 import android.util.Log
 import com.example.myapplication.data.remote.ApiService
+import com.example.myapplication.data.response.AdditionsResponse
 import com.example.myapplication.data.response.MaterialsResponse
 import com.example.myapplication.data.response.RoomZonesResponse
 import com.example.myapplication.domain.repository.RoomRepository
@@ -87,4 +88,39 @@ class RoomRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    override fun getAdditions(category: Int): Flow<Result<AdditionsResponse>> = flow {
+        emit(Result.Loading())
+
+        try {
+            val response = apiService.getAdditions(category)
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                Log.d("getAdditions", "Body: $body")
+
+                if (body?.status == true) {
+                    emit(Result.Success(body))
+                } else {
+                    emit(Result.Error(body?.message ?: "Unknown error"))
+                }
+
+            } else {
+                Log.d("getAdditions", "API call failed")
+                emit(
+                    Result.Error(
+                        "Server Error: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
+            }
+
+        } catch (e: HttpException) {
+            emit(Result.Error("HTTP Error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Result.Error("Network Error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Result.Error("Unexpected Error: ${e.message}"))
+        }
+    }.flowOn(Dispatchers.IO)
 }
