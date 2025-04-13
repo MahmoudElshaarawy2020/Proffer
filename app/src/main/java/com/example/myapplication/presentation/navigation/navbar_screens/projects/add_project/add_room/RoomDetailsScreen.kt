@@ -117,13 +117,9 @@ fun RoomDetailsScreen(
     var image4 by remember { mutableStateOf<Uri?>(null) }
     var image5 by remember { mutableStateOf<Uri?>(null) }
     var image6 by remember { mutableStateOf<Uri?>(null) }
-    var imageList by remember { mutableStateOf<ArrayList<Uri>>(arrayListOf()) }
-    image1?.let { imageList.add(it) }
-    image2?.let { imageList.add(it) }
-    image3?.let { imageList.add(it) }
-    image4?.let { imageList.add(it) }
-    image5?.let { imageList.add(it) }
-    image6?.let { imageList.add(it) }
+    val imageList = remember(image1, image2, image3, image4, image5, image6) {
+        listOfNotNull(image1, image2, image3, image4, image5, image6)
+    }
 
     val roomTypes = when (roomTypesState) {
         is Result.Success -> (roomTypesState as Result.Success<RoomZonesResponse>)
@@ -553,7 +549,6 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 // Title appears normally when collapsed
                 if (!expanded) {
                     Icon(
@@ -588,8 +583,6 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
                     )
                 )
             ) {
-
-                // Move Title to the top of the TextField when expanded
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -632,108 +625,172 @@ fun ExpandedCard(
     var expanded by remember { mutableStateOf(false) }
     var selectedModel by remember { mutableStateOf("Model") }
     var amount by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
+    var selectedPrice by remember { mutableStateOf(0) }
+    var showSummary by remember { mutableStateOf(false) }
 
     val additionsState by viewModel.getAdditionsState.collectAsState()
 
-    // Trigger API call when card appears
     LaunchedEffect(categoryId) {
         viewModel.getAdditions(categoryId)
     }
 
-    val models = when (additionsState) {
-        is Result.Success -> {
-            val response = (additionsState as Result.Success<AdditionsResponse>).data
-            response?.data?.filterNotNull()?.map { it.name ?: "Unnamed" }
-        }
-        else -> emptyList()
+    val additions = when (additionsState) {
+        is Result.Success -> (additionsState as Result.Success<AdditionsResponse>).data?.data?.filterNotNull()
+        else -> null
     }
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-            .clickable(onClick = onCollapse),
-        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
+    if (showSummary) {
+        SummaryCard(
+            model = selectedModel,
+            amount = amount,
+            price = selectedPrice,
+            onEdit = { showSummary = false }
+        )
+    } else {
+        Card(
+            modifier = modifier
                 .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
+            shape = RoundedCornerShape(16.dp),
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            // Dropdown Menu
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }) {
-                OutlinedTextField(
-                    value = selectedModel,
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Gray,
-                        unfocusedBorderColor = Color.LightGray
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            modifier = Modifier.clickable { expanded = true })
-                    }
-                )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    if (models != null) {
-                        models.forEach { model ->
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }) {
+                    OutlinedTextField(
+                        value = selectedModel,
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                modifier = Modifier.clickable { expanded = true })
+                        },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.LightGray
+                        )
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }) {
+                        additions?.forEach { item ->
                             DropdownMenuItem(
-                                text = { Text(model) },
+                                text = { Text(item.name ?: "Unnamed") },
                                 onClick = {
-                                    selectedModel = model
+                                    selectedModel = item.name ?: "Unnamed"
+                                    selectedPrice = (item.price ?: 0).toInt()
                                     expanded = false
                                 }
                             )
                         }
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            // Amount Input
-            OutlinedTextField(
-                value = amount,
-                onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() }) amount = newValue
-                },
-                placeholder = { Text("Amount", color = Color.Gray, fontSize = 12.sp) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Gray,
-                    unfocusedBorderColor = Color.LightGray
-                )
-            )
-            Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 50.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Info",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(16.dp)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { if (it.all(Char::isDigit)) amount = it },
+                    placeholder = { Text("Amount", color = Color.Gray, fontSize = 12.sp) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray
+                    )
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = price, fontSize = 9.sp, color = Color.Gray)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Price row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 50.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Info",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Total Price: ${((selectedPrice) * (amount.toIntOrNull() ?: 0))} L.E",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    Text(
+                        text = "Clear",
+                        color = colorResource(R.color.orange),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .clickable {
+                                selectedModel = "Model"
+                                selectedPrice = 0
+                                amount = ""
+                            }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {
+                        if (selectedModel != "Model" && amount.isNotEmpty()) {
+                            showSummary = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.orange)),
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Confirm")
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun SummaryCard(
+    model: String,
+    amount: String,
+    price: Int,
+    onEdit: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onEdit() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Selected Model: $model", fontSize = 16.sp)
+            Text("Amount: $amount", fontSize = 16.sp)
+            Text("Total Price: ${price * (amount.toIntOrNull() ?: 0)} L.E", fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -829,7 +886,7 @@ fun MaterialCategoryItem(title: String, imageRes: Int, onClick: () -> Unit) {
 
 
 data class CategUI(val id: Int, val img: Int, val name: String, val list: List<AdditionModel>)
-data class AdditionModel(val name: String)
+data class AdditionModel(val name: String, val price: Double, val amount : Int)
 
 fun Int.getAdditionIconByID(): Int {
     return when (this) {
