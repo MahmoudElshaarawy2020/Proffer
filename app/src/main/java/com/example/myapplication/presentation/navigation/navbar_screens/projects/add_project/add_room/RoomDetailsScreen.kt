@@ -64,7 +64,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -78,7 +77,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.response.MaterialItem
+import com.example.myapplication.data.response.AdditionsItem
+import com.example.myapplication.data.response.AdditionsResponse
 import com.example.myapplication.data.response.RoomZonesResponse
 import com.example.myapplication.util.Result
 
@@ -96,8 +96,6 @@ fun RoomDetailsScreen(
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Int?>(null) }
-    val selectedMaterials = remember { mutableStateMapOf<Int, MaterialItem?>() }
-
 
 
     val categoryList by remember(selectedRoom) {
@@ -140,6 +138,19 @@ fun RoomDetailsScreen(
         viewModel.getRoomZones()
     }
 
+    if (showDialog && selectedCategory != null) {
+        MaterialsDialog(
+            onDismiss = { showDialog = false },
+            onMaterialClick = { material ->
+                onMaterialSelected(material?.id ?: 0)
+                showDialog = false
+            },
+            categoryId = selectedCategory!!,
+            viewModel = viewModel
+        )
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -150,7 +161,7 @@ fun RoomDetailsScreen(
         TopAppBar(
             title = {
                 Text(
-                    "Add Room",
+                    "Add Project",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 35.dp),
@@ -277,21 +288,15 @@ fun RoomDetailsScreen(
                 }
             }
 
+            //Room Materials
             item {
                 Column(Modifier.fillMaxSize()) {
 
                     if (showDialog && selectedCategory != null) {
                         MaterialsDialog(
                             onDismiss = { showDialog = false },
+                            onMaterialClick = { showDialog = false },
                             categoryId = selectedCategory!!,
-                            preSelectedMaterial = selectedMaterials[selectedCategory],
-                            onMaterialClick = { material ->
-                                material?.let {
-                                    selectedMaterials[selectedCategory!!] = it
-                                    it.id?.let { it1 -> onMaterialSelected(it1) }
-                                }
-                                showDialog = false
-                            },
                             viewModel = viewModel
                         )
                     }
@@ -608,7 +613,7 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
                             textAlign = TextAlign.Start
                         )
 
-                        ExpandedCard(onCollapse = onExpand)
+                        ExpandedCard(onCollapse = onExpand, categoryId = category.id)
                     }
                 }
             }
@@ -620,15 +625,32 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
 @Composable
 fun ExpandedCard(
     modifier: Modifier = Modifier,
-    onCollapse: () -> Unit
+    onCollapse: () -> Unit,
+    categoryId: Int,
+    viewModel: RoomViewModel = hiltViewModel()
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val models = listOf("Model A", "Model B", "Model C")
     var selectedModel by remember { mutableStateOf("Model") }
     var amount by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
+
+    val additionsState by viewModel.getAdditionsState.collectAsState()
+
+    // Trigger API call when card appears
+    LaunchedEffect(categoryId) {
+        viewModel.getAdditions(categoryId)
+    }
+
+    val models = when (additionsState) {
+        is Result.Success -> {
+            val response = (additionsState as Result.Success<AdditionsResponse>).data
+            response?.data?.filterNotNull()?.map { it.name ?: "Unnamed" }
+        }
+        else -> emptyList()
+    }
+
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .clickable(onClick = onCollapse),
@@ -665,14 +687,16 @@ fun ExpandedCard(
                     }
                 )
                 ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    models.forEach { model ->
-                        DropdownMenuItem(
-                            text = { Text(model) },
-                            onClick = {
-                                selectedModel = model
-                                expanded = false
-                            }
-                        )
+                    if (models != null) {
+                        models.forEach { model ->
+                            DropdownMenuItem(
+                                text = { Text(model) },
+                                onClick = {
+                                    selectedModel = model
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -713,6 +737,7 @@ fun ExpandedCard(
         }
     }
 }
+
 
 @Composable
 fun AddImageButton(
@@ -836,5 +861,3 @@ fun getDryList(): List<CategUI> = listOf(
     CategUI(3, 3.getAdditionIconByID(), "Tele Point", emptyList()),
     CategUI(4, 4.getAdditionIconByID(), "Data Point", emptyList())
 )
-
-
