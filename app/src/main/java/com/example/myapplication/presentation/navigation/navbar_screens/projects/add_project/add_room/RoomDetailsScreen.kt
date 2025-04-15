@@ -64,8 +64,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
@@ -96,6 +98,7 @@ fun RoomDetailsScreen(
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Int?>(null) }
+    var confirmedAdditions by remember { mutableStateOf<List<AdditionModel>>(emptyList()) }
 
 
     val categoryList by remember(selectedRoom) {
@@ -353,15 +356,22 @@ fun RoomDetailsScreen(
 
             // Additions
             items(categoryList, key = { it.id }) { category ->
+                val confirmedAddition = confirmedAdditions.find { it.categoryId == category.id }
+
                 AdditionCard(
                     category = category,
-                    expanded = expandedCardId == category.id,
+                    isExpanded = expandedCardId == category.id,
                     onExpand = {
                         expandedCardId = if (expandedCardId == category.id) null else category.id
+                    },
+                    confirmedAddition = confirmedAddition,
+                    onAdditionConfirmed = { addition ->
+                        confirmedAdditions =
+                            confirmedAdditions.filter { it.categoryId != addition.categoryId } + addition
+                        expandedCardId = null
                     }
                 )
             }
-
             // Room Images
             item {
                 Text(text = "Room Images", fontWeight = FontWeight.Bold)
@@ -526,18 +536,31 @@ fun CustomOutlinedTextField(
 }
 
 @Composable
-fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
+fun AdditionCard(
+    category: CategUI,
+    isExpanded: Boolean,
+    onExpand: () -> Unit,
+    confirmedAddition: AdditionModel?,
+    onAdditionConfirmed: (AdditionModel) -> Unit
+) {
+    val backgroundColor = if (isExpanded || confirmedAddition != null) {
+        colorResource(R.color.light_pink)
+    } else {
+        colorResource(R.color.light_white)
+    }
+
+    var editingModel by remember { mutableStateOf<AdditionModel?>(null) } // <-- NEW
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .border(BorderStroke(1.dp, Color.LightGray), RoundedCornerShape(16.dp))
-            .clickable { onExpand() },
-        colors = CardDefaults.cardColors(
-            containerColor = if (!expanded) colorResource(R.color.light_white) else colorResource(
-                R.color.light_pink
-            )
-        ),
+            .clickable {
+                editingModel = confirmedAddition
+                onExpand()
+            },
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
@@ -549,89 +572,85 @@ fun AdditionCard(category: CategUI, expanded: Boolean, onExpand: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Title appears normally when collapsed
-                if (!expanded) {
-                    Icon(
-                        painter = painterResource(category.img),
-                        contentDescription = category.name,
-                        modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    painter = painterResource(category.img),
+                    contentDescription = category.name,
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = category.name,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorResource(R.color.dark_grey),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+                Text(
+                    text = category.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorResource(R.color.dark_grey),
+                    modifier = Modifier.weight(1f)
+                )
             }
 
-            // Animated Visibility for Expanded Content
-            AnimatedVisibility(
-                visible = expanded,
-                enter = fadeIn(animationSpec = tween(300)) + expandVertically(
-                    animationSpec = tween(
-                        300
-                    )
-                ),
-                exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(
-                    animationSpec = tween(
-                        300
-                    )
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(category.img),
-                        contentDescription = category.name,
-                        modifier = Modifier.size(50.dp),
-                        tint = Color.Unspecified
-                    )
-                    Column {
-
-                        Text(
-                            text = category.name,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colorResource(R.color.orange),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp, start = 8.dp),
-                            textAlign = TextAlign.Start
-                        )
-
-                        ExpandedCard(onCollapse = onExpand, categoryId = category.id)
+            // Show summary card if confirmed
+            confirmedAddition?.let { addition ->
+                SummaryCard(
+                    addition = addition,
+                    onEdit = {
+                        editingModel = addition
+                        onExpand()
                     }
-                }
+                )
+            }
+
+            // Show expansion content if expanded and no confirmed addition
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                ExpandedCard(
+                    category = category,
+                    initialModel = confirmedAddition?.let { addition ->
+                        AdditionsItem(
+                            id = addition.id,
+                            name = addition.name,
+                            price = addition.price,
+                        )
+                    },
+                    initialAmount = confirmedAddition?.amount?.toString() ?: "",
+                    onAdditionConfirmed = {
+                        editingModel = null
+                        onAdditionConfirmed(it)
+                    }
+                )
             }
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpandedCard(
     modifier: Modifier = Modifier,
-    onCollapse: () -> Unit,
-    categoryId: Int,
+    category: CategUI,
+    initialModel: AdditionsItem? = null,
+    initialAmount: String = "",
+    onAdditionConfirmed: (AdditionModel) -> Unit,
     viewModel: RoomViewModel = hiltViewModel()
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedModel by remember { mutableStateOf("Model") }
-    var amount by remember { mutableStateOf("") }
-    var selectedPrice by remember { mutableStateOf(0) }
-    var showSummary by remember { mutableStateOf(false) }
+    var selectedModel by remember (initialModel) {
+        mutableStateOf(initialModel)
+    }
+
+    var amount by remember (initialAmount) {
+        mutableStateOf(initialAmount)
+    }
+
 
     val additionsState by viewModel.getAdditionsState.collectAsState()
 
-    LaunchedEffect(categoryId) {
-        viewModel.getAdditions(categoryId)
+    LaunchedEffect(category.id) {
+        viewModel.getAdditions(category.id)
     }
 
     val additions = when (additionsState) {
@@ -639,133 +658,133 @@ fun ExpandedCard(
         else -> null
     }
 
-    if (showSummary) {
-        SummaryCard(
-            model = selectedModel,
-            amount = amount,
-            price = selectedPrice,
-            onEdit = { showSummary = false }
-        )
-    } else {
-        Card(
-            modifier = modifier
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
-            shape = RoundedCornerShape(16.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }) {
-                    OutlinedTextField(
-                        value = selectedModel,
-                        onValueChange = {},
-                        readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(),
-                        shape = RoundedCornerShape(12.dp),
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { expanded = true })
-                        },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Gray,
-                            unfocusedBorderColor = Color.LightGray
-                        )
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }) {
-                        additions?.forEach { item ->
-                            DropdownMenuItem(
-                                text = { Text(item.name ?: "Unnamed") },
-                                onClick = {
-                                    selectedModel = item.name ?: "Unnamed"
-                                    selectedPrice = (item.price ?: 0).toInt()
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 OutlinedTextField(
-                    value = amount,
-                    onValueChange = { if (it.all(Char::isDigit)) amount = it },
-                    placeholder = { Text("Amount", color = Color.Gray, fontSize = 12.sp) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
+                    value = selectedModel?.name ?: "Select Model",
+                    onValueChange = {},
+                    readOnly = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
                     shape = RoundedCornerShape(12.dp),
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier.clickable { expanded = true }
+                        )
+                    },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Gray,
                         unfocusedBorderColor = Color.LightGray
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Price row
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 50.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = "Info",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Total Price: ${((selectedPrice) * (amount.toIntOrNull() ?: 0))} L.E",
-                            fontSize = 12.sp,
-                            color = Color.Gray
+                    additions?.forEach { item ->
+                        DropdownMenuItem(
+                            text = { Text(item.name ?: "Unnamed") },
+                            onClick = {
+                                selectedModel = item
+                                expanded = false
+                            }
                         )
                     }
+                }
+            }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = amount,
+                onValueChange = { if (it.all(Char::isDigit)) amount = it },
+                placeholder = { Text("Amount", color = Color.Gray, fontSize = 12.sp) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Price row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 50.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "Info",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Clear",
-                        color = colorResource(R.color.orange),
+                        text = "Total Price: ${((selectedModel?.price ?: 0.0) * (amount.toIntOrNull() ?: 0))} L.E",
                         fontSize = 12.sp,
-                        modifier = Modifier
-                            .clickable {
-                                selectedModel = "Model"
-                                selectedPrice = 0
-                                amount = ""
-                            }
+                        color = Color.Gray
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = {
-                        if (selectedModel != "Model" && amount.isNotEmpty()) {
-                            showSummary = true
+                Text(
+                    text = "Clear",
+                    color = colorResource(R.color.orange),
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clickable {
+                            selectedModel = null
+                            amount = ""
                         }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.orange)),
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Confirm")
-                }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    if (selectedModel != null && amount.isNotEmpty()) {
+                        val addition = AdditionModel(
+                            name = selectedModel!!.name ?: "",
+                            price = selectedModel!!.price ?: 0.0,
+                            id = selectedModel!!.id ?: 0,
+                            amount = amount.toIntOrNull() ?: 0,
+                            categoryId = category.id,
+                            categoryName = category.name
+                        )
+                        onAdditionConfirmed(addition)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.orange)),
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text("Confirm")
             }
         }
     }
@@ -773,11 +792,10 @@ fun ExpandedCard(
 
 @Composable
 fun SummaryCard(
-    model: String,
-    amount: String,
-    price: Int,
+    addition: AdditionModel,
     onEdit: () -> Unit
 ) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -787,10 +805,20 @@ fun SummaryCard(
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_pink)),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Selected Model: $model", fontSize = 16.sp)
-            Text("Amount: $amount", fontSize = 16.sp)
-            Text("Total Price: ${price * (amount.toIntOrNull() ?: 0)} L.E", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Category: ${addition.categoryName}", fontSize = 14.sp)
+                Text("Edit", color = colorResource(R.color.orange), fontSize = 12.sp)
+            }
+            Text("Model: ${addition.name}", fontSize = 14.sp)
+            Text("Amount: ${addition.amount}", fontSize = 14.sp)
+            Text(
+                "Total Price: ${addition.price * addition.amount} L.E",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -885,8 +913,21 @@ fun MaterialCategoryItem(title: String, imageRes: Int, onClick: () -> Unit) {
 }
 
 
-data class CategUI(val id: Int, val img: Int, val name: String, val list: List<AdditionModel>)
-data class AdditionModel(val name: String, val price: Double, val amount : Int)
+data class CategUI(
+    val id: Int,
+    val img: Int,
+    val name: String,
+    val list: List<AdditionModel>
+)
+
+data class AdditionModel(
+    val name: String,
+    val price: Double,
+    val id: Int,
+    val amount: Int,
+    val categoryId: Int,
+    val categoryName: String
+)
 
 fun Int.getAdditionIconByID(): Int {
     return when (this) {
