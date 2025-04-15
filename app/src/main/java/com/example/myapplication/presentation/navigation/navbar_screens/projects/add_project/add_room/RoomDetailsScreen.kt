@@ -99,6 +99,7 @@ fun RoomDetailsScreen(
     var showDialog by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Int?>(null) }
     var confirmedAdditions by remember { mutableStateOf<List<AdditionModel>>(emptyList()) }
+    val totalPrice = confirmedAdditions.sumOf { it.amount * it.price }
 
 
     val categoryList by remember(selectedRoom) {
@@ -422,8 +423,8 @@ fun RoomDetailsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF57C00)), // Orange color
+                        onClick = { /* your logic */ },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF57C00)),
                         shape = RoundedCornerShape(50),
                         modifier = Modifier
                             .height(50.dp)
@@ -438,7 +439,7 @@ fun RoomDetailsScreen(
                                         fontSize = 16.sp
                                     )
                                 ) {
-                                    append(price)
+                                    append("%.2f".format(totalPrice))
                                 }
                                 append(" L.E")
                             },
@@ -446,6 +447,7 @@ fun RoomDetailsScreen(
                             color = Color.White
                         )
                     }
+
                 }
 
             }
@@ -638,11 +640,11 @@ fun ExpandedCard(
     viewModel: RoomViewModel = hiltViewModel()
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedModel by remember (initialModel) {
+    var selectedModel by remember(initialModel) {
         mutableStateOf(initialModel)
     }
 
-    var amount by remember (initialAmount) {
+    var amount by remember(initialAmount) {
         mutableStateOf(initialAmount)
     }
 
@@ -734,7 +736,7 @@ fun ExpandedCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 50.dp),
+                    .padding(start = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -782,10 +784,11 @@ fun ExpandedCard(
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.orange)),
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text("Confirm")
             }
+
         }
     }
 }
