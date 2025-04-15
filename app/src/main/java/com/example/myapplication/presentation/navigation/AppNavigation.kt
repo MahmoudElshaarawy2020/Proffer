@@ -4,8 +4,11 @@ import NotificationScreen
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -80,11 +84,17 @@ fun AppNavigation(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
+            .padding(bottom = 24.dp)
+            .fillMaxSize()
+            .background(Color.Transparent)
+            .windowInsetsPadding(WindowInsets.systemBars),
+        containerColor = colorResource(R.color.light_white)
     ) { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(colorResource(R.color.light_white))
+                .padding(paddingValues),
             contentAlignment = Alignment.BottomCenter
         ) {
             NavHost(
@@ -338,7 +348,7 @@ fun AppNavigation(
                 BottomNavigationBar(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 26.dp, start = 16.dp, end = 16.dp)
+                        .padding(bottom = 4.dp, start = 16.dp, end = 16.dp)
                         .background(Color.Transparent),
                     items = bottomNavItems,
                     selectedItem = if (selectedItemIndex != -1) selectedItemIndex else 0,

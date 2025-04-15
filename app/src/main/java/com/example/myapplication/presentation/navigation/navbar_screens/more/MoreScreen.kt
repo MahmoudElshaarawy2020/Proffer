@@ -1,11 +1,13 @@
 package com.example.myapplication.presentation.navigation.navbar_screens.more
 
+import android.inputmethodservice.Keyboard.Row
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +49,7 @@ import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.presentation.navigation.Screen
 import com.example.myapplication.presentation.navigation.navbar_screens.more.log_out.LogoutDialog
 import com.example.myapplication.util.Result
+import org.json.JSONObject
 
 
 @Composable
@@ -58,7 +64,6 @@ fun MoreScreen(
     val profileState by viewModel.profileState.collectAsState()
 
     val isAuthenticated by viewModel.isAuthenticated.collectAsState()
-
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -171,10 +176,34 @@ fun MoreScreen(
                             }
                         }
 
-                        is Result.Error -> Text(
-                            "Error: ${(profileState as Result.Error).message}",
-                            color = Color.Red
-                        )
+                        is Result.Error -> {
+                            val rawMessage = profileState.message
+                            val parsedMessage = rawMessage?.let {
+                                Regex("\"message\"\\s*:\\s*\"([^\"]+)\"")
+                                    .find(it)
+                                    ?.groupValues?.get(1)
+                            }
+                                ?: "Unable to load data"
+
+                            Row(
+                                modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Info",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text(
+                                    text = "$parsedMessage please login !",
+                                    color = Color.White
+                                )
+                            }
+
+                        }
 
                         is Result.Idle -> TODO()
                     }

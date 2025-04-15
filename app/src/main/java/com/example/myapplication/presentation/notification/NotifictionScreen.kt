@@ -19,17 +19,17 @@ import com.example.myapplication.presentation.notification.NotificationCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun NotificationScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     val notifications = List(10) { "Your project (Project Name) got 5 bids from contractors." }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(R.color.light_white)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+            .background(color = colorResource(R.color.light_white))
     ) {
-
         TopAppBar(
             title = {
                 Text(
@@ -40,7 +40,9 @@ fun NotificationScreen(modifier: Modifier = Modifier, navController: NavControll
                     fontWeight = FontWeight.Bold
                 )
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = colorResource(R.color.light_white)),
+            colors = TopAppBarDefaults.smallTopAppBarColors(
+                containerColor = colorResource(R.color.light_white)
+            ),
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
@@ -49,7 +51,7 @@ fun NotificationScreen(modifier: Modifier = Modifier, navController: NavControll
                         tint = Color.Unspecified
                     )
                 }
-            },
+            }
         )
 
         LazyColumn(
@@ -63,3 +65,6 @@ fun NotificationScreen(modifier: Modifier = Modifier, navController: NavControll
         }
     }
 }
+
+
+

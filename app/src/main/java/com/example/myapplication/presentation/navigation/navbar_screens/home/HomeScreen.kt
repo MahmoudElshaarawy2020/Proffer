@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import com.example.myapplication.util.Result
 import androidx.compose.material3.*
@@ -69,7 +70,6 @@ fun HomeScreen(
     }
 
 
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -85,7 +85,7 @@ fun HomeScreen(
             Column(
                 modifier
                     .fillMaxSize()
-                    .padding(8.dp)
+                    .padding(horizontal = 8.dp)
                     .verticalScroll(rememberScrollState())
                     .background(color = colorResource(R.color.light_white)),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -94,10 +94,10 @@ fun HomeScreen(
                 Row(
                     modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp, start = 16.dp),
+                        .padding(start = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = modifier.padding(vertical = 16.dp)) {
+                    Column(modifier = modifier.padding(top = 8.dp, bottom = 16.dp)) {
                         Text(
                             text = "Welcome,",
                             color = colorResource(R.color.light_grey),
@@ -232,12 +232,33 @@ fun HomeScreen(
                         }
 
                         is Result.Error -> {
+                            val rawMessage = contractorsState.message
+                            val parsedMessage = rawMessage?.let {
+                                Regex("\"message\"\\s*:\\s*\"([^\"]+)\"")
+                                    .find(it)
+                                    ?.groupValues?.get(1)
+                            } ?: "Unable to load data"
+
                             item {
-                                (contractorsState as Result.Error).message?.let {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                        .background(Color.Red, shape = RoundedCornerShape(8.dp))
+                                        .padding(12.dp),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "Info",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.size(8.dp))
                                     Text(
-                                        text = it,
-                                        color = Color.Red,
-                                        modifier = Modifier.padding(16.dp)
+                                        text = "$parsedMessage, unable to load contractors. Please login!",
+                                        color = Color.White
                                     )
                                 }
                             }

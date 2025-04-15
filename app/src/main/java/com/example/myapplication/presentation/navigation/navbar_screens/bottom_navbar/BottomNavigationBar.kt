@@ -46,7 +46,7 @@ fun BottomNavigationBar(
             .padding(horizontal = 8.dp)
             .background(Color.Transparent)
             .clip(RoundedCornerShape(32.dp))
-            .height(56.dp),
+            .height(50.dp),
         containerColor = colorResource(R.color.light_pink),
     ) {
         items.forEachIndexed { index, item ->
@@ -63,7 +63,7 @@ fun BottomNavigationBar(
                     ) {
                         Icon(
                             painter = painterResource(id = item.icon),
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(23.dp),
                             contentDescription = item.label,
                             tint = if (selectedItem == index)
                                 colorResource(id = R.color.orange)
@@ -73,7 +73,7 @@ fun BottomNavigationBar(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = item.label,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = if (selectedItem == index)
                                 colorResource(id = R.color.orange)
                             else
