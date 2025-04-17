@@ -242,7 +242,7 @@ fun HomeScreen(
                             item {
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .width(320.dp)
                                         .padding(16.dp)
                                         .background(Color.Red, shape = RoundedCornerShape(8.dp))
                                         .padding(12.dp),
@@ -258,7 +258,8 @@ fun HomeScreen(
                                     Spacer(modifier = Modifier.size(8.dp))
                                     Text(
                                         text = "$parsedMessage, unable to load contractors. Please login!",
-                                        color = Color.White
+                                        color = Color.White,
+                                        maxLines = 2
                                     )
                                 }
                             }

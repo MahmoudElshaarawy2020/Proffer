@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,7 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +58,7 @@ import com.example.myapplication.R
 import com.example.myapplication.data.data_store.DataStoreManager
 import com.example.myapplication.presentation.navigation.navbar_screens.more.faq.FAQItem
 import com.example.myapplication.util.Result
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +75,7 @@ fun BidsScreen(
     val bidsState = viewModel.getBidsState.collectAsState()
     val isLoadingMore = viewModel.isLoadingMore.collectAsState()
     val scrollState = rememberLazyListState()
+
 
     //Need to be changed
     LaunchedEffect(key1 = true) {
@@ -163,7 +168,7 @@ fun BidsScreen(
                             fontSize = 16.sp
                         )
                     }
-                }else {
+                } else {
 
                     LazyColumn(
                         modifier = Modifier
@@ -191,11 +196,64 @@ fun BidsScreen(
             }
 
             is Result.Error -> {
-                Text(
-                    text = "Failed to load FAQs: ${result.message}",
-                    color = Color.Red,
-                    fontSize = 16.sp
-                )
+                var showMessage by remember { mutableStateOf(true) }
+
+                LaunchedEffect(Unit) {
+                    delay(5000)
+                    showMessage = false
+                }
+
+                if (showMessage) {
+                    val rawMessage = bidsState.value.message
+                    val parsedMessage = rawMessage?.let {
+                        Regex("\"message\"\\s*:\\s*\"([^\"]+)\"")
+                            .find(it)
+                            ?.groupValues?.get(1)
+                    } ?: "Unable to load data"
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(Color.Red, shape = RoundedCornerShape(8.dp))
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Info",
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(
+                            text = "$parsedMessage unable to load Bids. Please login!",
+                            color = Color.White
+                        )
+                    }
+                }
+
+
+                Column(
+                    modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.no_bids_img),
+                        contentDescription = "No Bids",
+                        modifier = Modifier.size(200.dp)
+                    )
+
+                    Text(
+                        text = "No bids available",
+                        color = Color.Black,
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(Modifier.height(150.dp))
+                }
             }
 
             is Result.Idle -> TODO()
