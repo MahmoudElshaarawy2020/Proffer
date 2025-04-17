@@ -244,7 +244,7 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .width(320.dp)
                                         .padding(16.dp)
-                                        .background(Color.Red, shape = RoundedCornerShape(8.dp))
+                                        .background(Color.Gray, shape = RoundedCornerShape(8.dp))
                                         .padding(12.dp),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
