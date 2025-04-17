@@ -16,10 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.myapplication.R
@@ -28,11 +30,13 @@ import com.example.myapplication.util.Result
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YourProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: YourProfileViewModel = hiltViewModel(),
     onNavigateToOnboarding: () -> Unit,
+    navController: NavController,
     onNavigateToEditProfile: () -> Unit
 ) {
     val backgroundColor = colorResource(R.color.dark_blue)
@@ -46,7 +50,8 @@ fun YourProfileScreen(
     val imageUrl = (yourProfileState as? Result.Success)?.data?.userData?.profileImage ?: ""
     val email = (yourProfileState as? Result.Success)?.data?.userData?.email ?: "example@gmail.com"
     val phoneNumber = (yourProfileState as? Result.Success)?.data?.userData?.phone ?: "0000000000"
-    val location = (yourProfileState as? Result.Success)?.data?.userData?.address ?: "Unknown Location"
+    val location =
+        (yourProfileState as? Result.Success)?.data?.userData?.address ?: "Unknown Location"
 
     LaunchedEffect(Unit) {
         systemUiController.setStatusBarColor(color = backgroundColor, darkIcons = false)
@@ -67,16 +72,19 @@ fun YourProfileScreen(
                 onNavigateToOnboarding()
                 dataStoreManager.clearToken()
             }
+
             is Result.Error -> {
                 val errorMessage = (deleteAccountState as Result.Error).message
                 Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_LONG).show()
             }
+
             else -> {}
         }
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(colorResource(R.color.light_white))
     ) {
 
@@ -87,13 +95,40 @@ fun YourProfileScreen(
                 .background(backgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-                text = "Your Profile",
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+            TopAppBar(
+                title = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Your Profile",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(end = 45.dp),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.white_arrow_back_ic),
+                            contentDescription = "Back",
+                            tint = Color.Unspecified
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                ),
             )
+
+            Spacer(modifier = Modifier.height(40.dp))
+
         }
 
 
@@ -132,12 +167,12 @@ fun YourProfileScreen(
 
 
 
-                Text(
-                    text = name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.dark_blue)
-                )
+            Text(
+                text = name,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.dark_blue)
+            )
 
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -177,6 +212,7 @@ fun YourProfileScreen(
         }
     }
 }
+
 @Composable
 fun ProfileInfoItem(label: String, value: String, isEditable: Boolean = false) {
     Column(
@@ -202,9 +238,11 @@ fun ProfileInfoItem(label: String, value: String, isEditable: Boolean = false) {
                 )
             }
         }
-        Text(text = value,
+        Text(
+            text = value,
             modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
-            fontSize = 14.sp, color = Color.Gray)
+            fontSize = 14.sp, color = Color.Gray
+        )
         Divider(color = Color.LightGray, thickness = 1.dp)
     }
 }

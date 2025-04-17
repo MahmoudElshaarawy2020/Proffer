@@ -161,7 +161,7 @@ fun RoomDetailsScreen(
         TopAppBar(
             title = {
                 Text(
-                    "Add Project",
+                    "Add Room",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 35.dp),
@@ -196,14 +196,13 @@ fun RoomDetailsScreen(
                 Text(
                     text = "Enter The Required Data",
                     modifier = Modifier.padding(bottom = 16.dp),
-                    fontSize = 16.sp,
+                    fontSize = 12.sp,
                     color = Color.Gray
                 )
 
                 Divider(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .fillMaxWidth(),
                     thickness = 1.dp,
                     color = colorResource(R.color.orange)
                 )
@@ -310,7 +309,7 @@ fun RoomDetailsScreen(
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         MaterialCategoryItem(
                             title = "Floor",
-                            imageRes = R.drawable.house_img,
+                            imageRes = R.drawable.floor_img,
                             onClick = {
                                 selectedCategory = 1
                                 showDialog = true
@@ -319,7 +318,7 @@ fun RoomDetailsScreen(
 
                         MaterialCategoryItem(
                             title = "Cell",
-                            imageRes = R.drawable.house_img,
+                            imageRes = R.drawable.cell_img,
                             onClick = {
                                 selectedCategory = 2
                                 showDialog = true
@@ -328,7 +327,7 @@ fun RoomDetailsScreen(
 
                         MaterialCategoryItem(
                             title = "Wall",
-                            imageRes = R.drawable.house_img,
+                            imageRes = R.drawable.wall_img,
                             onClick = {
                                 selectedCategory = 3
                                 showDialog = true
@@ -895,7 +894,7 @@ fun AddImageButton(
 fun MaterialCategoryItem(title: String, imageRes: Int, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .size(100.dp)
+            .size(width = 110.dp, height = 95.dp)
             .padding(horizontal = 4.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable { onClick() },
@@ -910,7 +909,8 @@ fun MaterialCategoryItem(title: String, imageRes: Int, onClick: () -> Unit) {
         Text(
             text = title,
             color = Color.White,
-            fontSize = 16.sp
+            fontSize = 14.sp,
+            modifier = Modifier.padding(bottom = 12.dp)
         )
     }
 }

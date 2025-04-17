@@ -309,6 +309,7 @@ fun AppNavigation(
                 composable(Screen.YourProfile.route) {
                     YourProfileScreen(
                         modifier = modifier,
+                        navController = navController,
                         onNavigateToOnboarding = {
                             navController.navigate(Screen.OnBoarding.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
