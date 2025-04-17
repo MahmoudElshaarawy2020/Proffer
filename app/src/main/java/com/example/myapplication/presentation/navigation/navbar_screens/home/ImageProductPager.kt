@@ -50,25 +50,26 @@ fun ImageProductPager(images: List<SliderItem?>?) {
         ) { page ->
             val imageUrl = images?.get(page)?.image
 
-            SubcomposeAsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
-                    .crossfade(true)
-                    .build(),
-                loading = {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .align(Alignment.Center)
-                    )
-                },
-                contentDescription = "Slider Image",
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .height(200.dp)
                     .clip(RoundedCornerShape(16.dp))
-            )
+                    .background(Color(0xFFE0E0E0))
+            ) {
+                SubcomposeAsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Slider Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+
+
         }
 
         Spacer(modifier = Modifier.height(8.dp))
